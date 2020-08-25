@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Courgette&display=swap');
+
+.roundedCard {
+	border-radius: 20px !important;
+}
+
+.bgTransparent {
+	background-color: transparent !important;
+}
+
+.bgColorWhite {
+	background-color: #f1f1f2 !important;
+}
+
+.bgColorBlack {
+	background: #3b3b3b !important;
+}
+
+.bgColorGrey {
+	background-color: #e1e1e1 !important;
+}
+
+.cardColorWhite {
+	background-color: #f8f8f8 !important;
+}
+
+.cardColorGrey {
+	background-color: #f1f1f1 !important;
+}
+
+.paddingTutsCard {
+	padding-top: 8px !important;
+	padding-bottom: 8px !important;
+	padding-left: 16px !important;
+	padding-right: 16px !important;
+}
+
+.cardAction {
+	padding: 0px !important;
+	font-size: 13px !important;
+}
+
+.cardBtn {
+	background-color: transparent !important;
+	box-shadow: none !important;
+	outline: none !important;
+	text-transform: none !important;
+}
+
+.fontLight {
+	font-weight: 300 !important;
+}
+
+.fontMedium {
+	font-weight: 500 !important;
+}
+
+.fontSemibold {
+	font-weight: 600 !important;
+}
+
+.fontBold {
+	font-weight: 700 !important;
+}
+
+.fontColorCardText {
+	color: #3b3b3c !important;
+}
+
+.fontColorWhite {
+	color: white !important;
+}
+
+.blackToolbarBgColor {
+	background-color: #1e1e1e !important;
+}
+
+.noAllCaps {
+	text-transform: none !important;
+}
+
+.inputTxtColor {
+	color: #333132 !important;
+}
+
+.separatorLineBg {
+	background: #b7b7b7 !important;
+}

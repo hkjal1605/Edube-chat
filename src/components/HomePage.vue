@@ -2,12 +2,16 @@
   <div>
     <v-btn @click="onLogoutClick()">Logout</v-btn>
     <div v-if="isNewUser">New User</div>
+    <ChatWindow />
   </div>
 </template>
 
 
 <script>
+import ChatWindow from "./ChatWindow";
 export default {
+  name: "HomePage",
+  components: { ChatWindow },
   data() {
     return {
       authListenerUnsubscribe: null,

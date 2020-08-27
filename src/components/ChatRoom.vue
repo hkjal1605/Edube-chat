@@ -3,12 +3,9 @@
     <ul class="container__message-list">
       <li class="container__message" v-for="(chat, i) in chats" :key="i">
         <span class="individual-chat__message--name">{{ chat }}</span>
-        <span
-          class="individual-chat__message--name"
-          v-if="seen[0] !== null && chat.details.tm <= seen[0]"
-        >seen</span>
       </li>
     </ul>
+    <!-- <h1 v-if="checkSeen()">seen</h1> -->
   </div>
 </template>
 
@@ -20,23 +17,7 @@ export default {
     chatRoomId: String,
   },
   data() {
-    return {
-      seen: [null],
-    };
-  },
-  created() {
-    let usrRef = this.firebase
-      .database()
-      .ref("Edubase/chat/" + this.chatRoomId + "/usr/");
-
-    let _this = this;
-
-    usrRef.on("child_changed", function (data) {
-      _this.seen.pop();
-      _this.seen.push(data.val().ls);
-    });
-
-    this.seen = _this.seen;
+    return {};
   },
 };
 </script>

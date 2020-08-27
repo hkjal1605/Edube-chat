@@ -70,25 +70,38 @@ export default {
           ? this.myId + "-chat-" + user.usrId
           : user.usrId + "-chat-" + this.myId;
 
-      if (this.chatRoomId === currentChatRoomId || currentChatRoomId === null) {
-        let userRef = this.firebase
-          .database()
-          .ref("Edubase/chat/" + this.chatRoomId + "/usr/0/");
+      if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
+        if (this.myId === this.chatRoomId.split("-")[0]) {
+          let userRef = this.firebase
+            .database()
+            .ref("Edubase/chat/" + this.chatRoomId + "/usr/0/");
 
-        userRef.once("value").then((data) => {
-          console.log(data.val());
-          if (data.val().rl === "rcv") {
-            userRef.update({
-              ls: this.firebase.database.ServerValue.TIMESTAMP,
-            });
-          } else {
-            this.firebase
-              .database()
-              .ref("Edubase/chat/" + this.chatRoomId + "/usr/1/")
-              .update({ ls: this.firebase.database.ServerValue.TIMESTAMP });
-          }
-        });
+          userRef.update({
+            ls: this.firebase.database.ServerValue.TIMESTAMP,
+          });
+        } else {
+          let userRef = this.firebase
+            .database()
+            .ref("Edubase/chat/" + this.chatRoomId + "/usr/1/");
+
+          userRef.update({
+            ls: this.firebase.database.ServerValue.TIMESTAMP,
+          });
+        }
       }
+
+      let historyRef = this.firebase
+        .database()
+        .ref("Edubase/chatHistory/" + this.chatWith.usrId + "/" + this.myId);
+
+      historyRef.once("value").then((data) => {
+        if (data.val()) {
+          console.log(data.val().unseen);
+          if (data.val().unseen !== undefined) {
+            historyRef.update({ unseen: 0 });
+          }
+        }
+      });
 
       this.chats = [];
 
@@ -105,29 +118,41 @@ export default {
       let _this = this;
 
       msgRef.on("child_added", function (data) {
-        let userRef2 = _this.firebase
-          .database()
-          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0");
-
-        let userRef3 = _this.firebase
-          .database()
-          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1");
-
-        userRef2.once("value").then((doc) => {
-          if (doc.val().rl === "rcv" && doc.val().nm === _this.myName) {
-            userRef2.update({ ls: data.val().tm });
-          }
-
-          userRef3.once("value").then((doc) => {
-            if (doc.val().rl === "rcv" && doc.val().nm === _this.myName) {
-              userRef3.update({ ls: data.val().tm });
-            }
-          });
-        });
-
         _this.chats.push({
           chatId: data.key,
           details: data.val(),
+        });
+
+        if (_this.myId === _this.chatRoomId.split("-")[0]) {
+          let userRef = _this.firebase
+            .database()
+            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/");
+
+          userRef.update({
+            ls: data.val().tm,
+          });
+        } else {
+          let userRef = _this.firebase
+            .database()
+            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/");
+
+          userRef.update({
+            ls: data.val().tm,
+          });
+        }
+
+        let historyRef = _this.firebase
+          .database()
+          .ref(
+            "Edubase/chatHistory/" + _this.chatWith.usrId + "/" + _this.myId
+          );
+
+        historyRef.once("value").then((data) => {
+          if (data.val()) {
+            if (data.val().unseen !== undefined) {
+              historyRef.update({ unseen: 0 });
+            }
+          }
         });
       });
 

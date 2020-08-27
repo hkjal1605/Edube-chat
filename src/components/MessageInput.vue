@@ -23,7 +23,7 @@ export default {
     };
   },
   methods: {
-    addMessage() {
+    async addMessage() {
       if (this.newMessage) {
         const userOneId = this.chatRoomId.split("-")[0];
 
@@ -34,11 +34,9 @@ export default {
             .set([
               {
                 nm: this.myName,
-                rl: "snd",
               },
               {
                 nm: this.chatWith.usrDetails.name,
-                rl: "rcv",
               },
             ]);
         } else {
@@ -48,11 +46,9 @@ export default {
             .set([
               {
                 nm: this.chatWith.usrDetails.name,
-                rl: "rcv",
               },
               {
                 nm: this.myName,
-                rl: "snd",
               },
             ]);
         }
@@ -67,6 +63,42 @@ export default {
           .catch((err) => {
             console.log(err);
           });
+
+        let historyRef = this.firebase
+          .database()
+          .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId);
+
+        historyRef.update({
+          end: this.firebase.database.ServerValue.TIMESTAMP,
+          msg:
+            this.newMessage.length > 45
+              ? this.newMessage.substring(0, 45) + "..."
+              : this.newMessage,
+        });
+
+        await historyRef.transaction(function (data) {
+          if (data) {
+            if (data.unseen) {
+              data.unseen++;
+            } else {
+              data.unseen = 1;
+            }
+          }
+
+          return data;
+        });
+
+        let historyRef2 = this.firebase
+          .database()
+          .ref("Edubase/chatHistory/" + this.chatWith.usrId + "/" + this.myId);
+
+        historyRef2.update({
+          end: this.firebase.database.ServerValue.TIMESTAMP,
+          msg:
+            this.newMessage.length > 45
+              ? this.newMessage.substring(0, 45) + "..."
+              : this.newMessage,
+        });
 
         this.newMessage = null;
       } else {

@@ -11,25 +11,58 @@
 <script>
 export default {
   name: "MessageInput",
-  props: ["chatRoomId"],
+  props: {
+    chatRoomId: String,
+    chatWith: Object,
+  },
   data() {
     return {
       newMessage: null,
+      messages: [],
       warning: null,
     };
   },
   methods: {
     addMessage() {
       if (this.newMessage) {
+        const userOneId = this.chatRoomId.split("-")[0];
+
+        if (this.myId === userOneId) {
+          this.firebase
+            .database()
+            .ref("Edubase/chat/" + this.chatRoomId + "/usr")
+            .set([
+              {
+                nm: this.myName,
+                rl: "snd",
+              },
+              {
+                nm: this.chatWith.usrDetails.name,
+                rl: "rcv",
+              },
+            ]);
+        } else {
+          this.firebase
+            .database()
+            .ref("Edubase/chat/" + this.chatRoomId + "/usr")
+            .set([
+              {
+                nm: this.chatWith.usrDetails.name,
+                rl: "rcv",
+              },
+              {
+                nm: this.myName,
+                rl: "snd",
+              },
+            ]);
+        }
+
         this.firebase
           .database()
-          .ref("Edubase/chat/" + this.chatRoomId)
+          .ref("Edubase/chat/" + this.chatRoomId + "/chats")
           .push({
             msg: this.newMessage,
-            usrId: this.myId,
-            usrNm: this.myName,
-            usrDp: this.myDp,
-            tm: Date.now(),
+            tm: this.firebase.database.ServerValue.TIMESTAMP,
           })
           .catch((err) => {
             console.log(err);

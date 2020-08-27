@@ -23,8 +23,8 @@
       </div>
       <div class="chat-window__container" v-if="chatWith">
         <div class="chat-window__chat-with">{{ chatWith.usrDetails.name }}</div>
-        <ChatRoom :chatRoomId="chatRoomId" />
-        <MessageInput :chatRoomId="chatRoomId" />
+        <ChatRoom :chats="chats" :chatRoomId="chatRoomId" />
+        <MessageInput :chatRoomId="chatRoomId" :chatWith="chatWith" />
       </div>
     </div>
   </div>
@@ -63,10 +63,75 @@ export default {
     setChatWith(user) {
       this.chatWith = user;
 
+      let currentChatRoomId = this.chatRoomId;
+
       this.chatRoomId =
         this.myId > user.usrId
           ? this.myId + "-chat-" + user.usrId
           : user.usrId + "-chat-" + this.myId;
+
+      if (this.chatRoomId === currentChatRoomId || currentChatRoomId === null) {
+        let userRef = this.firebase
+          .database()
+          .ref("Edubase/chat/" + this.chatRoomId + "/usr/0/");
+
+        userRef.once("value").then((data) => {
+          console.log(data.val());
+          if (data.val().rl === "rcv") {
+            userRef.update({
+              ls: this.firebase.database.ServerValue.TIMESTAMP,
+            });
+          } else {
+            this.firebase
+              .database()
+              .ref("Edubase/chat/" + this.chatRoomId + "/usr/1/")
+              .update({ ls: this.firebase.database.ServerValue.TIMESTAMP });
+          }
+        });
+      }
+
+      this.chats = [];
+
+      let oldMsgRef = this.firebase
+        .database()
+        .ref("Edubase/chat/" + currentChatRoomId + "/chats");
+
+      oldMsgRef.off();
+
+      let msgRef = this.firebase
+        .database()
+        .ref("Edubase/chat/" + this.chatRoomId + "/chats");
+
+      let _this = this;
+
+      msgRef.on("child_added", function (data) {
+        let userRef2 = _this.firebase
+          .database()
+          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0");
+
+        let userRef3 = _this.firebase
+          .database()
+          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1");
+
+        userRef2.once("value").then((doc) => {
+          if (doc.val().rl === "rcv" && doc.val().nm === _this.myName) {
+            userRef2.update({ ls: data.val().tm });
+          }
+
+          userRef3.once("value").then((doc) => {
+            if (doc.val().rl === "rcv" && doc.val().nm === _this.myName) {
+              userRef3.update({ ls: data.val().tm });
+            }
+          });
+        });
+
+        _this.chats.push({
+          chatId: data.key,
+          details: data.val(),
+        });
+      });
+
+      this.chats = _this.chats;
     },
   },
 };
@@ -76,6 +141,7 @@ export default {
 .chat-window {
   padding: 40px 20px;
   text-align: center;
+  overflow: scroll;
 }
 
 .chat-window__heading {

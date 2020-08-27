@@ -23,7 +23,7 @@ export default {
     };
   },
   methods: {
-    async addMessage() {
+    addMessage() {
       if (this.newMessage) {
         const userOneId = this.chatRoomId.split("-")[0];
 
@@ -76,18 +76,6 @@ export default {
               : this.newMessage,
         });
 
-        await historyRef.transaction(function (data) {
-          if (data) {
-            if (data.unseen) {
-              data.unseen++;
-            } else {
-              data.unseen = 1;
-            }
-          }
-
-          return data;
-        });
-
         let historyRef2 = this.firebase
           .database()
           .ref("Edubase/chatHistory/" + this.chatWith.usrId + "/" + this.myId);
@@ -98,6 +86,18 @@ export default {
             this.newMessage.length > 45
               ? this.newMessage.substring(0, 45) + "..."
               : this.newMessage,
+        });
+
+        historyRef2.transaction(function (data) {
+          if (data) {
+            if (data.unseen) {
+              data.unseen++;
+            } else {
+              data.unseen = 1;
+            }
+          }
+
+          return data;
         });
 
         this.newMessage = null;

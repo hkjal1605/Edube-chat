@@ -92,7 +92,7 @@ export default {
 
       let historyRef = this.firebase
         .database()
-        .ref("Edubase/chatHistory/" + this.chatWith.usrId + "/" + this.myId);
+        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId);
 
       historyRef.once("value").then((data) => {
         if (data.val()) {
@@ -144,12 +144,12 @@ export default {
         let historyRef = _this.firebase
           .database()
           .ref(
-            "Edubase/chatHistory/" + _this.chatWith.usrId + "/" + _this.myId
+            "Edubase/chatHistory/" + _this.myId + "/" + _this.chatWith.usrId
           );
 
         historyRef.once("value").then((data) => {
           if (data.val()) {
-            if (data.val().unseen !== undefined) {
+            if (data.val().unseen) {
               historyRef.update({ unseen: 0 });
             }
           }

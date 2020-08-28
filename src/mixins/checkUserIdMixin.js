@@ -1,7 +1,7 @@
 export default {
   methods: {
     checkUserId(userId, chatRoomId) {
-      return userId === chatRoomId.split("-chat-")[0];
+      return userId === chatRoomId.split("-CHAT-")[0];
     },
   },
 };

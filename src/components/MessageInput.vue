@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import checkUserIdMixin from "./checkUserIdMixin.js";
+import checkUserIdMixin from "../mixins/checkUserIdMixin";
 export default {
   name: "MessageInput",
   mixins: [checkUserIdMixin],
@@ -70,32 +70,41 @@ export default {
               : this.newMessage,
         };
 
+        updates[
+          "Edubase/chatHistory/" +
+            this.chatWith.usrId +
+            "/" +
+            this.myId +
+            "/end"
+        ] = this.firebase.database.ServerValue.TIMESTAMP;
+
+        updates[
+          "Edubase/chatHistory/" +
+            this.chatWith.usrId +
+            "/" +
+            this.myId +
+            "/msg"
+        ] =
+          this.newMessage.length > 45
+            ? this.newMessage.substring(0, 45) + "..."
+            : this.newMessage;
+
         this.firebase.database().ref().update(updates);
 
-        let historyRef2 = this.firebase
+        this.firebase
           .database()
-          .ref("Edubase/chatHistory/" + this.chatWith.usrId + "/" + this.myId);
-
-        historyRef2.update({
-          end: this.firebase.database.ServerValue.TIMESTAMP,
-          msg:
-            this.newMessage.length > 45
-              ? this.newMessage.substring(0, 45) + "..."
-              : this.newMessage,
-        });
-
-        historyRef2.transaction(function (data) {
-          if (data) {
-            if (data.unseen) {
-              data.unseen++;
-            } else {
-              data.unseen = 1;
-              console.log("B");
+          .ref("Edubase/chatHistory/" + this.chatWith.usrId + "/" + this.myId)
+          .transaction(function (data) {
+            if (data) {
+              if (data.unseen) {
+                data.unseen++;
+              } else {
+                data.unseen = 1;
+              }
             }
-          }
 
-          return data;
-        });
+            return data;
+          });
 
         this.newMessage = null;
       } else {

@@ -33,7 +33,7 @@
 <script>
 import MessageInput from "./MessageInput";
 import ChatRoom from "./ChatRoom";
-import checkUserIdMixin from "./checkUserIdMixin.js";
+import checkUserIdMixin from "../mixins/checkUserIdMixin";
 export default {
   name: "ChatWindow",
   mixins: [checkUserIdMixin],
@@ -71,8 +71,8 @@ export default {
       //-CHAT-
       this.chatRoomId =
         this.myId > user.usrId
-          ? this.myId + "-chat-" + user.usrId
-          : user.usrId + "-chat-" + this.myId;
+          ? this.myId + "-CHAT-" + user.usrId
+          : user.usrId + "-CHAT-" + this.myId;
 
       if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
         if (this.checkUserId(this.myId, this.chatRoomId)) {
@@ -101,21 +101,19 @@ export default {
 
       historyRef.once("value").then((data) => {
         if (data.val()) {
-          console.log(data.val().unseen);
-          if (data.val().unseen >= 0) {
-            historyRef.update({ unseen: 0 });
-          }
+          historyRef.update({ unseen: 0 });
         }
       });
 
       this.chats = [];
 
       //if currentChatRoomId
-      let oldMsgRef = this.firebase
-        .database()
-        .ref("Edubase/chat/" + currentChatRoomId + "/chats");
-
-      oldMsgRef.off();
+      if (currentChatRoomId) {
+        this.firebase
+          .database()
+          .ref("Edubase/chat/" + currentChatRoomId + "/chats")
+          .off();
+      }
 
       let msgRef = this.firebase
         .database()
@@ -126,26 +124,24 @@ export default {
       msgRef.on("child_added", function (data) {
         //use key, val
         _this.chats.push({
-          chatId: data.key,
-          details: data.val(),
+          key: data.key,
+          val: data.val(),
         });
 
         if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
-          let userRef = _this.firebase
+          _this.firebase
             .database()
-            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/");
-
-          userRef.update({
-            ls: data.val().tm,
-          });
+            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/")
+            .update({
+              ls: data.val().tm,
+            });
         } else {
-          let userRef = _this.firebase
+          _this.firebase
             .database()
-            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/");
-
-          userRef.update({
-            ls: data.val().tm,
-          });
+            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/")
+            .update({
+              ls: data.val().tm,
+            });
         }
 
         //merge with ls
@@ -157,16 +153,10 @@ export default {
 
         historyRef.once("value").then((data) => {
           if (data.val()) {
-            if (data.val().unseen >= 0) {
-              historyRef.update({ unseen: 0 });
-              console.log("A");
-            }
+            historyRef.update({ unseen: 0 });
           }
         });
       });
-
-      //delete
-      this.chats = _this.chats;
     },
   },
 };

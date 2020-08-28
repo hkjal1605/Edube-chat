@@ -9,8 +9,10 @@
 </template>
 
 <script>
+import checkUserIdMixin from "./checkUserIdMixin.js";
 export default {
   name: "MessageInput",
+  mixins: [checkUserIdMixin],
   props: {
     chatRoomId: String,
     chatWith: Object,
@@ -25,32 +27,26 @@ export default {
   methods: {
     addMessage() {
       if (this.newMessage) {
-        const userOneId = this.chatRoomId.split("-")[0];
+        var updates = {};
 
-        if (this.myId === userOneId) {
-          this.firebase
-            .database()
-            .ref("Edubase/chat/" + this.chatRoomId + "/usr")
-            .set([
-              {
-                nm: this.myName,
-              },
-              {
-                nm: this.chatWith.usrDetails.name,
-              },
-            ]);
+        if (this.checkUserId(this.myId, this.chatRoomId)) {
+          updates["Edubase/chat/" + this.chatRoomId + "/usr"] = [
+            {
+              nm: this.myName,
+            },
+            {
+              nm: this.chatWith.usrDetails.name,
+            },
+          ];
         } else {
-          this.firebase
-            .database()
-            .ref("Edubase/chat/" + this.chatRoomId + "/usr")
-            .set([
-              {
-                nm: this.chatWith.usrDetails.name,
-              },
-              {
-                nm: this.myName,
-              },
-            ]);
+          updates["Edubase/chat/" + this.chatRoomId + "/usr"] = [
+            {
+              nm: this.chatWith.usrDetails.name,
+            },
+            {
+              nm: this.myName,
+            },
+          ];
         }
 
         this.firebase
@@ -64,17 +60,17 @@ export default {
             console.log(err);
           });
 
-        let historyRef = this.firebase
-          .database()
-          .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId);
-
-        historyRef.update({
+        updates[
+          "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId
+        ] = {
           end: this.firebase.database.ServerValue.TIMESTAMP,
           msg:
             this.newMessage.length > 45
               ? this.newMessage.substring(0, 45) + "..."
               : this.newMessage,
-        });
+        };
+
+        this.firebase.database().ref().update(updates);
 
         let historyRef2 = this.firebase
           .database()
@@ -94,6 +90,7 @@ export default {
               data.unseen++;
             } else {
               data.unseen = 1;
+              console.log("B");
             }
           }
 

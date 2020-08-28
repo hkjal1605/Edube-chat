@@ -33,8 +33,10 @@
 <script>
 import MessageInput from "./MessageInput";
 import ChatRoom from "./ChatRoom";
+import checkUserIdMixin from "./checkUserIdMixin.js";
 export default {
   name: "ChatWindow",
+  mixins: [checkUserIdMixin],
   components: { MessageInput, ChatRoom },
   data() {
     return {
@@ -55,6 +57,7 @@ export default {
           usrDetails: data.val()[key],
         });
       });
+      5;
     });
 
     this.users = _this.users;
@@ -65,14 +68,14 @@ export default {
 
       let currentChatRoomId = this.chatRoomId;
 
+      //-CHAT-
       this.chatRoomId =
         this.myId > user.usrId
           ? this.myId + "-chat-" + user.usrId
           : user.usrId + "-chat-" + this.myId;
 
       if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
-        //split
-        if (this.myId === this.chatRoomId.split("-")[0]) {
+        if (this.checkUserId(this.myId, this.chatRoomId)) {
           let userRef = this.firebase
             .database()
             .ref("Edubase/chat/" + this.chatRoomId + "/usr/0/");
@@ -99,7 +102,7 @@ export default {
       historyRef.once("value").then((data) => {
         if (data.val()) {
           console.log(data.val().unseen);
-          if (data.val().unseen !== undefined) {
+          if (data.val().unseen >= 0) {
             historyRef.update({ unseen: 0 });
           }
         }
@@ -127,7 +130,7 @@ export default {
           details: data.val(),
         });
 
-        if (_this.myId === _this.chatRoomId.split("-")[0]) {
+        if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
           let userRef = _this.firebase
             .database()
             .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/");
@@ -154,13 +157,15 @@ export default {
 
         historyRef.once("value").then((data) => {
           if (data.val()) {
-            if (data.val().unseen) {
+            if (data.val().unseen >= 0) {
               historyRef.update({ unseen: 0 });
+              console.log("A");
             }
           }
         });
       });
 
+      //delete
       this.chats = _this.chats;
     },
   },

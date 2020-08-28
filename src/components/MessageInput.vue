@@ -29,6 +29,7 @@ export default {
       if (this.newMessage) {
         var updates = {};
 
+        // /nm
         if (this.checkUserId(this.myId, this.chatRoomId)) {
           updates["Edubase/chat/" + this.chatRoomId + "/usr"] = [
             {
@@ -49,16 +50,11 @@ export default {
           ];
         }
 
-        this.firebase
-          .database()
-          .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-          .push({
-            msg: this.newMessage,
-            tm: this.firebase.database.ServerValue.TIMESTAMP,
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        let pushKey = this.getPushKey();
+        updates["Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey] = {
+          msg: this.newMessage,
+          tm: this.firebase.database.ServerValue.TIMESTAMP,
+        };
 
         updates[
           "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId

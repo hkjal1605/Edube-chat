@@ -71,6 +71,7 @@ export default {
           : user.usrId + "-chat-" + this.myId;
 
       if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
+        //split
         if (this.myId === this.chatRoomId.split("-")[0]) {
           let userRef = this.firebase
             .database()
@@ -90,6 +91,7 @@ export default {
         }
       }
 
+      //merge with ls
       let historyRef = this.firebase
         .database()
         .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId);
@@ -105,6 +107,7 @@ export default {
 
       this.chats = [];
 
+      //if currentChatRoomId
       let oldMsgRef = this.firebase
         .database()
         .ref("Edubase/chat/" + currentChatRoomId + "/chats");
@@ -118,6 +121,7 @@ export default {
       let _this = this;
 
       msgRef.on("child_added", function (data) {
+        //use key, val
         _this.chats.push({
           chatId: data.key,
           details: data.val(),
@@ -141,6 +145,7 @@ export default {
           });
         }
 
+        //merge with ls
         let historyRef = _this.firebase
           .database()
           .ref(

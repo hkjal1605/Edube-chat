@@ -116,7 +116,6 @@ export default {
       let _this = this;
 
       msgRef.on("child_added", function (data) {
-        //use key, val
         _this.chats.push({
           key: data.key,
           val: data.val(),
@@ -138,17 +137,16 @@ export default {
             });
         }
 
-        let historyRef = _this.firebase
+        _this.firebase
           .database()
-          .ref(
-            "Edubase/chatHistory/" + _this.myId + "/" + _this.chatWith.usrId
-          );
+          .ref("Edubase/chatHistory/" + _this.myId + "/" + _this.chatWith.usrId)
+          .transaction(function (data) {
+            if (data) {
+              data.unseen = 0;
+            }
 
-        historyRef.once("value").then((data) => {
-          if (data.val()) {
-            historyRef.update({ unseen: 0 });
-          }
-        });
+            return data;
+          });
       });
     },
   },

@@ -29,7 +29,6 @@ export default {
       if (this.newMessage) {
         var updates = {};
 
-        // /nm
         if (this.checkUserId(this.myId, this.chatRoomId)) {
           updates[
             "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"

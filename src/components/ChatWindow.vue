@@ -68,46 +68,40 @@ export default {
 
       let currentChatRoomId = this.chatRoomId;
 
-      //-CHAT-
       this.chatRoomId =
         this.myId > user.usrId
           ? this.myId + "-CHAT-" + user.usrId
           : user.usrId + "-CHAT-" + this.myId;
 
+      let updates = {};
+
       if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
         if (this.checkUserId(this.myId, this.chatRoomId)) {
-          let userRef = this.firebase
-            .database()
-            .ref("Edubase/chat/" + this.chatRoomId + "/usr/0/");
-
-          userRef.update({
-            ls: this.firebase.database.ServerValue.TIMESTAMP,
-          });
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/0/ls"
+          ] = this.firebase.database.ServerValue.TIMESTAMP;
         } else {
-          let userRef = this.firebase
-            .database()
-            .ref("Edubase/chat/" + this.chatRoomId + "/usr/1/");
-
-          userRef.update({
-            ls: this.firebase.database.ServerValue.TIMESTAMP,
-          });
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/1/ls"
+          ] = this.firebase.database.ServerValue.TIMESTAMP;
         }
       }
 
-      //merge with ls
-      let historyRef = this.firebase
-        .database()
-        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId);
+      this.firebase.database().ref().update(updates);
 
-      historyRef.once("value").then((data) => {
-        if (data.val()) {
-          historyRef.update({ unseen: 0 });
-        }
-      });
+      this.firebase
+        .database()
+        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId)
+        .transaction(function (data) {
+          if (data) {
+            data.unseen = 0;
+          }
+
+          return data;
+        });
 
       this.chats = [];
 
-      //if currentChatRoomId
       if (currentChatRoomId) {
         this.firebase
           .database()
@@ -144,7 +138,6 @@ export default {
             });
         }
 
-        //merge with ls
         let historyRef = _this.firebase
           .database()
           .ref(

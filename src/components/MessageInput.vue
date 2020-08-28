@@ -31,23 +31,19 @@ export default {
 
         // /nm
         if (this.checkUserId(this.myId, this.chatRoomId)) {
-          updates["Edubase/chat/" + this.chatRoomId + "/usr"] = [
-            {
-              nm: this.myName,
-            },
-            {
-              nm: this.chatWith.usrDetails.name,
-            },
-          ];
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
+          ] = this.myName;
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
+          ] = this.chatWith.usrDetails.name;
         } else {
-          updates["Edubase/chat/" + this.chatRoomId + "/usr"] = [
-            {
-              nm: this.chatWith.usrDetails.name,
-            },
-            {
-              nm: this.myName,
-            },
-          ];
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
+          ] = this.chatWith.usrDetails.name;
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
+          ] = this.myName;
         }
 
         let pushKey = this.getPushKey();

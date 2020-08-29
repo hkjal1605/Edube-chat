@@ -1,6 +1,7 @@
 <template>
   <div class="chat-window">
     <h2 class="chat-window__heading">EDUBASE CHAT</h2>
+    <h4>{{ lastMsg }}</h4>
     <div class="chat-window__main">
       <div class="chat-window__user-list">
         <div class="user-list">
@@ -23,6 +24,7 @@
       </div>
       <div class="chat-window__container" v-if="chatWith">
         <div class="chat-window__chat-with">{{ chatWith.usrDetails.name }}</div>
+        <button class="chat-window__button" @click="loadPreviousMessages">LOAD PREVIOUS CHAT</button>
         <ChatRoom :chats="chats" :chatRoomId="chatRoomId" />
         <MessageInput :chatRoomId="chatRoomId" :chatWith="chatWith" />
       </div>
@@ -44,9 +46,12 @@ export default {
       users: [],
       chatWith: null,
       chatRoomId: null,
+      lastMsg: undefined,
+      arrayOfKeys: [],
+      previousMessages: [],
     };
   },
-  created() {
+  mounted() {
     let userRef = this.firebase.database().ref("Edubase/users/");
 
     let _this = this;
@@ -57,10 +62,9 @@ export default {
           usrDetails: data.val()[key],
         });
       });
-      5;
     });
 
-    this.users = _this.users;
+    this.checkUnseenMessages();
   },
   methods: {
     setChatWith(user) {
@@ -111,7 +115,9 @@ export default {
 
       let msgRef = this.firebase
         .database()
-        .ref("Edubase/chat/" + this.chatRoomId + "/chats");
+        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+        .orderByKey()
+        .limitToLast(4);
 
       let _this = this;
 
@@ -120,6 +126,8 @@ export default {
           key: data.key,
           val: data.val(),
         });
+
+        _this.arrayOfKeys.push(data.key);
 
         if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
           _this.firebase
@@ -149,6 +157,46 @@ export default {
           });
       });
     },
+
+    checkUnseenMessages() {
+      let ref = this.firebase
+        .database()
+        .ref("Edubase/chatHistory/" + this.myId);
+
+      let _this = this;
+
+      ref.on("value", function (data) {
+        _this.lastMsg = data.val();
+      });
+    },
+
+    loadPreviousMessages() {
+      let msgRef = this.firebase
+        .database()
+        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+        .orderByKey()
+        .endAt(this.arrayOfKeys[0])
+        .limitToLast(5);
+
+      this.arrayOfKeys = [];
+
+      let _this = this;
+
+      let tempArray = [];
+
+      msgRef.once("value", function (data) {
+        Object.keys(data.val()).map((key) => {
+          _this.arrayOfKeys.push(key);
+          tempArray.unshift({
+            key: key,
+            val: data.val()[key],
+          });
+        });
+
+        console.log(tempArray.shift());
+        tempArray.map((item) => _this.chats.unshift(item));
+      });
+    },
   },
 };
 </script>
@@ -168,6 +216,13 @@ export default {
 
 .chat-window__main {
   display: flex;
+}
+
+.chat-window__button {
+  padding: 20px 30px;
+  border-radius: 10px;
+  background-color: teal;
+  color: #fff;
 }
 
 .chat-window__container {

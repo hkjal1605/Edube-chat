@@ -1,17 +1,19 @@
 <template>
-  <div>
+  <div class="home-page">
     <v-btn @click="onLogoutClick()">Logout</v-btn>
     <div v-if="isNewUser">New User</div>
-    <ChatWindow />
+    <div class="toggle-button">
+      <ToggleChatButton />
+    </div>
   </div>
 </template>
 
 
 <script>
-import ChatWindow from "./ChatWindow";
+import ToggleChatButton from "./ToggleChatButton";
 export default {
   name: "HomePage",
-  components: { ChatWindow },
+  components: { ToggleChatButton },
   data() {
     return {
       authListenerUnsubscribe: null,
@@ -108,3 +110,16 @@ export default {
   },
 };
 </script>
+
+<style>
+.home-page {
+  height: 100vh;
+  position: relative;
+}
+
+.toggle-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+</style>

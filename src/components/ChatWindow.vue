@@ -1,9 +1,12 @@
 <template>
   <div class="chat-window">
-    <h2 class="chat-window__heading">EDUBASE CHAT</h2>
-    <h4>{{ lastMsg }}</h4>
+    <div class="chat-window__top">
+      <h4 class="chat-window__top--heading" v-if="!chatWith">New Chat</h4>
+      <h4 class="chat-window__top--heading" v-if="chatWith">{{chatWith.usrDetails.name}}</h4>
+    </div>
+    <!-- <h4>{{ lastMsg }}</h4> -->
     <div class="chat-window__main">
-      <div class="chat-window__user-list">
+      <div class="chat-window__user-list" v-if="!chatWith">
         <div class="user-list">
           <h4 class="user-list__heading">Users</h4>
           <div
@@ -203,9 +206,27 @@ export default {
 
 <style>
 .chat-window {
-  padding: 40px 20px;
-  text-align: center;
-  overflow: scroll;
+  width: 300px;
+  height: 400px;
+  text-align: left;
+  /* border-radius: 40px;
+  overflow: hidden; */
+
+  position: relative;
+}
+
+.chat-window__top {
+  padding: 5px 10px;
+  width: 100%;
+  background-color: #1976d2;
+  position: absolute;
+  top: 0;
+}
+
+.chat-window__top--heading {
+  color: #eee;
+  font-size: 20px;
+  margin: 0;
 }
 
 .chat-window__heading {

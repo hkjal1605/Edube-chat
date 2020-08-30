@@ -1,10 +1,12 @@
 <template>
   <div class="message-div">
     <form class="message-div__form" @submit.prevent="addMessage">
-      <label class="message-div__form--label" for="message">Write Message Here</label>
       <input type="text" class="message-div__form--input" name="message" v-model="newMessage" />
-      <span class="message-div__form--warning" v-if="warning">{{ warning }}</span>
+      <button type="submit" class="message-div__button">
+        <v-icon>mdi-send</v-icon>
+      </button>
     </form>
+    <span class="message-div__form--warning" v-if="warning">{{ warning }}</span>
   </div>
 </template>
 
@@ -49,6 +51,7 @@ export default {
         updates["Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey] = {
           msg: this.newMessage,
           tm: this.firebase.database.ServerValue.TIMESTAMP,
+          sender: this.myId,
         };
 
         updates[
@@ -98,6 +101,7 @@ export default {
           });
 
         this.newMessage = null;
+        this.warning = null;
       } else {
         this.warning = "Please enter a message to send!";
       }
@@ -112,20 +116,20 @@ export default {
 }
 
 .message-div__form {
+  padding: 0 20px;
   width: 100%;
   display: flex;
-  flex-direction: column;
-}
-.message-div__form--label {
-  color: #444;
+  align-items: center;
+  justify-content: space-between;
 }
 .message-div__form--input {
-  height: 25px;
+  height: 30px;
+  padding: 5px 10px;
   border: none;
   outline: none;
-  width: 100%;
-  opacity: 0.2;
-  border-bottom: solid 2px teal;
+  width: 88%;
+  border-radius: 2000px;
+  border: solid 2px teal;
 }
 .message-div__form--warning {
   color: red;

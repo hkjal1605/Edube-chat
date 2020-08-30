@@ -1,5 +1,5 @@
 <template>
-  <v-menu :top="true" :offset-x="true" :left="true">
+  <v-menu :top="true" :offset-x="true" :left="true" :close-on-content-click="false">
     <template v-slot:activator="{ on, attrs }">
       <v-btn class="purple" color="primary" dark v-bind="attrs" v-on="on">
         <v-icon>mdi-message-text</v-icon>
@@ -24,4 +24,10 @@ export default {
   }),
 };
 </script>
+
+<style>
+.v-menu__content {
+  overflow-y: hidden !important;
+}
+</style>
 

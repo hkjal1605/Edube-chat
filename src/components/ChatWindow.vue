@@ -4,11 +4,11 @@
       <h4 class="chat-window__top--heading" v-if="!chatWith">New Chat</h4>
       <h4 class="chat-window__top--heading" v-if="chatWith">{{chatWith.usrDetails.name}}</h4>
     </div>
-    <!-- <h4>{{ lastMsg }}</h4> -->
+
     <div class="chat-window__main">
       <div class="chat-window__user-list" v-if="!chatWith">
         <div class="user-list">
-          <h4 class="user-list__heading">Users</h4>
+          <!-- <h4 class="user-list__heading">Users</h4> -->
           <div
             class="user-list__user"
             v-for="user in users"
@@ -22,14 +22,17 @@
               v-if="user.usrId != myId"
             />
             <span class="user-list__user--name" v-if="user.usrId != myId">{{ user.usrDetails.name }}</span>
+            <span
+              class="user-list__last-msg"
+              v-if="lastMsg && lastMsg[user.usrId]"
+            >{{ lastMsg[user.usrId].msg }}</span>
           </div>
         </div>
       </div>
       <div class="chat-window__container" v-if="chatWith">
-        <div class="chat-window__chat-with">{{ chatWith.usrDetails.name }}</div>
         <button class="chat-window__button" @click="loadPreviousMessages">LOAD PREVIOUS CHAT</button>
         <ChatRoom :chats="chats" :chatRoomId="chatRoomId" />
-        <MessageInput :chatRoomId="chatRoomId" :chatWith="chatWith" />
+        <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
       </div>
     </div>
   </div>
@@ -171,6 +174,8 @@ export default {
       ref.on("value", function (data) {
         _this.lastMsg = data.val();
       });
+
+      console.log(_this.lastMsg);
     },
 
     loadPreviousMessages() {
@@ -239,22 +244,29 @@ export default {
   display: flex;
 }
 
-.chat-window__button {
-  padding: 20px 30px;
-  border-radius: 10px;
-  background-color: teal;
-  color: #fff;
+.chat-window__user-list {
+  width: 100%;
 }
 
 .chat-window__container {
   display: inline-block;
-  padding: 30px;
   height: 70vh;
   width: 80vw;
-  border: 1px solid teal;
+  text-align: center;
+}
+
+.chat-window__button {
+  display: inline-block;
+  margin-top: 40px;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  border-radius: 2000px;
+  background-color: teal;
+  color: #fff;
 }
 
 .user-list {
+  margin-top: 30px;
   padding: 10px;
 }
 .user-list__heading {
@@ -262,17 +274,25 @@ export default {
 }
 .user-list__user {
   cursor: pointer;
-  padding: 10px 0;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
+  margin-bottom: 3px;
 }
 .user-list__user--img {
   height: 30px;
   width: 30px;
   object-fit: cover;
   border-radius: 50%;
+  margin-right: 15px;
 }
 .user-list__user--name {
-  font-size: 20px;
+  font-size: 16px;
+}
+
+.message-input {
+  width: 100%;
+  position: absolute;
+  bottom: 10px;
 }
 </style>

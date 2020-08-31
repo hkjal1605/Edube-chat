@@ -3,7 +3,10 @@
     <v-btn class="purple" color="primary" @click="changeContainerClass()">
       <v-icon>mdi-message-text</v-icon>
     </v-btn>
-    <ChatWindow v-bind:class="{'shown': (showContainer), 'hidden': (!showContainer)}" />
+    <ChatWindow
+      v-bind:class="{'shown': (showContainer), 'hidden': (!showContainer)}"
+      :showContainer="showContainer"
+    />
   </div>
 </template>
 

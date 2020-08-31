@@ -4,7 +4,7 @@
       <div class="chat-window__top">
         <h4 class="chat-window__top--heading">Messages</h4>
       </div>
-
+      {{ checkUnseenMessages() }}
       <div class="chat-window__main">
         <div class="chat-window__user-list">
           <div class="user-list">
@@ -33,18 +33,6 @@
         </div>
       </div>
     </div>
-    <div class="chat-window__container" v-if="chatRoomId">
-      <div class="chat-window__container--top">{{ chatWith.usrDetails.name}}</div>
-      <v-btn
-        text
-        small
-        color="primary"
-        class="chat-window__button"
-        @click="loadPreviousMessages"
-      >LOAD PREVIOUS CHAT</v-btn>
-      <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
-      <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
-    </div>
   </div>
 </template>
 
@@ -56,6 +44,9 @@ export default {
   name: "ChatWindow",
   mixins: [checkUserIdMixin],
   components: { MessageInput, ChatRoom },
+  props: {
+    showContainer: Boolean,
+  },
   data() {
     return {
       chats: [],
@@ -79,8 +70,6 @@ export default {
         });
       });
     });
-
-    this.checkUnseenMessages();
   },
   methods: {
     setChatWith(user) {
@@ -148,6 +137,10 @@ export default {
       let _this = this;
 
       msgRef.on("child_added", function (data) {
+        if (!_this.showContainer) {
+          _this.chatRoomId = null;
+          return;
+        }
         _this.chats.push({
           key: data.key,
           val: data.val(),
@@ -191,8 +184,8 @@ export default {
 
       let _this = this;
 
-      ref.on("value", function (data) {
-        _this.lastMsg = data.val();
+      ref.on("child_changed", function (data) {
+        _this.lastMsg = data.val().msg;
       });
 
       console.log(_this.lastMsg);

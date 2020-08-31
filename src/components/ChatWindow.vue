@@ -1,59 +1,50 @@
 <template>
   <div class="chat-window">
-    <div class="chat-window__top">
-      <h4 class="chat-window__top--heading">Messages</h4>
-    </div>
+    <div>
+      <div class="chat-window__top">
+        <h4 class="chat-window__top--heading">Messages</h4>
+      </div>
 
-    <v-menu
-      transition="slide-x-transition"
-      :offset-x="true"
-      :left="true"
-      :close-on-content-click="false"
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <div class="chat-window__main">
-          <div class="chat-window__user-list">
-            <div class="user-list">
-              <div
-                v-bind="attrs"
-                v-on="on"
-                class="user-list__user"
-                v-for="user in users"
-                :key="user.usrId"
-                @click="setChatWith(user)"
-              >
-                <img
-                  :src="user.usrDetails.dp"
-                  alt="User"
-                  class="user-list__user--img"
-                  v-if="user.usrId != myId"
-                />
-                <span
-                  class="user-list__user--name"
-                  v-if="user.usrId != myId"
-                >{{ user.usrDetails.name }}</span>
-                <span
-                  class="user-list__last-msg"
-                  v-if="lastMsg && lastMsg[user.usrId]"
-                >{{ lastMsg[user.usrId].msg }}</span>
-              </div>
+      <div class="chat-window__main">
+        <div class="chat-window__user-list">
+          <div class="user-list">
+            <div
+              class="user-list__user"
+              v-for="user in users"
+              :key="user.usrId"
+              @click="setChatWith(user)"
+            >
+              <img
+                :src="user.usrDetails.dp"
+                alt="User"
+                class="user-list__user--img"
+                v-if="user.usrId != myId"
+              />
+              <span
+                class="user-list__user--name"
+                v-if="user.usrId != myId"
+              >{{ user.usrDetails.name }}</span>
+              <span
+                class="user-list__last-msg"
+                v-if="lastMsg && lastMsg[user.usrId]"
+              >{{ lastMsg[user.usrId].msg }}</span>
             </div>
           </div>
         </div>
-      </template>
-      <div class="chat-window__container" v-if="chatWith">
-        <div class="chat-window__container--top">{{ chatWith.usrDetails.name}}</div>
-        <v-btn
-          text
-          small
-          color="primary"
-          class="chat-window__button"
-          @click="loadPreviousMessages"
-        >LOAD PREVIOUS CHAT</v-btn>
-        <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
-        <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
       </div>
-    </v-menu>
+    </div>
+    <div class="chat-window__container" v-if="chatRoomId">
+      <div class="chat-window__container--top">{{ chatWith.usrDetails.name}}</div>
+      <v-btn
+        text
+        small
+        color="primary"
+        class="chat-window__button"
+        @click="loadPreviousMessages"
+      >LOAD PREVIOUS CHAT</v-btn>
+      <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
+      <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
+    </div>
   </div>
 </template>
 
@@ -101,6 +92,12 @@ export default {
         this.myId > user.usrId
           ? this.myId + "-CHAT-" + user.usrId
           : user.usrId + "-CHAT-" + this.myId;
+
+      if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
+        this.chatRoomId = null;
+
+        return;
+      }
 
       this.arrayOfKeys = [];
 
@@ -185,8 +182,6 @@ export default {
             return data;
           });
       });
-
-      this.chats = [];
     },
 
     checkUnseenMessages() {
@@ -241,6 +236,7 @@ export default {
   text-align: left;
   /* border-radius: 40px;
   overflow: hidden; */
+  box-shadow: 2px 5px 12px rgba(0, 0, 0, 0.5);
 
   position: relative;
 }
@@ -275,10 +271,13 @@ export default {
 }
 
 .chat-window__container {
+  box-shadow: 2px 5px 12px rgba(0, 0, 0, 0.5);
   height: 450px;
   width: 400px;
   text-align: center;
-  position: relative;
+  position: absolute;
+  top: -50px;
+  left: -415px;
 }
 
 .chat-window__container--top {

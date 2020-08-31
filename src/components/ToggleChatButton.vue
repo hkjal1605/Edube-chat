@@ -1,18 +1,10 @@
 <template>
-  <v-menu
-    transition="slide-x-transition"
-    :top="true"
-    :offset-x="true"
-    :left="true"
-    :close-on-content-click="false"
-  >
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn class="purple" color="primary" dark v-bind="attrs" v-on="on">
-        <v-icon>mdi-message-text</v-icon>
-      </v-btn>
-    </template>
-    <ChatWindow />
-  </v-menu>
+  <div class="mega-chat-container">
+    <v-btn class="purple" color="primary" @click="changeContainerClass()">
+      <v-icon>mdi-message-text</v-icon>
+    </v-btn>
+    <ChatWindow v-bind:class="{'shown': (showContainer), 'hidden': (!showContainer)}" />
+  </div>
 </template>
 
 <script>
@@ -21,14 +13,36 @@ export default {
   name: "ToggleChatButton",
   components: { ChatWindow },
   data() {
-    return {};
+    return {
+      showContainer: false,
+    };
+  },
+  methods: {
+    changeContainerClass() {
+      this.showContainer = !this.showContainer;
+    },
   },
 };
 </script>
 
 <style>
+.mega-chat-container {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: row-reverse;
+  position: relative;
+}
+
 .v-menu__content {
   overflow-y: hidden !important;
+}
+
+.hidden {
+  display: none;
+}
+
+.shown {
+  display: block;
 }
 </style>
 

@@ -41,11 +41,13 @@ export default {
 }
 
 .hidden {
-  display: none;
+  visibility: hidden;
+  opacity: 0;
 }
 
 .shown {
-  display: block;
+  visibility: visible;
+  opacity: 1;
 }
 </style>
 

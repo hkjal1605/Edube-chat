@@ -21,6 +21,7 @@ export default {
   name: "IndividualChat",
   props: {
     chatWith: Object,
+    showContainer: Boolean,
   },
   mixins: [checkUserIdMixin],
   components: { MessageInput, ChatRoom },
@@ -32,6 +33,7 @@ export default {
     };
   },
   mounted() {
+    console.log(this.chatWith);
     let currentChatRoomId = this.chatRoomId;
 
     this.chatRoomId =
@@ -113,6 +115,15 @@ export default {
           return data;
         });
     });
+  },
+  destroyed() {
+    console.log("unmounted");
+    this.firebase
+      .database()
+      .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+      .orderByKey()
+      .limitToLast(4)
+      .off();
   },
   methods: {
     loadPreviousMessages() {

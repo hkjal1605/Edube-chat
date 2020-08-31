@@ -63,12 +63,12 @@ export default {
   height: 300px;
   overflow-y: auto;
 }
+
 .container__message-list {
   padding-left: 0;
   padding: 0 10px;
   list-style: none;
   text-align: right;
-  overflow: scroll;
 }
 
 .container__message {

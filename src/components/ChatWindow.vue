@@ -1,8 +1,7 @@
 <template>
   <div class="chat-window">
     <div class="chat-window__top">
-      <h4 class="chat-window__top--heading" v-if="!chatWith">New Chat</h4>
-      <h4 class="chat-window__top--heading" v-if="chatWith">{{chatWith.usrDetails.name}}</h4>
+      <h4 class="chat-window__top--heading">Messages</h4>
     </div>
 
     <v-menu
@@ -43,7 +42,10 @@
         </div>
       </template>
       <div class="chat-window__container" v-if="chatWith">
+        <div class="chat-window__container--top">{{ chatWith.usrDetails.name}}</div>
         <v-btn
+          text
+          small
           color="primary"
           class="chat-window__button"
           @click="loadPreviousMessages"
@@ -255,6 +257,7 @@ export default {
   color: #eee;
   font-size: 20px;
   margin: 0;
+  font-weight: 300;
 }
 
 .chat-window__heading {
@@ -275,16 +278,23 @@ export default {
   height: 450px;
   width: 400px;
   text-align: center;
+  position: relative;
+}
+
+.chat-window__container--top {
+  padding: 5px 10px;
+  width: 100%;
+  background-color: #1976d2;
+  position: absolute;
+  top: 0;
+  color: #eee;
+  font-size: 20px;
+  font-weight: 300;
 }
 
 .chat-window__button {
   display: inline-block;
-  margin-top: 40px;
-  margin-bottom: 10px;
-  padding: 6px 12px;
-  border-radius: 2000px;
-  background-color: teal;
-  color: #fff;
+  margin-top: 45px;
 }
 
 .user-list {

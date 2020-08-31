@@ -5,36 +5,53 @@
       <h4 class="chat-window__top--heading" v-if="chatWith">{{chatWith.usrDetails.name}}</h4>
     </div>
 
-    <div class="chat-window__main">
-      <div class="chat-window__user-list" v-if="!chatWith">
-        <div class="user-list">
-          <!-- <h4 class="user-list__heading">Users</h4> -->
-          <div
-            class="user-list__user"
-            v-for="user in users"
-            :key="user.usrId"
-            @click="setChatWith(user)"
-          >
-            <img
-              :src="user.usrDetails.dp"
-              alt="User"
-              class="user-list__user--img"
-              v-if="user.usrId != myId"
-            />
-            <span class="user-list__user--name" v-if="user.usrId != myId">{{ user.usrDetails.name }}</span>
-            <span
-              class="user-list__last-msg"
-              v-if="lastMsg && lastMsg[user.usrId]"
-            >{{ lastMsg[user.usrId].msg }}</span>
+    <v-menu
+      transition="slide-x-transition"
+      :offset-x="true"
+      :left="true"
+      :close-on-content-click="false"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <div class="chat-window__main">
+          <div class="chat-window__user-list">
+            <div class="user-list">
+              <div
+                v-bind="attrs"
+                v-on="on"
+                class="user-list__user"
+                v-for="user in users"
+                :key="user.usrId"
+                @click="setChatWith(user)"
+              >
+                <img
+                  :src="user.usrDetails.dp"
+                  alt="User"
+                  class="user-list__user--img"
+                  v-if="user.usrId != myId"
+                />
+                <span
+                  class="user-list__user--name"
+                  v-if="user.usrId != myId"
+                >{{ user.usrDetails.name }}</span>
+                <span
+                  class="user-list__last-msg"
+                  v-if="lastMsg && lastMsg[user.usrId]"
+                >{{ lastMsg[user.usrId].msg }}</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
       <div class="chat-window__container" v-if="chatWith">
-        <button class="chat-window__button" @click="loadPreviousMessages">LOAD PREVIOUS CHAT</button>
-        <ChatRoom :chats="chats" :chatRoomId="chatRoomId" />
+        <v-btn
+          color="primary"
+          class="chat-window__button"
+          @click="loadPreviousMessages"
+        >LOAD PREVIOUS CHAT</v-btn>
+        <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
         <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
       </div>
-    </div>
+    </v-menu>
   </div>
 </template>
 
@@ -82,6 +99,10 @@ export default {
         this.myId > user.usrId
           ? this.myId + "-CHAT-" + user.usrId
           : user.usrId + "-CHAT-" + this.myId;
+
+      this.arrayOfKeys = [];
+
+      console.log(this.chatRoomId);
 
       let updates = {};
 
@@ -162,6 +183,8 @@ export default {
             return data;
           });
       });
+
+      this.chats = [];
     },
 
     checkUnseenMessages() {
@@ -249,9 +272,8 @@ export default {
 }
 
 .chat-window__container {
-  display: inline-block;
-  height: 70vh;
-  width: 80vw;
+  height: 450px;
+  width: 400px;
   text-align: center;
 }
 

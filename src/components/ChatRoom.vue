@@ -8,33 +8,66 @@
       >
         <span class="individual-chat__message--name">{{ chat.val.msg }}</span>
       </li>
+      <span
+        class="individual-chat__seen"
+        v-if="lastSeen !== null && lastSeen >= chats[chats.length - 1].val.tm && chats[chats.length - 1].val.sender === myId"
+      >seen</span>
     </ul>
-    <!-- <h1 v-if="checkSeen()">seen</h1> -->
+    {{ checkMessageSeen() }}
   </div>
 </template>
 
 <script>
+import checkUserIdMixin from "../mixins/checkUserIdMixin";
 export default {
   name: "ChatRoom",
+  mixins: [checkUserIdMixin],
   props: {
     chats: Array,
     chatRoomId: String,
   },
   data() {
-    return {};
+    return {
+      lastSeen: null,
+    };
+  },
+  methods: {
+    checkMessageSeen() {
+      let _this = this;
+      if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
+        _this.firebase
+          .database()
+          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/ls")
+          .on("value", function (data) {
+            if (data.val()) {
+              _this.lastSeen = data.val();
+            }
+          });
+      } else {
+        _this.firebase
+          .database()
+          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/ls")
+          .on("value", function (data) {
+            if (data.val()) {
+              _this.lastSeen = data.val();
+            }
+          });
+      }
+    },
   },
 };
 </script>
 
 <style>
 .chat-room {
+  height: 300px;
   overflow-y: auto;
 }
 .container__message-list {
   padding-left: 0;
   padding: 0 10px;
   list-style: none;
-  text-align: left;
+  text-align: right;
   overflow: scroll;
 }
 
@@ -46,12 +79,14 @@ export default {
 }
 
 .msg-sent {
-  text-align: left;
+  text-align: right;
+  margin-left: 45px;
   background-color: #ff7675;
 }
 
 .msg-recieved {
-  text-align: right;
+  text-align: left;
+  margin-right: 30px;
   background-color: #55efc4;
 }
 </style>

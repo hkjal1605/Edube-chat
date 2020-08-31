@@ -33,17 +33,21 @@
         </div>
       </div>
     </div>
+    <div class="components">
+      <div v-for="(comp, i) in component" :key="i">
+        <component :is="comp" :chatWith="chatWith" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import MessageInput from "./MessageInput";
-import ChatRoom from "./ChatRoom";
+import IndividualChat from "./IndividualChat";
 import checkUserIdMixin from "../mixins/checkUserIdMixin";
 export default {
   name: "ChatWindow",
   mixins: [checkUserIdMixin],
-  components: { MessageInput, ChatRoom },
+  components: { IndividualChat },
   props: {
     showContainer: Boolean,
   },
@@ -56,9 +60,12 @@ export default {
       lastMsg: undefined,
       arrayOfKeys: [],
       previousMessages: [],
+      component: [],
     };
   },
   mounted() {
+    this.component = [];
+
     let userRef = this.firebase.database().ref("Edubase/users/");
 
     let _this = this;
@@ -74,107 +81,7 @@ export default {
   methods: {
     setChatWith(user) {
       this.chatWith = user;
-
-      let currentChatRoomId = this.chatRoomId;
-
-      this.chatRoomId =
-        this.myId > user.usrId
-          ? this.myId + "-CHAT-" + user.usrId
-          : user.usrId + "-CHAT-" + this.myId;
-
-      if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
-        this.chatRoomId = null;
-
-        return;
-      }
-
-      this.arrayOfKeys = [];
-
-      console.log(this.chatRoomId);
-
-      let updates = {};
-
-      if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
-        if (this.checkUserId(this.myId, this.chatRoomId)) {
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/0/ls"
-          ] = this.firebase.database.ServerValue.TIMESTAMP;
-        } else {
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/1/ls"
-          ] = this.firebase.database.ServerValue.TIMESTAMP;
-        }
-      }
-
-      this.firebase.database().ref().update(updates);
-
-      this.firebase
-        .database()
-        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId)
-        .transaction(function (data) {
-          if (data) {
-            data.unseen = 0;
-          }
-
-          return data;
-        });
-
-      this.chats = [];
-
-      if (currentChatRoomId) {
-        this.firebase
-          .database()
-          .ref("Edubase/chat/" + currentChatRoomId + "/chats")
-          .off();
-      }
-
-      let msgRef = this.firebase
-        .database()
-        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-        .orderByKey()
-        .limitToLast(4);
-
-      let _this = this;
-
-      msgRef.on("child_added", function (data) {
-        if (!_this.showContainer) {
-          _this.chatRoomId = null;
-          return;
-        }
-        _this.chats.push({
-          key: data.key,
-          val: data.val(),
-        });
-
-        _this.arrayOfKeys.push(data.key);
-
-        if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
-          _this.firebase
-            .database()
-            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/")
-            .update({
-              ls: data.val().tm,
-            });
-        } else {
-          _this.firebase
-            .database()
-            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/")
-            .update({
-              ls: data.val().tm,
-            });
-        }
-
-        _this.firebase
-          .database()
-          .ref("Edubase/chatHistory/" + _this.myId + "/" + _this.chatWith.usrId)
-          .transaction(function (data) {
-            if (data) {
-              data.unseen = 0;
-            }
-
-            return data;
-          });
-      });
+      this.component.push(IndividualChat);
     },
 
     checkUnseenMessages() {
@@ -186,36 +93,6 @@ export default {
 
       ref.on("child_changed", function (data) {
         _this.lastMsg = data.val().msg;
-      });
-
-      console.log(_this.lastMsg);
-    },
-
-    loadPreviousMessages() {
-      let msgRef = this.firebase
-        .database()
-        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-        .orderByKey()
-        .endAt(this.arrayOfKeys[0])
-        .limitToLast(5);
-
-      this.arrayOfKeys = [];
-
-      let _this = this;
-
-      let tempArray = [];
-
-      msgRef.once("value", function (data) {
-        Object.keys(data.val()).map((key) => {
-          _this.arrayOfKeys.push(key);
-          tempArray.unshift({
-            key: key,
-            val: data.val()[key],
-          });
-        });
-
-        console.log(tempArray.shift());
-        tempArray.map((item) => _this.chats.unshift(item));
       });
     },
   },
@@ -318,5 +195,9 @@ export default {
   width: 100%;
   position: absolute;
   bottom: 10px;
+}
+
+.components {
+  display: flex;
 }
 </style>

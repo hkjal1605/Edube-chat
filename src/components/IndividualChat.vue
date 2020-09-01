@@ -1,6 +1,17 @@
 <template>
   <div class="chat-window__container" v-if="chatRoomId">
-    <div class="chat-window__container--top">{{ chatWith.usrDetails.name}}</div>
+    <div class="chat-window__container--top">
+      {{ chatWith.usrDetails.name}}
+      <v-btn
+        class="chat-window__container--close-btn"
+        color="error"
+        fab
+        small
+        @click="closeChatRoom()"
+      >
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </div>
     <v-btn
       text
       small
@@ -21,7 +32,6 @@ export default {
   name: "IndividualChat",
   props: {
     chatWith: Object,
-    showContainer: Boolean,
   },
   mixins: [checkUserIdMixin],
   components: { MessageInput, ChatRoom },
@@ -33,7 +43,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.chatWith);
+    console.log("mounted");
     let currentChatRoomId = this.chatRoomId;
 
     this.chatRoomId =
@@ -152,6 +162,15 @@ export default {
         console.log(tempArray.shift());
         tempArray.map((item) => _this.chats.unshift(item));
       });
+    },
+
+    closeChatRoom() {
+      let tempArray = this.$parent.chatWith;
+      const index = tempArray.indexOf(this.chatWith);
+      if (index > -1) {
+        this.$parent.chatWith.splice(index, 1);
+      }
+      console.log(this.$parent.chatWith);
     },
   },
 };

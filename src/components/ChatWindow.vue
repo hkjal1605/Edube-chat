@@ -30,12 +30,7 @@
     <div class="components">
       <div v-for="(comp, i) in component" :key="i">
         {{ resetComponentArray() }}
-        <component
-          v-if="chatWith[i] !== undefined"
-          :is="comp"
-          :chatWith="chatWith[i]"
-          :showContainer="showContainer"
-        />
+        <component v-if="chatWith[i] !== undefined" :is="comp" :chatWith="chatWith[i]" />
       </div>
     </div>
   </div>
@@ -74,6 +69,7 @@ export default {
   },
   methods: {
     setChatWith(user) {
+      console.log(this.chatWith);
       if (!this.chatWith.includes(user)) {
         this.chatWith.push(user);
         this.component.push(IndividualChat);
@@ -165,6 +161,15 @@ export default {
   color: #eee;
   font-size: 20px;
   font-weight: 300;
+}
+
+.chat-window__container--close-btn {
+  height: 28px !important;
+  width: 28px !important;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .chat-window__button {

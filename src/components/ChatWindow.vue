@@ -1,10 +1,19 @@
 <template>
   <div class="chat-window">
-    <div class="chat-window__main">
+    <div v-bind:class="{'chat-window__main': true, 'minimised': (minimised)}">
       <div class="chat-window__top">
-        <h4 class="chat-window__top--heading">Messages</h4>
+        <h4 class="chat-window__top--heading">Messages({{lastMsg}})</h4>
+        <v-btn
+          class="chat-window__top--minimise-btn"
+          color="error"
+          fab
+          small
+          @click="minimiseChatWindow()"
+        >
+          <v-icon>mdi-minus</v-icon>
+        </v-btn>
       </div>
-      <div class="chat-window__user-list">
+      <div class="chat-window__user-list" v-if="!minimised">
         <div class="user-list">
           <div
             class="user-list__user"
@@ -30,7 +39,12 @@
     <div class="components">
       <div v-for="(comp, i) in component" :key="i">
         {{ resetComponentArray() }}
-        <component v-if="chatWith[i] !== undefined" :is="comp" :chatWith="chatWith[i]" />
+        <component
+          :key="tempVar"
+          v-if="chatWith[i] !== undefined"
+          :is="comp"
+          :chatWith="chatWith[i]"
+        />
       </div>
     </div>
   </div>
@@ -52,6 +66,8 @@ export default {
       chatWith: [],
       lastMsg: undefined,
       component: [],
+      minimised: false,
+      tempVar: true,
     };
   },
   mounted() {
@@ -66,10 +82,11 @@ export default {
         });
       });
     });
+
+    this.checkUnseenMessages();
   },
   methods: {
     setChatWith(user) {
-      console.log(this.chatWith);
       if (!this.chatWith.includes(user)) {
         this.chatWith.push(user);
         this.component.push(IndividualChat);
@@ -94,6 +111,10 @@ export default {
         _this.lastMsg = data.val().msg;
       });
     },
+
+    minimiseChatWindow() {
+      this.minimised = !this.minimised;
+    },
   },
 };
 </script>
@@ -112,6 +133,9 @@ export default {
   padding: 5px 10px;
   width: 100%;
   background-color: #1976d2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .chat-window__top--heading {
@@ -119,6 +143,11 @@ export default {
   font-size: 20px;
   margin: 0;
   font-weight: 300;
+}
+
+.chat-window__top--minimise-btn {
+  height: 28px !important;
+  width: 28px !important;
 }
 
 .chat-window__heading {
@@ -134,6 +163,11 @@ export default {
   overflow: hidden;
   border-radius: 5px;
   margin-left: 10px;
+}
+
+.minimised {
+  height: 38px;
+  overflow: hidden;
 }
 
 .chat-window__user-list {
@@ -152,6 +186,10 @@ export default {
   position: relative;
 }
 
+.minimisedChatRoom {
+  height: 40px;
+}
+
 .chat-window__container--top {
   padding: 5px 10px;
   width: 100%;
@@ -168,6 +206,15 @@ export default {
   width: 28px !important;
   position: absolute;
   right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chat-window__container--minimise-btn {
+  height: 28px !important;
+  width: 28px !important;
+  position: absolute;
+  right: 45px;
   top: 50%;
   transform: translateY(-50%);
 }

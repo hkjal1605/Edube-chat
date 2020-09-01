@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-window__container" v-if="chatRoomId">
+  <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (!minimised)}">
     <div class="chat-window__container--top">
       {{ chatWith.usrDetails.name}}
       <v-btn
@@ -11,16 +11,27 @@
       >
         <v-icon>mdi-close</v-icon>
       </v-btn>
+      <v-btn
+        class="chat-window__container--minimise-btn"
+        color="error"
+        fab
+        small
+        @click="minimiseChatRoom()"
+      >
+        <v-icon>mdi-minus</v-icon>
+      </v-btn>
     </div>
-    <v-btn
-      text
-      small
-      color="primary"
-      class="chat-window__button"
-      @click="loadPreviousMessages"
-    >LOAD PREVIOUS CHAT</v-btn>
-    <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
-    <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
+    <div v-if="minimised">
+      <v-btn
+        text
+        small
+        color="primary"
+        class="chat-window__button"
+        @click="loadPreviousMessages"
+      >LOAD PREVIOUS CHAT</v-btn>
+      <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
+      <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
+    </div>
   </div>
 </template>
 
@@ -40,83 +51,41 @@ export default {
       chatRoomId: null,
       chats: [],
       arrayOfKeys: [],
+      minimised: null,
     };
   },
   mounted() {
-    console.log("mounted");
-    let currentChatRoomId = this.chatRoomId;
+    this.minimised = this.$parent.tempVar;
 
-    this.chatRoomId =
-      this.myId > this.chatWith.usrId
-        ? this.myId + "-CHAT-" + this.chatWith.usrId
-        : this.chatWith.usrId + "-CHAT-" + this.myId;
+    if (this.minimised) {
+      let currentChatRoomId = this.chatRoomId;
 
-    this.arrayOfKeys = [];
+      this.chatRoomId =
+        this.myId > this.chatWith.usrId
+          ? this.myId + "-CHAT-" + this.chatWith.usrId
+          : this.chatWith.usrId + "-CHAT-" + this.myId;
 
-    let updates = {};
+      this.arrayOfKeys = [];
 
-    if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
-      if (this.checkUserId(this.myId, this.chatRoomId)) {
-        updates[
-          "Edubase/chat/" + this.chatRoomId + "/usr/0/ls"
-        ] = this.firebase.database.ServerValue.TIMESTAMP;
-      } else {
-        updates[
-          "Edubase/chat/" + this.chatRoomId + "/usr/1/ls"
-        ] = this.firebase.database.ServerValue.TIMESTAMP;
-      }
-    }
+      let updates = {};
 
-    this.firebase.database().ref().update(updates);
-
-    this.firebase
-      .database()
-      .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId)
-      .transaction(function (data) {
-        if (data) {
-          data.unseen = 0;
+      if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
+        if (this.checkUserId(this.myId, this.chatRoomId)) {
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/0/ls"
+          ] = this.firebase.database.ServerValue.TIMESTAMP;
+        } else {
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/usr/1/ls"
+          ] = this.firebase.database.ServerValue.TIMESTAMP;
         }
-
-        return data;
-      });
-
-    this.chats = [];
-
-    let msgRef = this.firebase
-      .database()
-      .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-      .orderByKey()
-      .limitToLast(4);
-
-    let _this = this;
-
-    msgRef.on("child_added", function (data) {
-      _this.chats.push({
-        key: data.key,
-        val: data.val(),
-      });
-
-      _this.arrayOfKeys.push(data.key);
-
-      if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
-        _this.firebase
-          .database()
-          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/")
-          .update({
-            ls: data.val().tm,
-          });
-      } else {
-        _this.firebase
-          .database()
-          .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/")
-          .update({
-            ls: data.val().tm,
-          });
       }
 
-      _this.firebase
+      this.firebase.database().ref().update(updates);
+
+      this.firebase
         .database()
-        .ref("Edubase/chatHistory/" + _this.myId + "/" + _this.chatWith.usrId)
+        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId)
         .transaction(function (data) {
           if (data) {
             data.unseen = 0;
@@ -124,10 +93,55 @@ export default {
 
           return data;
         });
-    });
+
+      this.chats = [];
+
+      let msgRef = this.firebase
+        .database()
+        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+        .orderByKey()
+        .limitToLast(4);
+
+      let _this = this;
+
+      msgRef.on("child_added", function (data) {
+        _this.chats.push({
+          key: data.key,
+          val: data.val(),
+        });
+
+        _this.arrayOfKeys.push(data.key);
+
+        if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
+          _this.firebase
+            .database()
+            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/")
+            .update({
+              ls: data.val().tm,
+            });
+        } else {
+          _this.firebase
+            .database()
+            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/")
+            .update({
+              ls: data.val().tm,
+            });
+        }
+
+        _this.firebase
+          .database()
+          .ref("Edubase/chatHistory/" + _this.myId + "/" + _this.chatWith.usrId)
+          .transaction(function (data) {
+            if (data) {
+              data.unseen = 0;
+            }
+
+            return data;
+          });
+      });
+    }
   },
   destroyed() {
-    console.log("unmounted");
     this.firebase
       .database()
       .ref("Edubase/chat/" + this.chatRoomId + "/chats")
@@ -164,6 +178,10 @@ export default {
       });
     },
 
+    minimiseChatRoom() {
+      this.$parent.tempVar = !this.$parent.tempVar;
+    },
+
     closeChatRoom() {
       let tempArray = this.$parent.chatWith;
       const index = tempArray.indexOf(this.chatWith);
@@ -175,4 +193,5 @@ export default {
   },
 };
 </script>
+
 

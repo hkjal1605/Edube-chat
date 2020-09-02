@@ -10,7 +10,7 @@ export default {
     resetUnseenNumber(chatWith) {
       this.firebase
         .database()
-        .ref("Edubase/chatHistory/" + this.myId + "/" + chatWith.usrId)
+        .ref("Edubase/chatHistory/" + this.myId + "/" + chatWith.objectID)
         .transaction(function(data) {
           if (data) {
             data.unseen = 0;

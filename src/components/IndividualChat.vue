@@ -1,7 +1,7 @@
 <template>
   <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (minimised)}">
     <div class="chat-window__container--top">
-      {{ chatWith.usrDetails.name}}
+      {{ chatWith.name}}
       <v-btn
         class="chat-window__container--close-btn"
         color="error"
@@ -61,9 +61,9 @@ export default {
     let currentChatRoomId = this.chatRoomId;
 
     this.chatRoomId =
-      this.myId > this.chatWith.usrId
-        ? this.myId + "-CHAT-" + this.chatWith.usrId
-        : this.chatWith.usrId + "-CHAT-" + this.myId;
+      this.myId > this.chatWith.objectID
+        ? this.myId + "-CHAT-" + this.chatWith.objectID
+        : this.chatWith.objectID + "-CHAT-" + this.myId;
 
     this.arrayOfKeys = [];
 

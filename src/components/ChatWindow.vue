@@ -23,7 +23,7 @@
             <ais-search-box></ais-search-box>
             <ais-results>
               <template slot-scope="{ result }">
-                <h2>
+                <h2 @click="setChatWith(result)">
                   <ais-highlight :result="result" attribute-name="name"></ais-highlight>
                 </h2>
               </template>
@@ -78,6 +78,7 @@ export default {
   methods: {
     setChatWith(user) {
       if (!this.chatWith.includes(user)) {
+        console.log(user);
         this.chatWith.push(user);
         this.component.push(IndividualChat);
       }

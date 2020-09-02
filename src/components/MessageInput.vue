@@ -37,11 +37,11 @@ export default {
           ] = this.myName;
           updates[
             "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
-          ] = this.chatWith.usrDetails.name;
+          ] = this.chatWith.name;
         } else {
           updates[
             "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
-          ] = this.chatWith.usrDetails.name;
+          ] = this.chatWith.name;
           updates[
             "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
           ] = this.myName;
@@ -55,7 +55,7 @@ export default {
         };
 
         updates[
-          "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId
+          "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
         ] = {
           end: this.firebase.database.ServerValue.TIMESTAMP,
           msg:
@@ -66,7 +66,7 @@ export default {
 
         updates[
           "Edubase/chatHistory/" +
-            this.chatWith.usrId +
+            this.chatWith.objectID +
             "/" +
             this.myId +
             "/end"
@@ -74,7 +74,7 @@ export default {
 
         updates[
           "Edubase/chatHistory/" +
-            this.chatWith.usrId +
+            this.chatWith.objectID +
             "/" +
             this.myId +
             "/msg"
@@ -87,7 +87,9 @@ export default {
 
         this.firebase
           .database()
-          .ref("Edubase/chatHistory/" + this.chatWith.usrId + "/" + this.myId)
+          .ref(
+            "Edubase/chatHistory/" + this.chatWith.objectID + "/" + this.myId
+          )
           .transaction(function (data) {
             if (data) {
               if (data.unseen) {

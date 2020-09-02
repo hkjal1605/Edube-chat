@@ -15,24 +15,20 @@
       </div>
       <div class="chat-window__user-list" v-if="!minimised">
         <div class="user-list">
-          <div
-            class="user-list__user"
-            v-for="user in users"
-            :key="user.usrId"
-            @click="setChatWith(user)"
+          <ais-index
+            app-id="OU413LC7SR"
+            api-key="11ed9b1e149370761f2ca223ef2b615a"
+            index-name="test"
           >
-            <img
-              :src="user.usrDetails.dp"
-              alt="User"
-              class="user-list__user--img"
-              v-if="user.usrId != myId"
-            />
-            <span class="user-list__user--name" v-if="user.usrId != myId">{{ user.usrDetails.name }}</span>
-            <span
-              class="user-list__last-msg"
-              v-if="lastMsg && lastMsg[user.usrId]"
-            >{{ lastMsg[user.usrId].msg }}</span>
-          </div>
+            <ais-search-box></ais-search-box>
+            <ais-results>
+              <template slot-scope="{ result }">
+                <h2>
+                  <ais-highlight :result="result" attribute-name="name"></ais-highlight>
+                </h2>
+              </template>
+            </ais-results>
+          </ais-index>
         </div>
       </div>
     </div>
@@ -241,7 +237,7 @@ export default {
   margin-right: 15px;
 }
 .user-list__user--name {
-  font-size: 16px;
+  font-size: 16px !important;
 }
 
 .message-input {

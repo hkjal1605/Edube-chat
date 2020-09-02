@@ -39,12 +39,7 @@
     <div class="components">
       <div v-for="(comp, i) in component" :key="i">
         {{ resetComponentArray() }}
-        <component
-          :key="tempVar"
-          v-if="chatWith[i] !== undefined"
-          :is="comp"
-          :chatWith="chatWith[i]"
-        />
+        <component v-if="chatWith[i] !== undefined" :is="comp" :chatWith="chatWith[i]" />
       </div>
     </div>
   </div>
@@ -67,7 +62,6 @@ export default {
       lastMsg: undefined,
       component: [],
       minimised: false,
-      tempVar: true,
     };
   },
   mounted() {
@@ -187,7 +181,8 @@ export default {
 }
 
 .minimisedChatRoom {
-  height: 40px;
+  height: 38px;
+  align-self: flex-end;
 }
 
 .chat-window__container--top {
@@ -257,5 +252,6 @@ export default {
 
 .components {
   display: flex;
+  align-items: flex-end;
 }
 </style>

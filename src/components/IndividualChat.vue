@@ -1,5 +1,5 @@
 <template>
-  <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (!minimised)}">
+  <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (minimised)}">
     <div class="chat-window__container--top">
       {{ chatWith.usrDetails.name}}
       <v-btn
@@ -21,7 +21,7 @@
         <v-icon>mdi-minus</v-icon>
       </v-btn>
     </div>
-    <div v-if="minimised">
+    <div v-if="!minimised">
       <v-btn
         text
         small
@@ -38,108 +38,89 @@
 <script>
 import MessageInput from "./MessageInput";
 import checkUserIdMixin from "../mixins/checkUserIdMixin";
+import setUserLastSeenMixin from "../mixins/setUserLastSeenMixin";
 import ChatRoom from "./ChatRoom";
 export default {
   name: "IndividualChat",
   props: {
     chatWith: Object,
   },
-  mixins: [checkUserIdMixin],
+  mixins: [checkUserIdMixin, setUserLastSeenMixin],
   components: { MessageInput, ChatRoom },
   data() {
     return {
       chatRoomId: null,
       chats: [],
       arrayOfKeys: [],
-      minimised: null,
+      minimised: false,
     };
   },
   mounted() {
-    this.minimised = this.$parent.tempVar;
+    // this.minimised = this.$parent.tempVar;
 
-    if (this.minimised) {
-      let currentChatRoomId = this.chatRoomId;
+    let currentChatRoomId = this.chatRoomId;
 
-      this.chatRoomId =
-        this.myId > this.chatWith.usrId
-          ? this.myId + "-CHAT-" + this.chatWith.usrId
-          : this.chatWith.usrId + "-CHAT-" + this.myId;
+    this.chatRoomId =
+      this.myId > this.chatWith.usrId
+        ? this.myId + "-CHAT-" + this.chatWith.usrId
+        : this.chatWith.usrId + "-CHAT-" + this.myId;
 
-      this.arrayOfKeys = [];
+    this.arrayOfKeys = [];
 
-      let updates = {};
+    let updates = {};
 
+    if (!this.minimised) {
       if (this.chatRoomId === currentChatRoomId && currentChatRoomId !== null) {
         if (this.checkUserId(this.myId, this.chatRoomId)) {
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/0/ls"
-          ] = this.firebase.database.ServerValue.TIMESTAMP;
+          this.setLastSeen(
+            this.firebase.database.ServerValue.TIMESTAMP,
+            this.chatRoomId,
+            "0"
+          );
         } else {
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/1/ls"
-          ] = this.firebase.database.ServerValue.TIMESTAMP;
+          this.setLastSeen(
+            this.firebase.database.ServerValue.TIMESTAMP,
+            this.chatRoomId,
+            "1"
+          );
         }
       }
+    }
 
-      this.firebase.database().ref().update(updates);
+    this.firebase.database().ref().update(updates);
 
-      this.firebase
-        .database()
-        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.usrId)
-        .transaction(function (data) {
-          if (data) {
-            data.unseen = 0;
-          }
+    if (!this.minimised) {
+      this.resetUnseenNumber(this.chatWith);
+    }
 
-          return data;
-        });
+    this.chats = [];
 
-      this.chats = [];
+    let msgRef = this.firebase
+      .database()
+      .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+      .orderByKey()
+      .limitToLast(4);
 
-      let msgRef = this.firebase
-        .database()
-        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-        .orderByKey()
-        .limitToLast(4);
+    let _this = this;
 
-      let _this = this;
+    msgRef.on("child_added", function (data) {
+      _this.chats.push({
+        key: data.key,
+        val: data.val(),
+      });
 
-      msgRef.on("child_added", function (data) {
-        _this.chats.push({
-          key: data.key,
-          val: data.val(),
-        });
+      _this.arrayOfKeys.push(data.key);
 
-        _this.arrayOfKeys.push(data.key);
-
+      if (!_this.minimised) {
         if (_this.checkUserId(_this.myId, _this.chatRoomId)) {
-          _this.firebase
-            .database()
-            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/0/")
-            .update({
-              ls: data.val().tm,
-            });
+          _this.setLastSeen(data.val().tm, _this.chatRoomId, "0");
         } else {
-          _this.firebase
-            .database()
-            .ref("Edubase/chat/" + _this.chatRoomId + "/usr/1/")
-            .update({
-              ls: data.val().tm,
-            });
+          _this.setLastSeen(data.val().tm, _this.chatRoomId, "1");
         }
 
-        _this.firebase
-          .database()
-          .ref("Edubase/chatHistory/" + _this.myId + "/" + _this.chatWith.usrId)
-          .transaction(function (data) {
-            if (data) {
-              data.unseen = 0;
-            }
-
-            return data;
-          });
-      });
-    }
+        _this.resetUnseenNumber(_this.chatWith);
+      }
+    });
   },
   destroyed() {
     this.firebase
@@ -179,7 +160,25 @@ export default {
     },
 
     minimiseChatRoom() {
-      this.$parent.tempVar = !this.$parent.tempVar;
+      this.minimised = !this.minimised;
+
+      if (!this.minimised) {
+        this.resetUnseenNumber(this.chatWith);
+
+        if (this.checkUserId(this.myId, this.chatRoomId)) {
+          this.setLastSeen(
+            this.firebase.database.ServerValue.TIMESTAMP,
+            this.chatRoomId,
+            "0"
+          );
+        } else {
+          this.setLastSeen(
+            this.firebase.database.ServerValue.TIMESTAMP,
+            this.chatRoomId,
+            "1"
+          );
+        }
+      }
     },
 
     closeChatRoom() {

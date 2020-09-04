@@ -1,7 +1,11 @@
 <template>
   <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (minimised)}">
     <div class="chat-window__container--top">
-      {{ chatWith.name}}
+      <h3 class="chat-window__container--heading">
+        {{ chatWith.name}}
+        <div class="chat-window__container--unseen" v-if="numUnseen">{{ numUnseen }}</div>
+      </h3>
+
       <v-btn
         class="chat-window__container--close-btn"
         color="error"
@@ -53,6 +57,7 @@ export default {
       chats: [],
       arrayOfKeys: [],
       minimised: false,
+      numUnseen: 0,
     };
   },
   mounted() {
@@ -162,8 +167,39 @@ export default {
     minimiseChatRoom() {
       this.minimised = !this.minimised;
 
+      let _this = this;
+
+      if (this.minimised) {
+        this.firebase
+          .database()
+          .ref(
+            "Edubase/chatHistory/" +
+              this.myId +
+              "/" +
+              this.chatWith.objectID +
+              "/unseen"
+          )
+          .on("value", function (data) {
+            if (data.val()) {
+              _this.numUnseen = data.val();
+            }
+          });
+      }
+
       if (!this.minimised) {
+        this.numUnseen = 0;
         this.resetUnseenNumber(this.chatWith);
+
+        this.firebase
+          .database()
+          .ref(
+            "Edubase/chatHistory/" +
+              this.myId +
+              "/" +
+              this.chatWith.objectID +
+              "/unseen"
+          )
+          .off();
 
         if (this.checkUserId(this.myId, this.chatRoomId)) {
           this.setLastSeen(

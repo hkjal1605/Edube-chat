@@ -15,7 +15,6 @@ export default {
           if (data) {
             data.unseen = 0;
           }
-
           return data;
         });
     },

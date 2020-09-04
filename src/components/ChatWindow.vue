@@ -1,6 +1,5 @@
 <template>
   <div class="chat-window">
-    {{ getChatHistory() }}
     <div v-bind:class="{'chat-window__main': true, 'minimised': (minimised)}">
       <div class="chat-window__top">
         <h4 class="chat-window__top--heading">Messages</h4>
@@ -33,6 +32,21 @@
             </ais-results>
           </ais-index>
         </div>
+
+        <div class="chat-history">
+          <div
+            class="chat-history__item"
+            v-for="(user, i) in users"
+            :key="i"
+            @click="setChatWith(user)"
+          >
+            <div class="chat-history__item--user-details">
+              <img :src="user.dp" alt="Dp" class="chat-history__item--dp" />
+              <h4 class="chat-history__item--name">{{ user.name }}</h4>
+            </div>
+            <div class="chat-history__item--last-msg">{{ user.msg }}</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="components">
@@ -64,6 +78,9 @@ export default {
       userShown: false,
     };
   },
+  mounted() {
+    this.getChatHistory();
+  },
 
   methods: {
     getChatHistory() {
@@ -71,10 +88,27 @@ export default {
         .database()
         .ref("Edubase/chatHistory/" + this.myId);
 
-      // let _this = this;
-      userRef.on("child_changed", function (data) {
+      let _this = this;
+
+      userRef.on("value", function (data) {
         if (data.val()) {
-          console.log(data.val());
+          _this.users = [];
+
+          Object.keys(data.val()).map((key) => {
+            _this.firebase
+              .database()
+              .ref("Edubase/users/" + key)
+              .once("value", function (data2) {
+                _this.users.push({
+                  objectID: data2.key,
+                  name: data2.val().name,
+                  dp: data2.val().dp,
+                  msg: data.val()[key].msg,
+                  unseen: data.val()[key].unseen,
+                });
+              });
+          });
+          console.log(_this.users);
         }
       });
     },
@@ -156,8 +190,8 @@ export default {
 }
 
 .chat-window__main {
-  width: 250px;
-  height: 300px;
+  width: 300px;
+  height: 400px;
   box-shadow: 2px 5px 12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   border-radius: 5px;
@@ -171,6 +205,41 @@ export default {
 
 .chat-window__user-list {
   width: 100%;
+}
+
+.chat-history {
+  height: 300px;
+  overflow: auto;
+}
+
+.chat-history__item {
+  width: 100%;
+  padding: 3px;
+  background-color: lightskyblue;
+  margin-bottom: 3px;
+}
+
+.chat-history__item--user-details {
+  display: flex;
+  align-items: center;
+}
+
+.chat-history__item--dp {
+  height: 40px;
+  width: 40px;
+  object-fit: cover;
+  border-radius: 2000px;
+  margin-right: 10px;
+}
+
+.chat-history__item--name {
+  color: #444;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.chat-history__item--last-msg {
+  text-align: left;
 }
 
 .chat-window__container {

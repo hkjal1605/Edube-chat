@@ -4,6 +4,7 @@
       <v-icon>mdi-message-text</v-icon>
     </v-btn>
     <ChatWindow
+      v-if="myId"
       v-bind:class="{'shown': (showContainer), 'hidden': (!showContainer)}"
       :showContainer="showContainer"
     />

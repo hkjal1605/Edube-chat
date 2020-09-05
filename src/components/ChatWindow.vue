@@ -93,21 +93,21 @@ export default {
       userRef.on("value", function (data) {
         if (data.val()) {
           _this.users = [];
+          console.log(data.val());
 
           Object.keys(data.val()).map((key) => {
-            _this.firebase
-              .database()
-              .ref("Edubase/users/" + key)
-              .once("value", function (data2) {
-                _this.users.push({
-                  objectID: data2.key,
-                  name: data2.val().name,
-                  dp: data2.val().dp,
-                  msg: data.val()[key].msg,
-                  unseen: data.val()[key].unseen,
-                });
-              });
+            _this.users.push({
+              objectID: key,
+              name: data.val()[key].name,
+              dp: data.val()[key].dp,
+              msg: data.val()[key].msg,
+              unseen: data.val()[key].unseen,
+              end: data.val()[key].end,
+            });
           });
+
+          _this.users.sort((a, b) => (a.end > b.end ? -1 : 1));
+
           console.log(_this.users);
         }
       });

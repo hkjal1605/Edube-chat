@@ -57,12 +57,30 @@ export default {
         updates[
           "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
         ] = {
+          name: this.chatWith.name,
+          dp: this.chatWith.dp,
           end: this.firebase.database.ServerValue.TIMESTAMP,
           msg:
             this.newMessage.length > 45
               ? this.newMessage.substring(0, 45) + "..."
               : this.newMessage,
         };
+
+        updates[
+          "Edubase/chatHistory/" +
+            this.chatWith.objectID +
+            "/" +
+            this.myId +
+            "/name"
+        ] = this.myName;
+
+        updates[
+          "Edubase/chatHistory/" +
+            this.chatWith.objectID +
+            "/" +
+            this.myId +
+            "/dp"
+        ] = this.myDp;
 
         updates[
           "Edubase/chatHistory/" +

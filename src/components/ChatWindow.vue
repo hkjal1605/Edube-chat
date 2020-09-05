@@ -20,7 +20,7 @@
             api-key="11ed9b1e149370761f2ca223ef2b615a"
             index-name="test"
           >
-            <div @click="onFocus()">
+            <div @click="onFocus()" v-click-outside="hideSearchResults" style="width: 80%">
               <ais-input placeholder="Search Users..."></ais-input>
             </div>
             <ais-results v-if="userShown">
@@ -148,6 +148,10 @@ export default {
     onFocus() {
       this.userShown = true;
     },
+
+    hideSearchResults() {
+      this.userShown = false;
+    },
   },
 };
 </script>
@@ -205,11 +209,13 @@ export default {
 
 .chat-window__user-list {
   width: 100%;
+  position: relative;
 }
 
 .chat-history {
   height: 300px;
   overflow: auto;
+  margin-top: 50px;
 }
 
 .chat-history__item {
@@ -319,7 +325,12 @@ export default {
 }
 
 .user-list {
+  width: 100%;
   padding: 10px;
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .user-list__heading {
   color: teal;
@@ -353,11 +364,20 @@ export default {
   align-items: flex-end;
 }
 
+.ais-index {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: greenyellow;
+}
+
 .algolia__result {
   cursor: pointer;
 }
 
 .ais-input {
+  width: 100%;
   background-color: #81ecec;
   padding: 5px 10px;
   border-radius: 2000px;

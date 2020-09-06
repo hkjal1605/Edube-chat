@@ -12,9 +12,15 @@
         <v-icon>mdi-image</v-icon>
       </v-btn>
       <input type="file" ref="input1" style="display: none" @change="previewImage" accept="image/*" />
-      <form class="message-div__form">
-        <input type="text" class="message-div__form--input" name="message" v-model="newMessage" />
-      </form>
+
+      <input
+        type="text"
+        class="message-div__form--input"
+        name="message"
+        v-model="newMessage"
+        v-on:keyup.enter="sendMessage()"
+      />
+
       <button @click="sendMessage" class="message-div__button">
         <v-icon>mdi-send</v-icon>
       </button>
@@ -46,16 +52,58 @@ export default {
   },
   methods: {
     sendMessage() {
-      if (this.imageData) {
-        this.create();
-      }
+      if (this.imageData && this.newMessage) {
+        console.log("both");
+        this.uploadStart = true;
+        if (this.imgObj.flObj !== undefined) {
+          const storageRef = this.firebase
+            .storage()
+            .ref("Edubase/chatImg/" + this.imageData.name)
+            .put(this.imgObj.flObj);
 
-      if (this.newMessage) {
-        this.addMessage();
+          storageRef.on(
+            "state_changed",
+            (snapshot) => {
+              this.uploadValue =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            (error) => {
+              console.log(error.message);
+            },
+            () => {
+              this.uploadValue = 100;
+              storageRef.snapshot.ref.getDownloadURL().then((url) => {
+                this.img1 = url;
+
+                this.imageData = null;
+                const post = {
+                  photo: this.img1,
+                  tm: this.firebase.database.ServerValue.TIMESTAMP,
+                  sender: this.myId,
+                };
+
+                this.firebase
+                  .database()
+                  .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+                  .push(post);
+
+                this.img1 = null;
+                this.imageData = null;
+                this.addMessage(2);
+              });
+            }
+          );
+        }
+      } else if (this.imageData && this.newMessage === null) {
+        console.log("image");
+        this.create();
+      } else {
+        console.log("message");
+        this.addMessage(1);
       }
     },
 
-    addMessage() {
+    addMessage(unseenNumUpdate) {
       if (this.newMessage) {
         var updates = {};
 
@@ -92,6 +140,7 @@ export default {
             this.newMessage.length > 45
               ? this.newMessage.substring(0, 45) + "..."
               : this.newMessage,
+          img: null,
         };
 
         updates[
@@ -101,6 +150,14 @@ export default {
             this.myId +
             "/name"
         ] = this.myName;
+
+        updates[
+          "Edubase/chatHistory/" +
+            this.chatWith.objectID +
+            "/" +
+            this.myId +
+            "/img"
+        ] = null;
 
         updates[
           "Edubase/chatHistory/" +
@@ -139,9 +196,9 @@ export default {
           .transaction(function (data) {
             if (data) {
               if (data.unseen) {
-                data.unseen++;
+                data.unseen += unseenNumUpdate;
               } else {
-                data.unseen = 1;
+                data.unseen = unseenNumUpdate;
               }
             }
 
@@ -158,7 +215,6 @@ export default {
     create() {
       this.uploadStart = true;
       if (this.imgObj.flObj !== undefined) {
-        console.log(this.imgObj);
         const storageRef = this.firebase
           .storage()
           .ref("Edubase/chatImg/" + this.imageData.name)
@@ -167,10 +223,8 @@ export default {
         storageRef.on(
           "state_changed",
           (snapshot) => {
-            // this.uploadValue =
-            //   (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-            console.log(snapshot);
+            this.uploadValue =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           },
           (error) => {
             console.log(error.message);
@@ -191,6 +245,26 @@ export default {
                 .database()
                 .ref("Edubase/chat/" + this.chatRoomId + "/chats")
                 .push(post);
+
+              let updates = {};
+
+              if (this.checkUserId(this.myId, this.chatRoomId)) {
+                updates[
+                  "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
+                ] = this.myName;
+                updates[
+                  "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
+                ] = this.chatWith.name;
+              } else {
+                updates[
+                  "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
+                ] = this.chatWith.name;
+                updates[
+                  "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
+                ] = this.myName;
+              }
+
+              this.firebase.database().ref().update(updates);
 
               this.firebase
                 .database()
@@ -224,7 +298,28 @@ export default {
                   msg: null,
                 });
 
+              this.firebase
+                .database()
+                .ref(
+                  "Edubase/chatHistory/" +
+                    this.chatWith.objectID +
+                    "/" +
+                    this.myId
+                )
+                .transaction(function (data) {
+                  if (data) {
+                    if (data.unseen) {
+                      data.unseen++;
+                    } else {
+                      data.unseen = 1;
+                    }
+                  }
+
+                  return data;
+                });
+
               this.img1 = null;
+              this.imageData = null;
             });
           }
         );
@@ -240,7 +335,6 @@ export default {
       this.compressImg(event.target.files[0], this.imgObj);
       this.uploadStart = false;
       this.uploadValue = 0;
-      console.log(this.imgObj);
       this.img1 = URL.createObjectURL(event.target.files[0]);
       this.imageData = event.target.files[0];
     },

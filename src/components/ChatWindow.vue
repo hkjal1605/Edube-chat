@@ -44,7 +44,8 @@
               <img :src="user.dp" alt="Dp" class="chat-history__item--dp" />
               <h4 class="chat-history__item--name">{{ user.name }}</h4>
             </div>
-            <div class="chat-history__item--last-msg">{{ user.msg }}</div>
+            <div v-if="user.msg" class="chat-history__item--last-msg">{{ user.msg }}</div>
+            <div v-if="!user.msg" class="chat-history__item--last-msg">Image</div>
           </div>
         </div>
       </div>
@@ -60,10 +61,10 @@
 
 <script>
 import IndividualChat from "./IndividualChat";
-import checkUserIdMixin from "../mixins/checkUserIdMixin";
+import chatMixin from "../mixins/chatMixin";
 export default {
   name: "ChatWindow",
-  mixins: [checkUserIdMixin],
+  mixins: [chatMixin],
   components: { IndividualChat },
   props: {
     showContainer: Boolean,

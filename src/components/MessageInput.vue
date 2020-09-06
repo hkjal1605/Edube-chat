@@ -1,6 +1,9 @@
 <template>
   <div class="message-div">
-    <div class="image-preview" v-if="img1 != null">
+    <div class="image-preview" v-if="imageData != null">
+      <h5 v-if="uploadValue <= 100 && img1 === null">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </h5>
       <img class="image-preview__image" :src="img1" />
       <v-btn color="pink" @click="create">upload</v-btn>
     </div>
@@ -21,10 +24,10 @@
 </template>
 
 <script>
-import checkUserIdMixin from "../mixins/checkUserIdMixin";
+import chatMixin from "../mixins/chatMixin";
 export default {
   name: "MessageInput",
-  mixins: [checkUserIdMixin],
+  mixins: [chatMixin],
   props: {
     chatRoomId: String,
     chatWith: Object,
@@ -35,6 +38,9 @@ export default {
       messages: [],
       warning: null,
       img1: null,
+      imageData: null,
+      uploadValue: null,
+      imgObj: {},
     };
   },
   methods: {
@@ -139,38 +145,80 @@ export default {
     },
 
     create() {
-      const post = {
-        photo: this.img1,
-        tm: this.firebase.database.ServerValue.TIMESTAMP,
-        sender: this.myId,
-      };
-
-      this.firebase
-        .database()
-        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-        .push(post);
-
-      this.firebase
-        .database()
-        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID)
-        .update({
-          name: this.chatWith.name,
-          dp: this.chatWith.dp,
-          end: this.firebase.database.ServerValue.TIMESTAMP,
-          img: this.img1,
-        });
-
-      this.firebase
-        .database()
-        .ref("Edubase/chatHistory/" + this.chatWith.objectID + "/" + this.myId)
-        .update({
-          name: this.myName,
-          dp: this.myDp,
-          end: this.firebase.database.ServerValue.TIMESTAMP,
-          img: this.img1,
-        });
-
       this.img1 = null;
+
+      if (this.imgObj.flObj !== undefined) {
+        console.log(this.imgObj);
+        const storageRef = this.firebase
+          .storage()
+          .ref("Edubase/chatImg/" + this.imageData.name)
+          .put(this.imgObj.flObj);
+
+        storageRef.on(
+          "state_changed",
+          (snapshot) => {
+            this.uploadValue =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+            console.log(this.uploadValue);
+          },
+          (error) => {
+            console.log(error.message);
+          },
+          () => {
+            this.uploadValue = 100;
+            storageRef.snapshot.ref.getDownloadURL().then((url) => {
+              this.img1 = url;
+
+              this.imageData = null;
+              const post = {
+                photo: this.img1,
+                tm: this.firebase.database.ServerValue.TIMESTAMP,
+                sender: this.myId,
+              };
+
+              this.firebase
+                .database()
+                .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+                .push(post);
+
+              this.firebase
+                .database()
+                .ref(
+                  "Edubase/chatHistory/" +
+                    this.myId +
+                    "/" +
+                    this.chatWith.objectID
+                )
+                .update({
+                  name: this.chatWith.name,
+                  dp: this.chatWith.dp,
+                  end: this.firebase.database.ServerValue.TIMESTAMP,
+                  img: this.img1,
+                  msg: null,
+                });
+
+              this.firebase
+                .database()
+                .ref(
+                  "Edubase/chatHistory/" +
+                    this.chatWith.objectID +
+                    "/" +
+                    this.myId
+                )
+                .update({
+                  name: this.myName,
+                  dp: this.myDp,
+                  end: this.firebase.database.ServerValue.TIMESTAMP,
+                  img: this.img1,
+                  msg: null,
+                });
+
+              this.img1 = null;
+            });
+          }
+        );
+      }
     },
 
     click1() {
@@ -178,37 +226,11 @@ export default {
     },
 
     previewImage(event) {
+      console.log(event);
       this.uploadValue = 0;
-      this.img1 = null;
+      this.img1 = URL.createObjectURL(event.target.files[0]);
       this.imageData = event.target.files[0];
-      this.onUpload();
-    },
-
-    onUpload() {
-      this.img1 = null;
-
-      const storageRef = this.firebase
-        .storage()
-        .ref("Edubase/chatImg/" + this.imageData.name)
-        .put(this.imageData);
-
-      storageRef.on(
-        "state_changed",
-        (snapshot) => {
-          this.uploadValue =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        },
-        (error) => {
-          console.log(error.message);
-        },
-        () => {
-          this.uploadValue = 100;
-          storageRef.snapshot.ref.getDownloadURL().then((url) => {
-            this.img1 = url;
-            console.log(this.img1);
-          });
-        }
-      );
+      this.compressImg(this.imageData, this.imgObj);
     },
   },
 };

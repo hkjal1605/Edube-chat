@@ -41,15 +41,14 @@
 
 <script>
 import MessageInput from "./MessageInput";
-import checkUserIdMixin from "../mixins/checkUserIdMixin";
-import setUserLastSeenMixin from "../mixins/setUserLastSeenMixin";
+import chatMixin from "../mixins/chatMixin";
 import ChatRoom from "./ChatRoom";
 export default {
   name: "IndividualChat",
   props: {
     chatWith: Object,
   },
-  mixins: [checkUserIdMixin, setUserLastSeenMixin],
+  mixins: [chatMixin],
   components: { MessageInput, ChatRoom },
   data() {
     return {

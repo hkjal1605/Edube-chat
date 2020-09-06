@@ -2,6 +2,10 @@ import Compressor from "compressorjs";
 
 export default {
   methods: {
+    checkUserId(userId, chatRoomId) {
+      return userId === chatRoomId.split("-CHAT-")[0];
+    },
+
     setLastSeen(time, chatRoomId, userNum) {
       this.firebase
         .database()

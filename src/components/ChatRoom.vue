@@ -7,10 +7,10 @@
         :key="i"
       >
         <span v-if="chat.val.msg" class="container__message--msg">{{ chat.val.msg }}</span>
-        <img
+        <FullScreenImg
+          :imgUrl="chat.val.photo"
           class="container__message--image"
           v-if="chat.val.photo"
-          :src="chat.val.photo"
           alt="sentImage"
         />
       </li>
@@ -24,10 +24,12 @@
 </template>
 
 <script>
-import checkUserIdMixin from "../mixins/checkUserIdMixin";
+import chatMixin from "../mixins/chatMixin";
+import FullScreenImg from "./FullScreenImg";
 export default {
   name: "ChatRoom",
-  mixins: [checkUserIdMixin],
+  mixins: [chatMixin],
+  components: { FullScreenImg },
   props: {
     chats: Array,
     chatRoomId: String,

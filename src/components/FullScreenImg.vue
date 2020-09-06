@@ -82,14 +82,14 @@ export default {
         },
       },
 
-      defaultImg: require("../assets/icons/ic_cracked_img.svg"),
+      defaultImg: "",
 
       mImgArr: [],
     };
   },
 
   mounted() {
-    mImgArr.push(this.imgUrl);
+    this.mImgArr.push(this.imgUrl);
   },
   computed: {
     mainSwiper() {

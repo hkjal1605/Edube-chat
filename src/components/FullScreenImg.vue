@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- To edit -->
     <img :src="mImgArr[0]" @error="onImgError(0)" @click="showImgViewer(0)" />
 
     <viewer
@@ -30,6 +31,7 @@
 }
 </style>
 <style scoped>
+/* to edit */
 </style>
 
 <script>

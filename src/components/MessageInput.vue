@@ -1,23 +1,23 @@
 <template>
   <div class="message-div">
-    <div class="image-preview" v-if="imageData != null">
-      <h5 v-if="uploadValue <= 100 && img1 === null">
-        <v-progress-circular indeterminate color="primary"></v-progress-circular>
-      </h5>
+    <div class="image-preview" v-if="imageData">
       <img class="image-preview__image" :src="img1" />
-      <v-btn color="pink" @click="create">upload</v-btn>
+      <h5 v-if="uploadStart === true">
+        <v-progress-linear class="loader" indeterminate color="yellow"></v-progress-linear>
+      </h5>
+      <!-- <v-btn v-if="!uploadStart" color="pink" @click="create">upload</v-btn> -->
     </div>
     <div class="message-div__form-area">
       <v-btn class="message-div__image-btn" fab color="primary" small @click="click1">
         <v-icon>mdi-image</v-icon>
       </v-btn>
       <input type="file" ref="input1" style="display: none" @change="previewImage" accept="image/*" />
-      <form class="message-div__form" @submit.prevent="addMessage">
+      <form class="message-div__form">
         <input type="text" class="message-div__form--input" name="message" v-model="newMessage" />
-        <button type="submit" class="message-div__button">
-          <v-icon>mdi-send</v-icon>
-        </button>
       </form>
+      <button @click="sendMessage" class="message-div__button">
+        <v-icon>mdi-send</v-icon>
+      </button>
     </div>
     <span class="message-div__form--warning" v-if="warning">{{ warning }}</span>
   </div>
@@ -39,11 +39,22 @@ export default {
       warning: null,
       img1: null,
       imageData: null,
+      uploadStart: false,
       uploadValue: null,
       imgObj: {},
     };
   },
   methods: {
+    sendMessage() {
+      if (this.imageData) {
+        this.create();
+      }
+
+      if (this.newMessage) {
+        this.addMessage();
+      }
+    },
+
     addMessage() {
       if (this.newMessage) {
         var updates = {};
@@ -145,8 +156,7 @@ export default {
     },
 
     create() {
-      this.img1 = null;
-
+      this.uploadStart = true;
       if (this.imgObj.flObj !== undefined) {
         console.log(this.imgObj);
         const storageRef = this.firebase
@@ -157,10 +167,10 @@ export default {
         storageRef.on(
           "state_changed",
           (snapshot) => {
-            this.uploadValue =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            // this.uploadValue =
+            //   (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-            console.log(this.uploadValue);
+            console.log(snapshot);
           },
           (error) => {
             console.log(error.message);
@@ -226,11 +236,13 @@ export default {
     },
 
     previewImage(event) {
-      console.log(event);
+      this.imgObj = {};
+      this.compressImg(event.target.files[0], this.imgObj);
+      this.uploadStart = false;
       this.uploadValue = 0;
+      console.log(this.imgObj);
       this.img1 = URL.createObjectURL(event.target.files[0]);
       this.imageData = event.target.files[0];
-      this.compressImg(this.imageData, this.imgObj);
     },
   },
 };
@@ -285,6 +297,15 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   background-color: #ff7675;
+}
+
+.loader {
+  width: 350px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
 }
 
 .image-preview__image {

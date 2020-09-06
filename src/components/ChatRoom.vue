@@ -6,7 +6,13 @@
         v-for="(chat, i) in chats"
         :key="i"
       >
-        <span class="individual-chat__message--name">{{ chat.val.msg }}</span>
+        <span v-if="chat.val.msg" class="container__message--msg">{{ chat.val.msg }}</span>
+        <img
+          class="container__message--image"
+          v-if="chat.val.photo"
+          :src="chat.val.photo"
+          alt="sentImage"
+        />
       </li>
       <span
         class="individual-chat__seen"
@@ -76,6 +82,12 @@ export default {
 
   margin-bottom: 3px;
   border-radius: 5px;
+}
+
+.container__message--image {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 3px;
 }
 
 .msg-sent {

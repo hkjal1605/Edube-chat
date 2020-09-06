@@ -1,11 +1,21 @@
 <template>
   <div class="message-div">
-    <form class="message-div__form" @submit.prevent="addMessage">
-      <input type="text" class="message-div__form--input" name="message" v-model="newMessage" />
-      <button type="submit" class="message-div__button">
-        <v-icon>mdi-send</v-icon>
-      </button>
-    </form>
+    <div class="image-preview" v-if="img1 != null">
+      <img class="image-preview__image" :src="img1" />
+      <v-btn color="pink" @click="create">upload</v-btn>
+    </div>
+    <div class="message-div__form-area">
+      <v-btn class="message-div__image-btn" fab color="primary" small @click="click1">
+        <v-icon>mdi-image</v-icon>
+      </v-btn>
+      <input type="file" ref="input1" style="display: none" @change="previewImage" accept="image/*" />
+      <form class="message-div__form" @submit.prevent="addMessage">
+        <input type="text" class="message-div__form--input" name="message" v-model="newMessage" />
+        <button type="submit" class="message-div__button">
+          <v-icon>mdi-send</v-icon>
+        </button>
+      </form>
+    </div>
     <span class="message-div__form--warning" v-if="warning">{{ warning }}</span>
   </div>
 </template>
@@ -24,6 +34,7 @@ export default {
       newMessage: null,
       messages: [],
       warning: null,
+      img1: null,
     };
   },
   methods: {
@@ -126,6 +137,79 @@ export default {
         this.warning = "Please enter a message to send!";
       }
     },
+
+    create() {
+      const post = {
+        photo: this.img1,
+        tm: this.firebase.database.ServerValue.TIMESTAMP,
+        sender: this.myId,
+      };
+
+      this.firebase
+        .database()
+        .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+        .push(post);
+
+      this.firebase
+        .database()
+        .ref("Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID)
+        .update({
+          name: this.chatWith.name,
+          dp: this.chatWith.dp,
+          end: this.firebase.database.ServerValue.TIMESTAMP,
+          img: this.img1,
+        });
+
+      this.firebase
+        .database()
+        .ref("Edubase/chatHistory/" + this.chatWith.objectID + "/" + this.myId)
+        .update({
+          name: this.myName,
+          dp: this.myDp,
+          end: this.firebase.database.ServerValue.TIMESTAMP,
+          img: this.img1,
+        });
+
+      this.img1 = null;
+    },
+
+    click1() {
+      this.$refs.input1.click();
+    },
+
+    previewImage(event) {
+      this.uploadValue = 0;
+      this.img1 = null;
+      this.imageData = event.target.files[0];
+      this.onUpload();
+    },
+
+    onUpload() {
+      this.img1 = null;
+
+      const storageRef = this.firebase
+        .storage()
+        .ref("Edubase/chatImg/" + this.imageData.name)
+        .put(this.imageData);
+
+      storageRef.on(
+        "state_changed",
+        (snapshot) => {
+          this.uploadValue =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        },
+        (error) => {
+          console.log(error.message);
+        },
+        () => {
+          this.uploadValue = 100;
+          storageRef.snapshot.ref.getDownloadURL().then((url) => {
+            this.img1 = url;
+            console.log(this.img1);
+          });
+        }
+      );
+    },
   },
 };
 </script>
@@ -133,15 +217,26 @@ export default {
 <style>
 .message-div {
   text-align: left;
+  position: relative;
+}
+
+.message-div__form-area {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.message-div__image-btn {
+  margin-right: 10px;
 }
 
 .message-div__form {
-  padding: 0 20px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .message-div__form--input {
   height: 30px;
   padding: 5px 10px;
@@ -151,7 +246,30 @@ export default {
   border-radius: 2000px;
   border: solid 2px teal;
 }
+
 .message-div__form--warning {
   color: red;
+}
+
+.image-preview {
+  padding: 15px 0;
+  width: 94%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff7675;
+}
+
+.image-preview__image {
+  height: 250px;
+  width: 250px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 </style>

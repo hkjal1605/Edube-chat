@@ -1,7 +1,17 @@
 <template>
   <div>
     <!-- To edit -->
-    <img :src="mImgArr[0]" @error="onImgError(0)" @click="showImgViewer(0)" />
+    <!-- <img :src="mImgArr[0]" @error="onImgError(0)" @click="showImgViewer(0)" /> -->
+    <v-img
+      :src="mImgArr[0]"
+      :lazy-src="mImgArr[0]"
+      aspect-ratio="1"
+      class="grey lighten-2"
+      max-width="400"
+      max-height="200"
+      @error="onImgError(0)"
+      @click="showImgViewer(0)"
+    />
 
     <viewer
       :options="imgViewerOptions"

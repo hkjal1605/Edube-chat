@@ -26,13 +26,13 @@
       </v-btn>
     </div>
     <div v-if="!minimised">
-      <v-btn
+      <!-- <v-btn
         text
         small
         color="primary"
         class="chat-window__button"
         @click="loadPreviousMessages"
-      >LOAD PREVIOUS CHAT</v-btn>
+      >LOAD PREVIOUS CHAT</v-btn>-->
       <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
       <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
     </div>
@@ -65,7 +65,7 @@ export default {
     let currentChatRoomId = this.chatRoomId;
 
     this.chatRoomId =
-      this.myId > this.chatWith.objectID
+      this.myId < this.chatWith.objectID
         ? this.myId + "-CHAT-" + this.chatWith.objectID
         : this.chatWith.objectID + "-CHAT-" + this.myId;
 
@@ -158,7 +158,8 @@ export default {
           });
         });
 
-        console.log(tempArray.shift());
+        tempArray.shift();
+        console.log(tempArray);
         tempArray.map((item) => _this.chats.unshift(item));
       });
     },

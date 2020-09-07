@@ -320,11 +320,6 @@ export default {
   transform: translateY(-50%);
 }
 
-.chat-window__button {
-  display: inline-block;
-  margin-top: 45px;
-}
-
 .user-list {
   width: 100%;
   padding: 10px;

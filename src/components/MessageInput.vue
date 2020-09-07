@@ -1,7 +1,10 @@
 <template>
   <div class="message-div">
     <div class="image-preview" v-if="imageData">
-      <img class="image-preview__image" :src="img1" />
+      <v-btn class="image-preview__close-btn" color="error" fab small @click="closeImageInput()">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+      <v-img class="image-preview__image" max-width="250" max-height="250" :src="img1" />
       <h5 v-if="uploadStart === true">
         <v-progress-linear class="loader" indeterminate color="yellow"></v-progress-linear>
       </h5>
@@ -54,57 +57,18 @@ export default {
     sendMessage() {
       if (this.imageData && this.newMessage) {
         console.log("both");
-        this.uploadStart = true;
-        if (this.imgObj.flObj !== undefined) {
-          const storageRef = this.firebase
-            .storage()
-            .ref("Edubase/chatImg/" + this.imageData.name)
-            .put(this.imgObj.flObj);
-
-          storageRef.on(
-            "state_changed",
-            (snapshot) => {
-              this.uploadValue =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            (error) => {
-              console.log(error.message);
-            },
-            () => {
-              this.uploadValue = 100;
-              storageRef.snapshot.ref.getDownloadURL().then((url) => {
-                this.img1 = url;
-
-                this.imageData = null;
-                const post = {
-                  photo: this.img1,
-                  tm: this.firebase.database.ServerValue.TIMESTAMP,
-                  sender: this.myId,
-                };
-
-                this.firebase
-                  .database()
-                  .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-                  .push(post);
-
-                this.img1 = null;
-                this.imageData = null;
-                this.addMessage(2);
-              });
-            }
-          );
-        }
+        this.create(2, "both");
       } else if (this.imageData && this.newMessage === null) {
         console.log("image");
-        this.create();
+        this.create(1);
       } else {
         console.log("message");
-        this.addMessage(1);
+        this.addMessage(1, null, this.newMessage);
       }
     },
 
-    addMessage(unseenNumUpdate) {
-      if (this.newMessage) {
+    addMessage(unseenNumUpdate, imgPost, newMessage) {
+      if (newMessage || imgPost) {
         var updates = {};
 
         if (this.checkUserId(this.myId, this.chatRoomId)) {
@@ -123,25 +87,80 @@ export default {
           ] = this.myName;
         }
 
-        let pushKey = this.getPushKey();
-        updates["Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey] = {
-          msg: this.newMessage,
-          tm: this.firebase.database.ServerValue.TIMESTAMP,
-          sender: this.myId,
-        };
+        let pushKey1 = this.getPushKey();
+        let pushKey2 = this.getPushKey();
 
-        updates[
-          "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
-        ] = {
-          name: this.chatWith.name,
-          dp: this.chatWith.dp,
-          end: this.firebase.database.ServerValue.TIMESTAMP,
-          msg:
-            this.newMessage.length > 45
-              ? this.newMessage.substring(0, 45) + "..."
-              : this.newMessage,
-          img: null,
-        };
+        if (imgPost) {
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey1
+          ] = imgPost;
+
+          updates[
+            "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
+          ] = {
+            name: this.chatWith.name,
+            dp: this.chatWith.dp,
+            end: this.firebase.database.ServerValue.TIMESTAMP,
+            msg: null,
+            img: imgPost.photo,
+          };
+
+          updates[
+            "Edubase/chatHistory/" +
+              this.chatWith.objectID +
+              "/" +
+              this.myId +
+              "/img"
+          ] = imgPost.photo;
+
+          updates[
+            "Edubase/chatHistory/" +
+              this.chatWith.objectID +
+              "/" +
+              this.myId +
+              "/msg"
+          ] = null;
+        }
+
+        if (newMessage) {
+          updates["Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey2] = {
+            msg: newMessage,
+            tm: this.firebase.database.ServerValue.TIMESTAMP,
+            sender: this.myId,
+          };
+
+          updates[
+            "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
+          ] = {
+            name: this.chatWith.name,
+            dp: this.chatWith.dp,
+            end: this.firebase.database.ServerValue.TIMESTAMP,
+            msg:
+              newMessage.length > 45
+                ? newMessage.substring(0, 45) + "..."
+                : newMessage,
+            img: null,
+          };
+
+          updates[
+            "Edubase/chatHistory/" +
+              this.chatWith.objectID +
+              "/" +
+              this.myId +
+              "/img"
+          ] = null;
+
+          updates[
+            "Edubase/chatHistory/" +
+              this.chatWith.objectID +
+              "/" +
+              this.myId +
+              "/msg"
+          ] =
+            newMessage.length > 45
+              ? newMessage.substring(0, 45) + "..."
+              : newMessage;
+        }
 
         updates[
           "Edubase/chatHistory/" +
@@ -150,14 +169,6 @@ export default {
             this.myId +
             "/name"
         ] = this.myName;
-
-        updates[
-          "Edubase/chatHistory/" +
-            this.chatWith.objectID +
-            "/" +
-            this.myId +
-            "/img"
-        ] = null;
 
         updates[
           "Edubase/chatHistory/" +
@@ -174,17 +185,6 @@ export default {
             this.myId +
             "/end"
         ] = this.firebase.database.ServerValue.TIMESTAMP;
-
-        updates[
-          "Edubase/chatHistory/" +
-            this.chatWith.objectID +
-            "/" +
-            this.myId +
-            "/msg"
-        ] =
-          this.newMessage.length > 45
-            ? this.newMessage.substring(0, 45) + "..."
-            : this.newMessage;
 
         this.firebase.database().ref().update(updates);
 
@@ -205,19 +205,25 @@ export default {
             return data;
           });
 
-        this.newMessage = null;
+        if (newMessage) {
+          this.newMessage = null;
+        }
+
         this.warning = null;
       } else {
         this.warning = "Please enter a message to send!";
       }
     },
 
-    create() {
+    create(unseenNumUpdate, dataType) {
       this.uploadStart = true;
+
+      let pushKey = this.getPushKey();
+
       if (this.imgObj.flObj !== undefined) {
         const storageRef = this.firebase
           .storage()
-          .ref("Edubase/chatImg/" + this.imageData.name)
+          .ref("Edubase/chatImg/" + pushKey)
           .put(this.imgObj.flObj);
 
         storageRef.on(
@@ -241,82 +247,11 @@ export default {
                 sender: this.myId,
               };
 
-              this.firebase
-                .database()
-                .ref("Edubase/chat/" + this.chatRoomId + "/chats")
-                .push(post);
-
-              let updates = {};
-
-              if (this.checkUserId(this.myId, this.chatRoomId)) {
-                updates[
-                  "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
-                ] = this.myName;
-                updates[
-                  "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
-                ] = this.chatWith.name;
+              if (dataType === "both") {
+                this.addMessage(unseenNumUpdate, post, this.newMessage);
               } else {
-                updates[
-                  "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
-                ] = this.chatWith.name;
-                updates[
-                  "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
-                ] = this.myName;
+                this.addMessage(unseenNumUpdate, post);
               }
-
-              this.firebase.database().ref().update(updates);
-
-              this.firebase
-                .database()
-                .ref(
-                  "Edubase/chatHistory/" +
-                    this.myId +
-                    "/" +
-                    this.chatWith.objectID
-                )
-                .update({
-                  name: this.chatWith.name,
-                  dp: this.chatWith.dp,
-                  end: this.firebase.database.ServerValue.TIMESTAMP,
-                  img: this.img1,
-                  msg: null,
-                });
-
-              this.firebase
-                .database()
-                .ref(
-                  "Edubase/chatHistory/" +
-                    this.chatWith.objectID +
-                    "/" +
-                    this.myId
-                )
-                .update({
-                  name: this.myName,
-                  dp: this.myDp,
-                  end: this.firebase.database.ServerValue.TIMESTAMP,
-                  img: this.img1,
-                  msg: null,
-                });
-
-              this.firebase
-                .database()
-                .ref(
-                  "Edubase/chatHistory/" +
-                    this.chatWith.objectID +
-                    "/" +
-                    this.myId
-                )
-                .transaction(function (data) {
-                  if (data) {
-                    if (data.unseen) {
-                      data.unseen++;
-                    } else {
-                      data.unseen = 1;
-                    }
-                  }
-
-                  return data;
-                });
 
               this.img1 = null;
               this.imageData = null;
@@ -337,6 +272,14 @@ export default {
       this.uploadValue = 0;
       this.img1 = URL.createObjectURL(event.target.files[0]);
       this.imageData = event.target.files[0];
+    },
+
+    closeImageInput() {
+      this.imgObj = {};
+      this.uploadStart = false;
+      this.uploadValue = 0;
+      this.img1 = null;
+      this.imageData = null;
     },
   },
 };
@@ -403,10 +346,13 @@ export default {
 }
 
 .image-preview__image {
-  height: 250px;
-  width: 250px;
-  object-fit: cover;
   border-radius: 5px;
   margin-bottom: 10px;
+}
+
+.image-preview__close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
 </style>

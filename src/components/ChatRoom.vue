@@ -1,6 +1,13 @@
 <template>
   <div class="chat-room">
-    <ul class="container__message-list">
+    <v-btn
+      text
+      small
+      color="primary"
+      class="chat-room__load-button"
+      @click="loadPreviousMessages"
+    >LOAD PREVIOUS CHAT</v-btn>
+    <ul class="container__message-list" id="messages">
       <li
         v-bind:class="{'container__message': true, 'msg-sent':(chat.val.sender === myId), 'msg-recieved':(chat.val.sender !== myId)}"
         v-for="(chat, i) in chats"
@@ -8,6 +15,7 @@
       >
         <span v-if="chat.val.msg" class="container__message--msg">{{ chat.val.msg }}</span>
         <FullScreenImg
+          :key="chat.key"
           :imgUrl="chat.val.photo"
           class="container__message--image"
           v-if="chat.val.photo"
@@ -39,6 +47,9 @@ export default {
       lastSeen: null,
     };
   },
+  mounted() {
+    this.scrollToEnd();
+  },
   methods: {
     checkMessageSeen() {
       let _this = this;
@@ -62,14 +73,30 @@ export default {
           });
       }
     },
+
+    loadPreviousMessages() {
+      this.$parent.loadPreviousMessages();
+    },
+
+    scrollToEnd: function () {
+      this.$el.querySelector(
+        "#messages"
+      ).scrollTop = this.$el.lastElementChild.offsetTop;
+    },
   },
 };
 </script>
 
 <style>
 .chat-room {
+  margin-top: 60px;
   height: 300px;
   overflow-y: auto;
+}
+
+.chat-room__load-btn {
+  display: inline-block;
+  margin-top: 45px;
 }
 
 .container__message-list {

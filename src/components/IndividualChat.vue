@@ -33,7 +33,12 @@
         class="chat-window__button"
         @click="loadPreviousMessages"
       >LOAD PREVIOUS CHAT</v-btn>-->
-      <ChatRoom v-if="chats.length > 0" :chats="chats" :chatRoomId="chatRoomId" />
+      <ChatRoom
+        v-if="chats.length > 0"
+        :chats="chats"
+        :chatRoomId="chatRoomId"
+        :showLoadLastSeen="showLoadLastSeen"
+      />
       <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
     </div>
   </div>
@@ -57,6 +62,7 @@ export default {
       arrayOfKeys: [],
       minimised: false,
       numUnseen: 0,
+      showLoadLastSeen: false,
     };
   },
   mounted() {
@@ -125,6 +131,18 @@ export default {
         _this.resetUnseenNumber(_this.chatWith);
       }
     });
+
+    this.firebase
+      .database()
+      .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+      .once("value", function (data) {
+        if (
+          data.val() &&
+          Object.keys(data.val()).length !== _this.chats.length
+        ) {
+          _this.showLoadLastSeen = true;
+        }
+      });
   },
   destroyed() {
     this.firebase
@@ -161,6 +179,20 @@ export default {
         tempArray.shift();
         console.log(tempArray);
         tempArray.map((item) => _this.chats.unshift(item));
+
+        _this.firebase
+          .database()
+          .ref("Edubase/chat/" + _this.chatRoomId + "/chats")
+          .once("value", function (data) {
+            if (Object.keys(data.val()).length !== _this.chats.length) {
+              _this.showLoadLastSeen = true;
+            } else if (
+              data.val() &&
+              Object.keys(data.val()).length === _this.chats.length
+            ) {
+              _this.showLoadLastSeen = false;
+            }
+          });
       });
     },
 

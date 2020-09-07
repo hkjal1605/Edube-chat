@@ -97,14 +97,24 @@ export default {
           console.log(data.val());
 
           Object.keys(data.val()).map((key) => {
-            _this.users.push({
+            let userObj = {
               objectID: key,
               name: data.val()[key].name,
               dp: data.val()[key].dp,
               msg: data.val()[key].msg,
               unseen: data.val()[key].unseen,
               end: data.val()[key].end,
-            });
+            };
+
+            _this.firebase
+              .database()
+              .ref("Edubase/users/" + data.val()[key].userId)
+              .once("value", function (data2) {
+                if (userObj.name !== data2.val().name) {
+                  userObj.name = data2.val().name;
+                }
+              });
+            _this.users.push(userObj);
           });
 
           _this.users.sort((a, b) => (a.end > b.end ? -1 : 1));

@@ -1,6 +1,7 @@
 <template>
   <div class="chat-room">
     <v-btn
+      v-if="showLoadLastSeen"
       text
       small
       color="primary"
@@ -41,14 +42,12 @@ export default {
   props: {
     chats: Array,
     chatRoomId: String,
+    showLoadLastSeen: Boolean,
   },
   data() {
     return {
       lastSeen: null,
     };
-  },
-  mounted() {
-    this.scrollToEnd();
   },
   methods: {
     checkMessageSeen() {

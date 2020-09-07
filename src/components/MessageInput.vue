@@ -98,6 +98,7 @@ export default {
           updates[
             "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
           ] = {
+            userId: this.chatWith.objectID,
             name: this.chatWith.name,
             dp: this.chatWith.dp,
             end: this.firebase.database.ServerValue.TIMESTAMP,
@@ -132,6 +133,7 @@ export default {
           updates[
             "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
           ] = {
+            userId: this.chatWith.objectID,
             name: this.chatWith.name,
             dp: this.chatWith.dp,
             end: this.firebase.database.ServerValue.TIMESTAMP,
@@ -161,6 +163,14 @@ export default {
               ? newMessage.substring(0, 45) + "..."
               : newMessage;
         }
+
+        updates[
+          "Edubase/chatHistory/" +
+            this.chatWith.objectID +
+            "/" +
+            this.myId +
+            "/userId"
+        ] = this.chatWith.objectID;
 
         updates[
           "Edubase/chatHistory/" +
@@ -210,6 +220,25 @@ export default {
         }
 
         this.warning = null;
+
+        let _this = this;
+
+        this.firebase
+          .database()
+          .ref("Edubase/chat/" + this.chatRoomId + "/chats")
+          .once("value", function (data) {
+            if (
+              data.val() &&
+              Object.keys(data.val()).length !== _this.$parent.chats.length
+            ) {
+              _this.$parent.showLoadLastSeen = true;
+            } else if (
+              data.val() &&
+              Object.keys(data.val()).length === _this.$parent.chats.length
+            ) {
+              _this.$parent.showLoadLastSeen = false;
+            }
+          });
       } else {
         this.warning = "Please enter a message to send!";
       }

@@ -115,6 +115,7 @@ export default {
                 }
               });
             _this.users.push(userObj);
+            console.log(userObj);
           });
 
           _this.users.sort((a, b) => (a.end > b.end ? -1 : 1));
@@ -126,7 +127,9 @@ export default {
 
     setChatWith(user) {
       this.userShown = false;
-      if (!this.chatWith.includes(user)) {
+      if (
+        this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
+      ) {
         console.log(user);
         this.chatWith.push(user);
         this.component.push(IndividualChat);

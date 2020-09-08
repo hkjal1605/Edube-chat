@@ -43,6 +43,7 @@
             <div class="chat-history__item--user-details">
               <img :src="user.dp" alt="Dp" class="chat-history__item--dp" />
               <h4 class="chat-history__item--name">{{ user.name }}</h4>
+              <span v-if="user.online === 'true'">ONLINE</span>
             </div>
             <div v-if="user.msg" class="chat-history__item--last-msg">{{ user.msg }}</div>
             <div v-if="!user.msg" class="chat-history__item--last-msg">Image</div>
@@ -81,9 +82,23 @@ export default {
   },
   mounted() {
     this.getChatHistory();
+    this.listenUserPresence();
   },
 
   methods: {
+    listenUserPresence() {
+      this.chatWith.map((user) => {
+        this.firebase
+          .database()
+          .ref(`Edubase/users/${user.objectID}/online`)
+          .on("value", function (data) {
+            if (user.online !== data.val()) {
+              user.online = data.val();
+            }
+          });
+      });
+    },
+
     getChatHistory() {
       let userRef = this.firebase
         .database()
@@ -91,16 +106,36 @@ export default {
 
       let _this = this;
 
+      this.firebase
+        .database()
+        .ref(".info/connected")
+        .on("value", function (data) {
+          if (data.val()) {
+            console.log(data.val());
+
+            _this.firebase
+              .database()
+              .ref(`Edubase/users/${_this.myId}/online`)
+              .onDisconnect()
+              .set("false");
+            // set user's online status
+            _this.firebase
+              .database()
+              .ref(`Edubase/users/${_this.myId}/online`)
+              .set("true");
+          }
+        });
+
       userRef.on("value", function (data) {
         if (data.val()) {
           _this.users = [];
-          console.log(data.val());
 
           Object.keys(data.val()).map((key) => {
             let userObj = {
               objectID: key,
               name: data.val()[key].name,
               dp: data.val()[key].dp,
+              online: data.val()[key].online,
               msg: data.val()[key].msg,
               unseen: data.val()[key].unseen,
               end: data.val()[key].end,
@@ -115,12 +150,9 @@ export default {
                 }
               });
             _this.users.push(userObj);
-            console.log(userObj);
           });
 
           _this.users.sort((a, b) => (a.end > b.end ? -1 : 1));
-
-          console.log(_this.users);
         }
       });
     },
@@ -130,7 +162,6 @@ export default {
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
       ) {
-        console.log(user);
         this.chatWith.push(user);
         this.component.push(IndividualChat);
       }

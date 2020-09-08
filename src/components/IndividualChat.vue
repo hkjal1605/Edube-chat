@@ -4,6 +4,8 @@
       <h3 class="chat-window__container--heading">
         {{ chatWith.name}}
         <div class="chat-window__container--unseen" v-if="numUnseen">{{ numUnseen }}</div>
+        <h5 v-if="userOnline === 'true'">ONLINE</h5>
+        <h5 v-if="userOnline === 'false'">OFFLINE</h5>
       </h3>
 
       <v-btn
@@ -63,10 +65,21 @@ export default {
       minimised: false,
       numUnseen: 0,
       showLoadLastSeen: false,
+      userOnline: false,
     };
   },
   mounted() {
-    // this.minimised = this.$parent.tempVar;
+    console.log(this.chatWith);
+
+    let _this = this;
+
+    this.firebase
+      .database()
+      .ref("Edubase/users/" + this.chatWith.objectID + "/online")
+      .on("value", function (data) {
+        console.log(data.val());
+        _this.userOnline = data.val();
+      });
 
     let currentChatRoomId = this.chatRoomId;
 
@@ -110,8 +123,6 @@ export default {
       .ref("Edubase/chat/" + this.chatRoomId + "/chats")
       .orderByKey()
       .limitToLast(4);
-
-    let _this = this;
 
     msgRef.on("child_added", function (data) {
       _this.chats.push({

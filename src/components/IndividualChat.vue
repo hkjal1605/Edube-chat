@@ -70,15 +70,12 @@ export default {
     };
   },
   mounted() {
-    console.log(this.chatWith);
-
     let _this = this;
 
     this.firebase
       .database()
       .ref("Edubase/users/" + this.chatWith.objectID + "/online")
       .on("value", function (data) {
-        console.log(data.val());
         _this.userOnline = data.val();
       });
 
@@ -189,7 +186,6 @@ export default {
         });
 
         tempArray.shift();
-        console.log(tempArray);
         tempArray.map((item) => _this.chats.unshift(item));
 
         _this.firebase
@@ -267,8 +263,6 @@ export default {
       if (index > -1) {
         this.$parent.chatWith.splice(index, 1);
       }
-      console.log(this.$parent.chatWith);
-      this.$parent.chatRefreshKey = null;
     },
   },
 };

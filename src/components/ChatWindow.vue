@@ -52,14 +52,8 @@
       </div>
     </div>
     <div class="components">
-      <!-- <div v-for="(comp, i) in component" :key="i">
-        {{ resetComponentArray() }}
-        <component v-if="chatWith[i]" :key="chatRefreshKey" :is="comp" :chatWith="chatWith[i]" />
-      </div>-->
-      <div v-for="chatWith1 in chatWith" :key="chatWith1.objectId">
-        {{ resetComponentArray() }}
-        <IndividualChat ref="chat" :key="chatRefreshKey" :chatWith="chatWith1" />
-      </div>
+      <IndividualChat v-if="chatWith[0]" :key="chatWith[0].objectID" :chatWith="chatWith[0]" />
+      <IndividualChat v-if="chatWith[1]" :key="chatWith[1].objectID" :chatWith="chatWith[1]" />
     </div>
   </div>
 </template>
@@ -82,7 +76,6 @@ export default {
       component: [],
       minimised: false,
       userShown: false,
-      chatRefreshKey: null,
     };
   },
   mounted() {
@@ -116,14 +109,12 @@ export default {
         .ref(".info/connected")
         .on("value", function (data) {
           if (data.val()) {
-            console.log(data.val());
-
             _this.firebase
               .database()
               .ref(`Edubase/users/${_this.myId}/online`)
               .onDisconnect()
               .set("false");
-            // set user's online status
+
             _this.firebase
               .database()
               .ref(`Edubase/users/${_this.myId}/online`)
@@ -148,14 +139,14 @@ export default {
               end: data.val()[key].end,
             };
 
-            // _this.firebase
-            //   .database()
-            //   .ref("Edubase/users/" + data.val()[key].userId)
-            //   .once("value", function (data2) {
-            //     if (userObj.name !== data2.val().name) {
-            //       userObj.name = data2.val().name;
-            //     }
-            //   });
+            _this.firebase
+              .database()
+              .ref("Edubase/users/" + data.val()[key].userId)
+              .once("value", function (data2) {
+                if (userObj.name !== data2.val().name) {
+                  userObj.name = data2.val().name;
+                }
+              });
             _this.users.push(userObj);
           });
 
@@ -165,7 +156,6 @@ export default {
     },
 
     setChatWith(user) {
-      console.log(user);
       this.userShown = false;
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
@@ -173,14 +163,9 @@ export default {
         if (this.chatWith.length === 2) {
           this.chatWith.shift();
           this.chatWith.push(user);
-          // this.component.push(IndividualChat);
         } else {
           this.chatWith.push(user);
-          // this.component.push(IndividualChat);
         }
-
-        this.chatRefreshKey = user.objectID;
-        console.log(this.$refs);
       }
     },
 

@@ -56,19 +56,15 @@ export default {
   methods: {
     sendMessage() {
       if (this.imageData && this.newMessage) {
-        console.log("both");
         this.create(2, "both");
       } else if (this.imageData && !this.newMessage) {
-        console.log("image");
         this.create(1, "image");
       } else {
-        console.log("message");
         this.addMessage(1, null, this.newMessage);
       }
     },
 
     addMessage(unseenNumUpdate, imgPost, newMessage) {
-      console.log(this.chatWith);
       if (newMessage || imgPost) {
         var updates = {};
 
@@ -92,7 +88,6 @@ export default {
         let pushKey2 = this.getPushKey();
 
         if (imgPost) {
-          console.log(this.chatWith);
           updates[
             "Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey1
           ] = imgPost;

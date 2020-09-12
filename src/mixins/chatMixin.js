@@ -33,7 +33,6 @@ export default {
         convertSize: 200000, //convert png to jpg if size > 0.2Mb(200kb)
 
         success(result) {
-          console.log("rzzlt=", result);
           imgObj.localUrl = URL.createObjectURL(result); //localUrl can be displayed in <img />
           imgObj.flObj = result;
         },

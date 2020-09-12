@@ -76,12 +76,6 @@ export default {
     loadPreviousMessages() {
       this.$parent.loadPreviousMessages();
     },
-
-    scrollToEnd: function () {
-      this.$el.querySelector(
-        "#messages"
-      ).scrollTop = this.$el.lastElementChild.offsetTop;
-    },
   },
 };
 </script>

@@ -268,6 +268,7 @@ export default {
         this.$parent.chatWith.splice(index, 1);
       }
       console.log(this.$parent.chatWith);
+      this.$parent.chatRefreshKey = null;
     },
   },
 };

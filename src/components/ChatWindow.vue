@@ -52,9 +52,13 @@
       </div>
     </div>
     <div class="components">
-      <div v-for="(comp, i) in component" :key="i">
+      <!-- <div v-for="(comp, i) in component" :key="i">
         {{ resetComponentArray() }}
         <component v-if="chatWith[i]" :key="chatRefreshKey" :is="comp" :chatWith="chatWith[i]" />
+      </div>-->
+      <div v-for="chatWith1 in chatWith" :key="chatWith1.objectId">
+        {{ resetComponentArray() }}
+        <IndividualChat ref="chat" :key="chatRefreshKey" :chatWith="chatWith1" />
       </div>
     </div>
   </div>
@@ -169,13 +173,14 @@ export default {
         if (this.chatWith.length === 2) {
           this.chatWith.shift();
           this.chatWith.push(user);
-          this.component.push(IndividualChat);
+          // this.component.push(IndividualChat);
         } else {
           this.chatWith.push(user);
-          this.component.push(IndividualChat);
+          // this.component.push(IndividualChat);
         }
 
         this.chatRefreshKey = user.objectID;
+        console.log(this.$refs);
       }
     },
 

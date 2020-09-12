@@ -103,7 +103,6 @@ export default {
             userId: this.chatWith.objectID,
             name: this.chatWith.name,
             dp: this.chatWith.dp,
-            online: this.chatWith.online,
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg: null,
             img: imgPost.photo,

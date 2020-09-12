@@ -141,7 +141,7 @@ export default {
 
             _this.firebase
               .database()
-              .ref("Edubase/users/" + data.val()[key].userId)
+              .ref("Edubase/users/" + key)
               .once("value", function (data2) {
                 if (userObj.name !== data2.val().name) {
                   userObj.name = data2.val().name;

@@ -30,6 +30,7 @@ userRef.once("value", (users) => {
       name: contact.val().name,
       dp: contact.val().dp,
       clg: contact.val().clg,
+      online: contact.val().online,
     };
     // We set the Algolia objectID as the Firebase .key
     childData.objectID = childKey;

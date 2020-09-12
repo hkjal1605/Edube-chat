@@ -4,8 +4,8 @@
       <h3 class="chat-window__container--heading">
         {{ chatWith.name}}
         <div class="chat-window__container--unseen" v-if="numUnseen">{{ numUnseen }}</div>
-        <h5 v-if="userOnline === 'true'">ONLINE</h5>
-        <h5 v-if="userOnline === 'false'">OFFLINE</h5>
+        <div class="online-display" v-if="userOnline === 'true'" />
+        <div class="offline-display" v-if="userOnline === 'false'" />
       </h3>
 
       <v-btn
@@ -66,6 +66,7 @@ export default {
       numUnseen: 0,
       showLoadLastSeen: false,
       userOnline: false,
+      chatLimit: 4,
     };
   },
   mounted() {
@@ -122,7 +123,7 @@ export default {
       .database()
       .ref("Edubase/chat/" + this.chatRoomId + "/chats")
       .orderByKey()
-      .limitToLast(4);
+      .limitToLast(this.chatLimit);
 
     msgRef.on("child_added", function (data) {
       _this.chats.push({
@@ -160,7 +161,7 @@ export default {
       .database()
       .ref("Edubase/chat/" + this.chatRoomId + "/chats")
       .orderByKey()
-      .limitToLast(4)
+      .limitToLast(this.chatLimit)
       .off();
   },
   methods: {
@@ -272,4 +273,21 @@ export default {
 };
 </script>
 
+<style scoped>
+.online-display {
+  margin-left: 8px;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background-color: #55efc4;
+}
+
+.offline-display {
+  margin-left: 8px;
+  height: 16px;
+  width: 16px;
+  background-color: #ff7675;
+  border-radius: 50%;
+}
+</style>
 

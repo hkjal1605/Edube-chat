@@ -5,7 +5,7 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
       <v-img class="image-preview__image" max-width="250" max-height="250" :src="img1" />
-      <h5 v-if="uploadStart === true">
+      <h5 v-if="uploadStart">
         <v-progress-linear class="loader" indeterminate color="yellow"></v-progress-linear>
       </h5>
       <!-- <v-btn v-if="!uploadStart" color="pink" @click="create">upload</v-btn> -->
@@ -58,9 +58,9 @@ export default {
       if (this.imageData && this.newMessage) {
         console.log("both");
         this.create(2, "both");
-      } else if (this.imageData && this.newMessage === null) {
+      } else if (this.imageData && !this.newMessage) {
         console.log("image");
-        this.create(1);
+        this.create(1, "image");
       } else {
         console.log("message");
         this.addMessage(1, null, this.newMessage);
@@ -92,6 +92,7 @@ export default {
         let pushKey2 = this.getPushKey();
 
         if (imgPost) {
+          console.log(this.chatWith);
           updates[
             "Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey1
           ] = imgPost;

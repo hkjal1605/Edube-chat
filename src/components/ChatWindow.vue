@@ -54,7 +54,7 @@
     <div class="components">
       <div v-for="(comp, i) in component" :key="i">
         {{ resetComponentArray() }}
-        <component v-if="chatWith[i] !== undefined" :is="comp" :chatWith="chatWith[i]" />
+        <component v-if="chatWith[i]" :key="chatRefreshKey" :is="comp" :chatWith="chatWith[i]" />
       </div>
     </div>
   </div>
@@ -78,6 +78,7 @@ export default {
       component: [],
       minimised: false,
       userShown: false,
+      chatRefreshKey: null,
     };
   },
   mounted() {
@@ -130,8 +131,10 @@ export default {
         if (data.val()) {
           _this.users = [];
 
+          let userObj = {};
+
           Object.keys(data.val()).map((key) => {
-            let userObj = {
+            userObj = {
               objectID: key,
               name: data.val()[key].name,
               dp: data.val()[key].dp,
@@ -141,14 +144,14 @@ export default {
               end: data.val()[key].end,
             };
 
-            _this.firebase
-              .database()
-              .ref("Edubase/users/" + data.val()[key].userId)
-              .once("value", function (data2) {
-                if (userObj.name !== data2.val().name) {
-                  userObj.name = data2.val().name;
-                }
-              });
+            // _this.firebase
+            //   .database()
+            //   .ref("Edubase/users/" + data.val()[key].userId)
+            //   .once("value", function (data2) {
+            //     if (userObj.name !== data2.val().name) {
+            //       userObj.name = data2.val().name;
+            //     }
+            //   });
             _this.users.push(userObj);
           });
 
@@ -158,12 +161,21 @@ export default {
     },
 
     setChatWith(user) {
+      console.log(user);
       this.userShown = false;
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
       ) {
-        this.chatWith.push(user);
-        this.component.push(IndividualChat);
+        if (this.chatWith.length === 2) {
+          this.chatWith.shift();
+          this.chatWith.push(user);
+          this.component.push(IndividualChat);
+        } else {
+          this.chatWith.push(user);
+          this.component.push(IndividualChat);
+        }
+
+        this.chatRefreshKey = user.objectID;
       }
     },
 
@@ -327,6 +339,8 @@ export default {
   font-size: 20px;
   font-weight: 300;
   color: #eee;
+  display: flex;
+  align-items: center;
 }
 
 .chat-window__container--unseen {
@@ -401,6 +415,7 @@ export default {
 
 .components {
   display: flex;
+  flex-direction: row-reverse;
   align-items: flex-end;
 }
 

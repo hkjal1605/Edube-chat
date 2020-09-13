@@ -80,7 +80,14 @@ export default {
   },
   mounted() {
     this.getChatHistory();
+    this.checkUserChanges();
     this.listenUserPresence();
+  },
+  beforeDestroy() {
+    this.firebase
+      .database()
+      .ref("Edubase/chatHistory/" + this.myId)
+      .off();
   },
 
   methods: {
@@ -139,14 +146,16 @@ export default {
               end: data.val()[key].end,
             };
 
-            _this.firebase
-              .database()
-              .ref("Edubase/users/" + key)
-              .once("value", function (data2) {
-                if (userObj.name !== data2.val().name) {
-                  userObj.name = data2.val().name;
-                }
-              });
+            // _this.firebase
+            //   .database()
+            //   .ref("Edubase/users/" + userObj.objectID)
+            //   .once("value", function (data2) {
+            //     console.log(userObj.name, data2.val().name);
+            //     if (userObj.name !== data2.val().name) {
+            //       userObj.name = data2.val().name;
+            //     }
+            //   });
+
             _this.users.push(userObj);
           });
 
@@ -198,6 +207,36 @@ export default {
 
     hideSearchResults() {
       this.userShown = false;
+    },
+
+    checkUserChanges() {
+      let _this = this;
+
+      this.firebase
+        .database()
+        .ref("Edubase/users")
+        .on("child_changed", function (data) {
+          if (data.val()) {
+            _this.users.map((user) => {
+              if (user.objectID === data.key) {
+                user.name = data.val().name;
+                user.dp = data.val().dp;
+              }
+            });
+
+            _this.firebase
+              .database()
+              .ref("Edubase/chatHistory/" + _this.myId)
+              .once("value", function (data2) {
+                if (data2 && data2.val()[data.key]) {
+                  _this.firebase
+                    .database()
+                    .ref("Edubase/chatHistory/" + _this.myId + "/" + data.key)
+                    .update({ name: data.val().name, dp: data.val().dp });
+                }
+              });
+          }
+        });
     },
   },
 };

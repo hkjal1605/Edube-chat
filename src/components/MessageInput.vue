@@ -1,5 +1,5 @@
 <template>
-  <div class="message-div">
+  <div v-bind:class="{'message-div': true, 'no-border': (imageData)}">
     <div class="image-preview" v-if="imageData">
       <v-btn class="image-preview__close-btn" color="error" fab small @click="closeImageInput()">
         <v-icon>mdi-close</v-icon>
@@ -8,10 +8,9 @@
       <h5 v-if="uploadStart">
         <v-progress-linear class="loader" indeterminate color="yellow"></v-progress-linear>
       </h5>
-      <!-- <v-btn v-if="!uploadStart" color="pink" @click="create">upload</v-btn> -->
     </div>
     <div class="message-div__form-area">
-      <v-btn class="message-div__image-btn" fab color="primary" small @click="click1">
+      <v-btn class="message-div__image-btn" fab color="primary" small outlined @click="click1">
         <v-icon>mdi-image</v-icon>
       </v-btn>
       <input type="file" ref="input1" style="display: none" @change="previewImage" accept="image/*" />
@@ -24,11 +23,10 @@
         v-on:keyup.enter="sendMessage()"
       />
 
-      <button @click="sendMessage" class="message-div__button">
+      <v-btn fab small class="message-div__send-btn" @click="sendMessage">
         <v-icon>mdi-send</v-icon>
-      </button>
+      </v-btn>
     </div>
-    <span class="message-div__form--warning" v-if="warning">{{ warning }}</span>
   </div>
 </template>
 
@@ -237,7 +235,7 @@ export default {
             }
           });
       } else {
-        this.warning = "Please enter a message to send!";
+        return;
       }
     },
 
@@ -311,55 +309,81 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .message-div {
+  padding-bottom: 10px;
+  border-top: 2px solid #d4d4d4;
   text-align: left;
-  position: relative;
-}
-
-.message-div__form-area {
+  background-color: #eff3f2;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 0 10px;
+  justify-content: flex-end;
+
+  &__form-area {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  &__image-btn {
+    margin-right: 10px;
+  }
+
+  &__form {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &--input {
+      height: 35px;
+      padding: 5px 10px;
+      border: none;
+      outline: none;
+      width: 88%;
+      border-radius: 2000px;
+      border: solid 2px #c8cdce;
+      background-color: #f8f8f8;
+      margin-right: 10px;
+      color: #818181;
+    }
+  }
+
+  &__send-btn {
+    box-shadow: none !important;
+    border: solid 2px #c8cdce !important;
+    background-color: #f8f8f8 !important;
+  }
 }
 
-.message-div__image-btn {
-  margin-right: 10px;
-}
-
-.message-div__form {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.message-div__form--input {
-  height: 30px;
-  padding: 5px 10px;
+.no-border {
   border: none;
-  outline: none;
-  width: 88%;
-  border-radius: 2000px;
-  border: solid 2px teal;
-}
-
-.message-div__form--warning {
-  color: red;
 }
 
 .image-preview {
   padding: 15px 0;
-  width: 94%;
+  margin-bottom: 15px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  bottom: 45px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ff7675;
+  position: relative;
+  border-top: 2px solid #d4d4d4;
+  background-color: #eff3f2;
+
+  &__image {
+    border-radius: 15px;
+    margin-bottom: 10px;
+  }
+
+  &__close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
 }
 
 .loader {
@@ -369,16 +393,5 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
-}
-
-.image-preview__image {
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-
-.image-preview__close-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
 }
 </style>

@@ -10,7 +10,7 @@
     >LOAD PREVIOUS CHAT</v-btn>
     <ul class="container__message-list" id="messages">
       <li
-        v-bind:class="{'container__message': true, 'msg-sent':(chat.val.sender === myId), 'msg-recieved':(chat.val.sender !== myId)}"
+        v-bind:class="{'container__message': true, 'container__message--photo-msg': (chat.val.photo), 'msg-sent':(chat.val.sender === myId), 'msg-recieved':(chat.val.sender !== myId), 'last-sent': (chat.val.sender === myId && chats[i+1] && chats[i+1].val.sender !== myId), 'last-recieved': (chat.val.sender !== myId && chats[i+1] && chats[i+1].val.sender === myId)}"
         v-for="(chat, i) in chats"
         :key="i"
       >
@@ -80,16 +80,16 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .chat-room {
-  margin-top: 60px;
-  height: 300px;
+  height: 340px;
   overflow-y: auto;
-}
+  background-color: #eff3f2;
 
-.chat-room__load-btn {
-  display: inline-block;
-  margin-top: 45px;
+  &__load-btn {
+    display: inline-block;
+    margin-top: 45px;
+  }
 }
 
 .container__message-list {
@@ -101,26 +101,36 @@ export default {
 
 .container__message {
   padding: 5px;
-
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   margin-bottom: 3px;
-  border-radius: 5px;
+  border-radius: 8px;
+
+  &--photo-msg {
+    padding: 0;
+    margin-bottom: 5px;
+  }
 }
 
 .container__message--image {
   width: 100%;
   object-fit: cover;
-  border-radius: 3px;
+  cursor: pointer;
 }
 
 .msg-sent {
   text-align: right;
   margin-left: 45px;
-  background-color: #ff7675;
+  background-color: #e1e4e5;
 }
 
 .msg-recieved {
   text-align: left;
   margin-right: 30px;
-  background-color: #55efc4;
+  background-color: #c8e9f7;
+}
+
+.last-sent,
+.last-recieved {
+  margin-bottom: 15px;
 }
 </style>

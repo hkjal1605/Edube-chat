@@ -5,6 +5,7 @@
     <v-img
       :src="mImgArr[0]"
       :lazy-src="mImgArr[0]"
+      style="border-radius: 5px"
       aspect-ratio="1"
       class="grey lighten-2"
       max-width="400"

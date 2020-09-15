@@ -1,6 +1,6 @@
 <template>
   <div class="mega-chat-container">
-    <v-btn class="purple" color="primary" @click="changeContainerClass()">
+    <v-btn fab large class="toggle-chat-button" @click="changeContainerClass()">
       <v-icon>mdi-message-text</v-icon>
     </v-btn>
     <ChatWindow
@@ -35,6 +35,11 @@ export default {
   align-items: flex-end;
   flex-direction: row-reverse;
   position: relative;
+}
+
+.toggle-chat-button {
+  margin-bottom: 25px;
+  margin-left: 10px;
 }
 
 .v-menu__content {

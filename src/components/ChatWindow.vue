@@ -41,7 +41,14 @@
             @click="setChatWith(user)"
           >
             <div class="chat-history__item--user-details">
-              <img :src="user.dp" alt="Dp" class="chat-history__item--dp" />
+              <v-img
+                max-width="40"
+                max-height="40"
+                :src="user.dp"
+                :lazy-src="user.dp"
+                alt="Dp"
+                class="chat-history__item--dp"
+              />
               <h4 class="chat-history__item--name">{{ user.name }}</h4>
               <span v-if="user.online === 'true'">ONLINE</span>
             </div>
@@ -52,6 +59,7 @@
       </div>
     </div>
     <div class="components">
+      {{ resetComponentArray() }}
       <IndividualChat v-if="chatWith[0]" :key="chatWith[0].objectID" :chatWith="chatWith[0]" />
       <IndividualChat v-if="chatWith[1]" :key="chatWith[1].objectID" :chatWith="chatWith[1]" />
     </div>
@@ -242,50 +250,53 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .chat-window {
   display: flex;
   align-items: flex-end;
   justify-content: center;
   flex-direction: row-reverse;
-  /* border-radius: 40px;
-  overflow: hidden; */
-}
 
-.chat-window__top {
-  padding: 5px 10px;
-  width: 100%;
-  background-color: #1976d2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+  &__top {
+    padding: 5px 10px;
+    width: 100%;
+    background-color: #1976d2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-.chat-window__top--heading {
-  color: #eee;
-  font-size: 20px;
-  margin: 0;
-  font-weight: 300;
-}
+    &--heading {
+      color: #eee;
+      font-size: 20px;
+      margin: 0;
+      font-weight: 300;
+    }
 
-.chat-window__top--minimise-btn {
-  height: 28px !important;
-  width: 28px !important;
-}
+    &--minimise-btn {
+      height: 28px !important;
+      width: 28px !important;
+    }
+  }
 
-.chat-window__heading {
-  color: teal;
-  font-size: 40px;
-  font-weight: normal;
-}
+  &__heading {
+    color: teal;
+    font-size: 40px;
+    font-weight: normal;
+  }
 
-.chat-window__main {
-  width: 300px;
-  height: 400px;
-  box-shadow: 2px 5px 12px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  border-radius: 5px;
-  margin-left: 10px;
+  &__main {
+    width: 300px;
+    height: 400px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    border-radius: 15px 15px 2px 2px;
+    margin-left: 15px;
+  }
+
+  &__user-list {
+    width: 100%;
+    position: relative;
+  }
 }
 
 .minimised {
@@ -293,118 +304,40 @@ export default {
   overflow: hidden;
 }
 
-.chat-window__user-list {
-  width: 100%;
-  position: relative;
-}
-
 .chat-history {
   height: 300px;
   overflow: auto;
   margin-top: 50px;
-}
 
-.chat-history__item {
-  width: 100%;
-  padding: 3px;
-  background-color: lightskyblue;
-  margin-bottom: 3px;
-}
+  &__item {
+    width: 100%;
+    padding: 3px;
+    background-color: lightskyblue;
+    margin-bottom: 3px;
 
-.chat-history__item--user-details {
-  display: flex;
-  align-items: center;
-}
+    &--user-details {
+      display: flex;
+      align-items: center;
+    }
 
-.chat-history__item--dp {
-  height: 40px;
-  width: 40px;
-  object-fit: cover;
-  border-radius: 2000px;
-  margin-right: 10px;
-}
+    &--dp {
+      height: 40px !important;
+      width: 40px !important;
+      object-fit: cover !important;
+      border-radius: 2000px !important;
+      margin-right: 10px !important;
+    }
 
-.chat-history__item--name {
-  color: #444;
-  font-size: 25px;
-  font-weight: 400;
-}
+    &--name {
+      color: #444;
+      font-size: 25px;
+      font-weight: 400;
+    }
 
-.chat-history__item--last-msg {
-  text-align: left;
-}
-
-.chat-window__container {
-  box-shadow: 2px 5px 12px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  border-radius: 5px;
-  height: 450px;
-  width: 400px;
-  text-align: center;
-  margin-left: 10px;
-
-  position: relative;
-}
-
-.minimisedChatRoom {
-  height: 38px;
-  align-self: flex-end;
-}
-
-.chat-window__container--top {
-  padding: 5px 10px;
-  width: 100%;
-  background-color: #1976d2;
-  position: absolute;
-  top: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.chat-window__container--heading {
-  position: relative;
-  font-size: 20px;
-  font-weight: 300;
-  color: #eee;
-  display: flex;
-  align-items: center;
-}
-
-.chat-window__container--unseen {
-  position: absolute;
-  top: 50%;
-  right: -20px;
-  transform: translateY(-50%);
-  background-color: #f1c40f;
-  color: #c0392b;
-  height: 18px;
-  width: 18px;
-  border-radius: 2000px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 400;
-}
-
-.chat-window__container--close-btn {
-  height: 28px !important;
-  width: 28px !important;
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.chat-window__container--minimise-btn {
-  height: 28px !important;
-  width: 28px !important;
-  position: absolute;
-  right: 45px;
-  top: 50%;
-  transform: translateY(-50%);
+    &--last-msg {
+      text-align: left;
+    }
+  }
 }
 
 .user-list {
@@ -414,32 +347,28 @@ export default {
   top: -50px;
   left: 50%;
   transform: translateX(-50%);
-}
-.user-list__heading {
-  color: teal;
-}
-.user-list__user {
-  cursor: pointer;
-  padding: 4px 10px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 3px;
-}
-.user-list__user--img {
-  height: 30px;
-  width: 30px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-right: 15px;
-}
-.user-list__user--name {
-  font-size: 16px !important;
-}
 
-.message-input {
-  width: 100%;
-  position: absolute;
-  bottom: 10px;
+  &__heading {
+    color: teal;
+  }
+  &__user {
+    cursor: pointer;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px;
+
+    &--img {
+      height: 30px;
+      width: 30px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+    &--name {
+      font-size: 16px !important;
+    }
+  }
 }
 
 .components {

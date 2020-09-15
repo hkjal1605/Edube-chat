@@ -10,31 +10,24 @@
 
       <v-btn
         class="chat-window__container--close-btn"
-        color="error"
         fab
         small
+        color="transparent"
         @click="closeChatRoom()"
       >
-        <v-icon>mdi-close</v-icon>
+        <v-icon color="#dee2e1">mdi-close</v-icon>
       </v-btn>
       <v-btn
         class="chat-window__container--minimise-btn"
-        color="error"
         fab
         small
+        color="transparent"
         @click="minimiseChatRoom()"
       >
-        <v-icon>mdi-minus</v-icon>
+        <v-icon color="#dee2e1">mdi-minus</v-icon>
       </v-btn>
     </div>
     <div v-if="!minimised">
-      <!-- <v-btn
-        text
-        small
-        color="primary"
-        class="chat-window__button"
-        @click="loadPreviousMessages"
-      >LOAD PREVIOUS CHAT</v-btn>-->
       <ChatRoom
         v-if="chats.length > 0"
         :chats="chats"
@@ -268,7 +261,89 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
+.chat-window__container {
+  background-color: #eff3f2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  border-radius: 15px 15px 2px 2px;
+  height: 450px;
+  width: 380px;
+  text-align: center;
+  margin-left: 15px;
+
+  position: relative;
+
+  &--top {
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    width: 100%;
+    background-color: #1976d2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &--heading {
+    position: relative;
+    font-size: 20px;
+    font-weight: 300;
+    color: #eee;
+    display: flex;
+    align-items: center;
+  }
+
+  &--unseen {
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    transform: translateY(-50%);
+    background-color: #f1c40f;
+    color: #c0392b;
+    height: 18px;
+    width: 18px;
+    border-radius: 2000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  &--close-btn {
+    height: 28px !important;
+    width: 28px !important;
+    box-shadow: none !important;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &--minimise-btn {
+    height: 28px !important;
+    width: 28px !important;
+    box-shadow: none !important;
+    position: absolute;
+    right: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.minimisedChatRoom {
+  height: 38px;
+  align-self: flex-end;
+}
+
+.message-input {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  height: 67px;
+}
+
 .online-display {
   margin-left: 8px;
   height: 16px;

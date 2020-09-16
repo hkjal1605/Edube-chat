@@ -67,9 +67,20 @@ export default {
 
     this.firebase
       .database()
-      .ref("Edubase/users/" + this.chatWith.objectID + "/online")
+      .ref("Edubase/users/" + this.chatWith.objectID)
       .on("value", function (data) {
-        _this.userOnline = data.val();
+        _this.userOnline = data.val().online;
+
+        if (_this.chatWith.name !== data.val().name) {
+          _this.chatWith.name = data.val().name;
+
+          _this.firebase
+            .database()
+            .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`)
+            .update({
+              name: data.val().name,
+            });
+        }
       });
 
     let currentChatRoomId = this.chatRoomId;
@@ -198,8 +209,6 @@ export default {
     },
 
     minimiseChatRoom() {
-      this.$parent.checkUserChanges();
-
       this.minimised = !this.minimised;
 
       let _this = this;

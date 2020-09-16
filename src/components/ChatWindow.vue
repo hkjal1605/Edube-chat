@@ -1,6 +1,7 @@
 <template>
   <div class="chat-window">
     {{ resetComponentArray() }}
+    {{ checkUserChanges() }}
     <div v-bind:class="{'chat-window__main': true, 'minimised': (minimised)}">
       <div class="chat-window__top">
         <h4 class="chat-window__top--heading">Messages</h4>
@@ -88,6 +89,7 @@ export default {
   mounted() {
     this.getChatHistory();
     this.listenUserPresence();
+    // this.checkUserChanges();
   },
   beforeDestroy() {
     this.firebase
@@ -161,7 +163,6 @@ export default {
     },
 
     setChatWith(user) {
-      this.checkUserChanges();
       this.userShown = false;
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0

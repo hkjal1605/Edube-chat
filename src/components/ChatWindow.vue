@@ -1,5 +1,6 @@
 <template>
   <div class="chat-window">
+    {{ resetComponentArray() }}
     <div v-bind:class="{'chat-window__main': true, 'minimised': (minimised)}">
       <div class="chat-window__top">
         <h4 class="chat-window__top--heading">Messages</h4>
@@ -59,7 +60,6 @@
       </div>
     </div>
     <div class="components">
-      {{ resetComponentArray() }}
       <IndividualChat v-if="chatWith[0]" :key="chatWith[0].objectID" :chatWith="chatWith[0]" />
       <IndividualChat v-if="chatWith[1]" :key="chatWith[1].objectID" :chatWith="chatWith[1]" />
     </div>
@@ -81,14 +81,12 @@ export default {
       users: [],
       chatWith: [],
       lastMsg: undefined,
-      component: [],
       minimised: false,
       userShown: false,
     };
   },
   mounted() {
     this.getChatHistory();
-    this.checkUserChanges();
     this.listenUserPresence();
   },
   beforeDestroy() {
@@ -154,16 +152,6 @@ export default {
               end: data.val()[key].end,
             };
 
-            // _this.firebase
-            //   .database()
-            //   .ref("Edubase/users/" + userObj.objectID)
-            //   .once("value", function (data2) {
-            //     console.log(userObj.name, data2.val().name);
-            //     if (userObj.name !== data2.val().name) {
-            //       userObj.name = data2.val().name;
-            //     }
-            //   });
-
             _this.users.push(userObj);
           });
 
@@ -173,6 +161,7 @@ export default {
     },
 
     setChatWith(user) {
+      this.checkUserChanges();
       this.userShown = false;
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
@@ -187,22 +176,9 @@ export default {
     },
 
     resetComponentArray() {
-      if (!this.showContainer) {
-        this.component = [];
+      if (!this.showContainer && this.chatWith.length) {
         this.chatWith = [];
       }
-    },
-
-    checkUnseenMessages() {
-      let ref = this.firebase
-        .database()
-        .ref("Edubase/chatHistory/" + this.myId);
-
-      let _this = this;
-
-      ref.on("child_changed", function (data) {
-        _this.lastMsg = data.val().msg;
-      });
     },
 
     minimiseChatWindow() {
@@ -220,31 +196,23 @@ export default {
     checkUserChanges() {
       let _this = this;
 
-      this.firebase
-        .database()
-        .ref("Edubase/users")
-        .on("child_changed", function (data) {
-          if (data.val()) {
-            _this.users.map((user) => {
-              if (user.objectID === data.key) {
-                user.name = data.val().name;
-                user.dp = data.val().dp;
+      if (this.users.length) {
+        this.users.map((userObj) => {
+          this.firebase
+            .database()
+            .ref(`Edubase/users/${userObj.objectID}`)
+            .once("value", function (data) {
+              if (userObj.name !== data.val().name) {
+                userObj.name = data.val().name;
+
+                _this.firebase
+                  .database()
+                  .ref(`Edubase/chatHistory/${_this.myId}/${userObj.objectID}`)
+                  .update({ name: data.val().name });
               }
             });
-
-            _this.firebase
-              .database()
-              .ref("Edubase/chatHistory/" + _this.myId)
-              .once("value", function (data2) {
-                if (data2 && data2.val()[data.key]) {
-                  _this.firebase
-                    .database()
-                    .ref("Edubase/chatHistory/" + _this.myId + "/" + data.key)
-                    .update({ name: data.val().name, dp: data.val().dp });
-                }
-              });
-          }
         });
+      }
     },
   },
 };

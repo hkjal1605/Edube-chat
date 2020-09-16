@@ -1,7 +1,7 @@
 <template>
   <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (minimised)}">
-    <div class="chat-window__container--top">
-      <h3 class="chat-window__container--heading">
+    <div :key="chatWith.name" class="chat-window__container--top">
+      <h3 :key="chatWith.name" class="chat-window__container--heading">
         {{ chatWith.name}}
         <div class="chat-window__container--unseen" v-if="numUnseen">{{ numUnseen }}</div>
         <div class="online-display" v-if="userOnline === 'true'" />
@@ -198,6 +198,8 @@ export default {
     },
 
     minimiseChatRoom() {
+      this.$parent.checkUserChanges();
+
       this.minimised = !this.minimised;
 
       let _this = this;

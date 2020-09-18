@@ -19,6 +19,7 @@
         type="text"
         class="message-div__form--input"
         name="message"
+        :placeholder="imageData ? 'Caption Image' : 'Type Text Here' "
         v-model="newMessage"
         v-on:keyup.enter="sendMessage()"
       />

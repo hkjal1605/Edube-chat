@@ -22,20 +22,39 @@
             api-key="11ed9b1e149370761f2ca223ef2b615a"
             index-name="test"
           >
-            <div @click="onFocus()" v-click-outside="hideSearchResults" style="width: 80%">
-              <ais-input placeholder="Search Users..."></ais-input>
+            <div
+              class="user-list__search-box"
+              @click="onFocus()"
+              v-click-outside="hideSearchResults"
+              style="width: 100%"
+            >
+              <h5 class="user-list__search-box--placeholder">To:</h5>
+              <ais-input></ais-input>
             </div>
-            <ais-results v-if="userShown">
-              <template slot-scope="{ result }">
-                <h5 class="algolia__result" @click="setChatWith(result)">
-                  <ais-highlight :result="result" attribute-name="name"></ais-highlight>
-                </h5>
-              </template>
-            </ais-results>
+            <div class="user-list__results" v-if="userShown">
+              <ais-results v-if="userShown">
+                <template slot-scope="{ result }">
+                  <div class="user-list__user" @click="setChatWith(result)">
+                    <img
+                      v-if="result.dp"
+                      :src="result.dp"
+                      class="user-list__user--dp"
+                      alt="User-dp"
+                    />
+                    <img v-if="!result.dp" :src="errDp" class="user-list__user--dp" alt="User-dp" />
+                    <h5 class="user-list__user--name">
+                      {{result.name}}
+                      <!-- <ais-highlight :result="result" attribute-name="name"></ais-highlight> -->
+                    </h5>
+                  </div>
+                </template>
+              </ais-results>
+            </div>
           </ais-index>
         </div>
 
         <div class="chat-history">
+          <h5 class="chat-history__title">Messages:</h5>
           <div
             class="chat-history__item"
             v-for="(user, i) in users"
@@ -49,13 +68,22 @@
                 :src="user.dp"
                 :lazy-src="user.dp"
                 alt="Dp"
+                @error="onImgError(i)"
                 class="chat-history__item--dp"
-              />
-              <h4 class="chat-history__item--name">{{ user.name }}</h4>
-              <span v-if="user.online === 'true'">ONLINE</span>
+              >
+                <template v-slot:placeholder>
+                  <v-row class="fill-height ma-0" align="center" justify="center">
+                    <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                  </v-row>
+                </template>
+              </v-img>
+
+              <div class="chat-history__item--text-part">
+                <h4 class="chat-history__item--name">{{ user.name }}</h4>
+                <div v-if="user.msg" class="chat-history__item--last-msg">{{ user.msg }}</div>
+                <div v-if="!user.msg" class="chat-history__item--last-msg">Image</div>
+              </div>
             </div>
-            <div v-if="user.msg" class="chat-history__item--last-msg">{{ user.msg }}</div>
-            <div v-if="!user.msg" class="chat-history__item--last-msg">Image</div>
           </div>
         </div>
       </div>
@@ -70,6 +98,7 @@
 <script>
 import IndividualChat from "./IndividualChat";
 import chatMixin from "../mixins/chatMixin";
+import errDp from "../assets/logo.png";
 export default {
   name: "ChatWindow",
   mixins: [chatMixin],
@@ -84,6 +113,7 @@ export default {
       lastMsg: undefined,
       minimised: false,
       userShown: false,
+      errDp: errDp,
     };
   },
   mounted() {
@@ -96,6 +126,13 @@ export default {
       .database()
       .ref("Edubase/chatHistory/" + this.myId)
       .off();
+
+    this.users.map((user) => {
+      this.firebase
+        .database()
+        .ref(`Edubase/users/${user.objectID}/online`)
+        .off();
+    });
   },
 
   methods: {
@@ -164,6 +201,7 @@ export default {
 
     setChatWith(user) {
       this.userShown = false;
+
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
       ) {
@@ -171,6 +209,7 @@ export default {
           this.chatWith.shift();
           this.chatWith.push(user);
         } else {
+          console.log(user);
           this.chatWith.push(user);
         }
       }
@@ -215,6 +254,11 @@ export default {
         });
       }
     },
+
+    onImgError(i) {
+      this.users[i].dp = this.errDp;
+      console.log(this.users[i]);
+    },
   },
 };
 </script>
@@ -256,7 +300,6 @@ export default {
   &__main {
     width: 300px;
     height: 400px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     overflow: hidden;
     border-radius: 15px 15px 2px 2px;
     margin-left: 15px;
@@ -274,15 +317,33 @@ export default {
 }
 
 .chat-history {
-  height: 300px;
+  height: 310px;
   overflow: auto;
   margin-top: 50px;
+  padding: 10px;
+  border-top: 2px solid #d4d4d4;
+  background-color: #eff3f2;
+
+  &__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    margin-bottom: 0;
+  }
 
   &__item {
     width: 100%;
-    padding: 3px;
-    background-color: lightskyblue;
-    margin-bottom: 3px;
+    padding: 8px 3px;
+    border-bottom: 2px solid #d4d4d4;
+    cursor: pointer;
+
+    transition: all 0.6s;
+
+    &:hover {
+      background-color: #d4d4d4;
+      border-radius: 3px;
+    }
 
     &--user-details {
       display: flex;
@@ -290,6 +351,7 @@ export default {
     }
 
     &--dp {
+      z-index: 0 !important;
       height: 40px !important;
       width: 40px !important;
       object-fit: cover !important;
@@ -298,13 +360,14 @@ export default {
     }
 
     &--name {
-      color: #444;
-      font-size: 25px;
+      font-size: 18px;
       font-weight: 400;
+      margin-bottom: 0;
     }
 
     &--last-msg {
       text-align: left;
+      color: #666;
     }
   }
 }
@@ -316,26 +379,60 @@ export default {
   top: -50px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 100;
+  background-color: #eff3f2;
+
+  &__search-box {
+    display: flex;
+    align-items: center;
+
+    &--placeholder {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      text-align: left;
+      margin-bottom: 0;
+    }
+  }
+
+  &__results {
+    width: 101%;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #e1e4e5;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    margin-top: 11px;
+  }
 
   &__heading {
     color: teal;
   }
-  &__user {
-    cursor: pointer;
-    padding: 4px 10px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 3px;
 
-    &--img {
-      height: 30px;
-      width: 30px;
+  &__user {
+    padding: 5px 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+
+    transition: all 0.6s;
+
+    &:hover {
+      background-color: #d4d4d4;
+      border-radius: 3px;
+    }
+
+    &--dp {
+      width: 40px;
+      height: 40px;
       object-fit: cover;
       border-radius: 50%;
-      margin-right: 15px;
+      margin-right: 10px;
     }
+
     &--name {
-      font-size: 16px !important;
+      font-size: 20px;
+      font-weight: 500;
     }
   }
 }
@@ -351,18 +448,11 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: greenyellow;
-}
-
-.algolia__result {
-  cursor: pointer;
 }
 
 .ais-input {
   width: 100%;
-  background-color: #81ecec;
   padding: 5px 10px;
-  border-radius: 2000px;
   outline: none;
   border: none;
 }

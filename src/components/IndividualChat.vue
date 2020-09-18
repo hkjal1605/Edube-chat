@@ -81,6 +81,17 @@ export default {
               name: data.val().name,
             });
         }
+
+        if (_this.chatWith.dp !== data.val().dp) {
+          _this.chatWith.dp = data.val().dp;
+
+          _this.firebase
+            .database()
+            .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`)
+            .update({
+              dp: data.val().dp,
+            });
+        }
       });
 
     let currentChatRoomId = this.chatRoomId;
@@ -157,12 +168,28 @@ export default {
         }
       });
   },
-  destroyed() {
+  beforeDestroy() {
     this.firebase
       .database()
       .ref("Edubase/chat/" + this.chatRoomId + "/chats")
       .orderByKey()
       .limitToLast(this.chatLimit)
+      .off();
+
+    this.firebase
+      .database()
+      .ref("Edubase/users/" + this.chatWith.objectID)
+      .off();
+
+    this.firebase
+      .database()
+      .ref(
+        "Edubase/chatHistory/" +
+          this.myId +
+          "/" +
+          this.chatWith.objectID +
+          "/unseen"
+      )
       .off();
   },
   methods: {
@@ -275,7 +302,6 @@ export default {
 <style scoped lang='scss'>
 .chat-window__container {
   background-color: #eff3f2;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   border-radius: 15px 15px 2px 2px;
   height: 450px;

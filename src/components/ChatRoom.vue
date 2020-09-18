@@ -10,7 +10,7 @@
     >LOAD PREVIOUS CHAT</v-btn>
     <ul class="container__message-list" id="messages">
       <li
-        v-bind:class="{'container__message': true, 'container__message--photo-msg': (chat.val.photo), 'msg-sent':(chat.val.sender === myId), 'msg-recieved':(chat.val.sender !== myId), 'last-sent': (chat.val.sender === myId && chats[i+1] && chats[i+1].val.sender !== myId), 'last-recieved': (chat.val.sender !== myId && chats[i+1] && chats[i+1].val.sender === myId)}"
+        v-bind:class="{'container__message': true, 'msg-sent':(chat.val.sender === myId), 'msg-recieved':(chat.val.sender !== myId), 'last-sent': (chat.val.sender === myId && chats[i+1] && chats[i+1].val.sender !== myId), 'last-recieved': (chat.val.sender !== myId && chats[i+1] && chats[i+1].val.sender === myId)}"
         v-for="(chat, i) in chats"
         :key="i"
       >
@@ -48,6 +48,17 @@ export default {
     return {
       lastSeen: null,
     };
+  },
+  beforeDestroy() {
+    this.firebase
+      .database()
+      .ref("Edubase/chat/" + this.chatRoomId + "/usr/1/ls")
+      .off();
+
+    this.firebase
+      .database()
+      .ref("Edubase/chat/" + this.chatRoomId + "/usr/0/ls")
+      .off();
   },
   methods: {
     checkMessageSeen() {
@@ -101,7 +112,6 @@ export default {
 
 .container__message {
   padding: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   margin-bottom: 3px;
   border-radius: 8px;
 
@@ -119,13 +129,13 @@ export default {
 
 .msg-sent {
   text-align: right;
-  margin-left: 45px;
+  margin-left: 65px;
   background-color: #e1e4e5;
 }
 
 .msg-recieved {
   text-align: left;
-  margin-right: 30px;
+  margin-right: 50px;
   background-color: #c8e9f7;
 }
 

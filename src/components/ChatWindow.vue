@@ -7,15 +7,16 @@
         <h4 class="chat-window__top--heading">Messages</h4>
         <v-btn
           class="chat-window__top--minimise-btn"
-          color="error"
+          color="transparent"
           fab
           small
           @click="minimiseChatWindow()"
         >
-          <v-icon>mdi-minus</v-icon>
+          <v-icon color="#dee2e1" v-if="!minimised">mdi-chevron-down</v-icon>
+          <v-icon color="#dee2e1" v-if="minimised">mdi-chevron-up</v-icon>
         </v-btn>
       </div>
-      <div class="chat-window__user-list" v-if="!minimised">
+      <div class="chat-window__user-list">
         <div class="user-list">
           <ais-index
             app-id="OU413LC7SR"
@@ -288,6 +289,7 @@ export default {
     &--minimise-btn {
       height: 28px !important;
       width: 28px !important;
+      box-shadow: none !important;
     }
   }
 
@@ -303,6 +305,8 @@ export default {
     overflow: hidden;
     border-radius: 15px 15px 2px 2px;
     margin-left: 15px;
+
+    transition: all 0.3s;
   }
 
   &__user-list {

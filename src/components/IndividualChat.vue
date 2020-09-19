@@ -1,11 +1,11 @@
 <template>
   <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (minimised)}">
-    <div :key="chatWith.name" class="chat-window__container--top">
+    <div :key="chatWith.name" class="chat-window__container--top" @click="minimiseChatRoom()">
+      <div class="online-display" v-if="userOnline === 'true'" />
+      <div class="offline-display" v-if="!userOnline || userOnline === 'false'" />
       <h3 :key="chatWith.name" class="chat-window__container--heading">
         {{ chatWith.name}}
         <div class="chat-window__container--unseen" v-if="numUnseen">{{ numUnseen }}</div>
-        <div class="online-display" v-if="userOnline === 'true'" />
-        <div class="offline-display" v-if="userOnline === 'false'" />
       </h3>
 
       <v-btn
@@ -16,15 +16,6 @@
         @click="closeChatRoom()"
       >
         <v-icon color="#dee2e1">mdi-close</v-icon>
-      </v-btn>
-      <v-btn
-        class="chat-window__container--minimise-btn"
-        fab
-        small
-        color="transparent"
-        @click="minimiseChatRoom()"
-      >
-        <v-icon color="#dee2e1">mdi-minus</v-icon>
       </v-btn>
     </div>
     <div v-if="!minimised">
@@ -311,15 +302,17 @@ export default {
 
   position: relative;
 
+  transition: all 0.3s;
+
   &--top {
-    padding: 5px 10px;
+    padding: 8px 10px;
     margin-bottom: 5px;
     width: 100%;
     background-color: #1976d2;
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
 
   &--heading {
@@ -329,6 +322,7 @@ export default {
     color: #eee;
     display: flex;
     align-items: center;
+    margin-bottom: 0;
   }
 
   &--unseen {
@@ -371,6 +365,7 @@ export default {
 
 .minimisedChatRoom {
   height: 38px;
+  width: 280px;
   align-self: flex-end;
 }
 
@@ -382,7 +377,7 @@ export default {
 }
 
 .online-display {
-  margin-left: 8px;
+  margin-right: 8px;
   height: 16px;
   width: 16px;
   border-radius: 50%;
@@ -390,7 +385,7 @@ export default {
 }
 
 .offline-display {
-  margin-left: 8px;
+  margin-right: 8px;
   height: 16px;
   width: 16px;
   background-color: #ff7675;

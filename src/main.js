@@ -27,6 +27,9 @@ import Viewer from "v-viewer";
 import InstantSearch from "vue-instantsearch";
 Vue.use(InstantSearch);
 
+import VueChatScroll from "vue-chat-scroll";
+Vue.use(VueChatScroll);
+
 Vue.use(Viewer);
 
 Vue.use(Vuetify);

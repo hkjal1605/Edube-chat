@@ -96,7 +96,7 @@ export default {
           ] = {
             userId: this.chatWith.objectID,
             name: this.chatWith.name,
-            dp: this.chatWith.dp,
+            dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg: null,
             img: imgPost.photo,
@@ -131,7 +131,7 @@ export default {
           ] = {
             userId: this.chatWith.objectID,
             name: this.chatWith.name,
-            dp: this.chatWith.dp,
+            dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg:
               newMessage.length > 45

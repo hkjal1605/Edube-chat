@@ -65,7 +65,7 @@
               <v-img
                 max-width="40"
                 max-height="40"
-                :src="user.dp"
+                :src="user.dp ? user.dp : errDp"
                 :lazy-src="user.dp"
                 alt="Dp"
                 @error="onImgError(i)"

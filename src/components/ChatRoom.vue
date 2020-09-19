@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-room">
+  <div class="chat-room" v-chat-scroll="{always: false, smooth: true, scrollonremoved:true}">
     <v-btn
       v-if="showLoadLastSeen"
       text
@@ -8,6 +8,7 @@
       class="chat-room__load-button"
       @click="loadPreviousMessages"
     >LOAD PREVIOUS CHAT</v-btn>
+    <div style="height: 10px"></div>
     <ul class="container__message-list" id="messages">
       <li
         v-bind:class="{'container__message': true, 'msg-sent':(chat.val.sender === myId), 'msg-recieved':(chat.val.sender !== myId), 'last-sent': (chat.val.sender === myId && chats[i+1] && chats[i+1].val.sender !== myId), 'last-recieved': (chat.val.sender !== myId && chats[i+1] && chats[i+1].val.sender === myId)}"

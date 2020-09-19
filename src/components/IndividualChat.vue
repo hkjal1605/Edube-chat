@@ -89,7 +89,7 @@ export default {
             .database()
             .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`)
             .update({
-              dp: data.val().dp,
+              dp: data.val().dp ? data.val().dp : null,
             });
         }
       });

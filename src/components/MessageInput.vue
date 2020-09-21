@@ -15,13 +15,14 @@
       </v-btn>
       <input type="file" ref="input1" style="display: none" @change="previewImage" accept="image/*" />
 
-      <input
+      <textarea
         type="text"
         class="message-div__form--input"
         name="message"
+        rows="1"
         :placeholder="imageData ? 'Caption Image' : 'Type Text Here' "
         v-model="newMessage"
-        v-on:keyup.enter="sendMessage()"
+        v-on:keyup.enter="sendMessage"
       />
 
       <v-btn fab small class="message-div__send-btn" @click="sendMessage">
@@ -53,13 +54,16 @@ export default {
     };
   },
   methods: {
-    sendMessage() {
-      if (this.imageData && this.newMessage) {
-        this.create(2, "both");
-      } else if (this.imageData && !this.newMessage) {
-        this.create(1, "image");
-      } else {
-        this.addMessage(1, null, this.newMessage);
+    sendMessage(event) {
+      if (event.keyCode == 13 && !event.shiftKey) {
+        event.preventDefault();
+        if (this.imageData && this.newMessage) {
+          this.create(2, "both");
+        } else if (this.imageData && !this.newMessage) {
+          this.create(1, "image");
+        } else {
+          this.addMessage(1, null, this.newMessage);
+        }
       }
     },
 
@@ -339,6 +343,7 @@ export default {
     justify-content: space-between;
 
     &--input {
+      resize: none;
       height: 35px;
       padding: 5px 10px;
       border: none;

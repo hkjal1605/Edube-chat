@@ -1,32 +1,60 @@
 <template>
-  <div v-bind:class="{'message-div': true, 'no-border': (imageData)}">
+  <div v-bind:class="{ 'message-div': true, 'no-border': imageData }">
     <div class="image-preview" v-if="imageData">
-      <v-btn class="image-preview__close-btn" color="error" fab small @click="closeImageInput()">
+      <v-btn
+        class="image-preview__close-btn"
+        color="error"
+        fab
+        small
+        @click="closeImageInput()"
+      >
         <v-icon>mdi-close</v-icon>
       </v-btn>
-      <v-img class="image-preview__image" max-width="250" max-height="250" :src="img1" />
+      <v-img
+        class="image-preview__image"
+        max-width="250"
+        max-height="250"
+        :src="img1"
+      />
       <h5 v-if="uploadStart">
-        <v-progress-linear class="loader" indeterminate color="yellow"></v-progress-linear>
+        <v-progress-linear
+          class="loader"
+          indeterminate
+          color="yellow"
+        ></v-progress-linear>
       </h5>
     </div>
     <div class="message-div__form-area">
-      <v-btn class="message-div__image-btn" fab color="primary" small outlined @click="click1">
+      <v-btn
+        class="message-div__image-btn"
+        fab
+        color="primary"
+        small
+        outlined
+        @click="click1"
+      >
         <v-icon>mdi-image</v-icon>
       </v-btn>
-      <input type="file" ref="input1" style="display: none" @change="previewImage" accept="image/*" />
+      <input
+        type="file"
+        ref="input1"
+        style="display: none"
+        @change="previewImage"
+        accept="image/*"
+      />
 
       <textarea
         type="text"
         class="message-div__form--input"
         name="message"
         rows="1"
-        :placeholder="imageData ? 'Caption Image' : 'Type Text Here' "
+        :placeholder="imageData ? 'Caption Image' : 'Type Text Here'"
         v-model="newMessage"
-        v-on:keyup.enter="sendMessage"
+        v-on:keydown.enter="sendMessage"
       />
 
       <v-btn fab small class="message-div__send-btn" @click="sendMessage">
-        <v-icon>mdi-send</v-icon>
+        <v-icon @click="sendMessage">mdi-send</v-icon>
       </v-btn>
     </div>
   </div>
@@ -55,7 +83,7 @@ export default {
   },
   methods: {
     sendMessage(event) {
-      if (event.keyCode == 13 && !event.shiftKey) {
+      if ((event.keyCode == 13 && !event.shiftKey) || event.type === "click") {
         event.preventDefault();
         if (this.imageData && this.newMessage) {
           this.create(2, "both");
@@ -71,22 +99,6 @@ export default {
       if (newMessage || imgPost) {
         var updates = {};
 
-        if (this.checkUserId(this.myId, this.chatRoomId)) {
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
-          ] = this.myName;
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
-          ] = this.chatWith.name;
-        } else {
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/0/nm"
-          ] = this.chatWith.name;
-          updates[
-            "Edubase/chat/" + this.chatRoomId + "/usr/1/nm"
-          ] = this.myName;
-        }
-
         let pushKey1 = this.getPushKey();
         let pushKey2 = this.getPushKey();
 
@@ -98,7 +110,6 @@ export default {
           updates[
             "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
           ] = {
-            userId: this.chatWith.objectID,
             name: this.chatWith.name,
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
@@ -133,7 +144,6 @@ export default {
           updates[
             "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
           ] = {
-            userId: this.chatWith.objectID,
             name: this.chatWith.name,
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
@@ -164,13 +174,13 @@ export default {
               : newMessage;
         }
 
-        updates[
-          "Edubase/chatHistory/" +
-            this.chatWith.objectID +
-            "/" +
-            this.myId +
-            "/userId"
-        ] = this.chatWith.objectID;
+        // updates[
+        //   "Edubase/chatHistory/" +
+        //     this.chatWith.objectID +
+        //     "/" +
+        //     this.myId +
+        //     "/userId"
+        // ] = this.chatWith.objectID;
 
         updates[
           "Edubase/chatHistory/" +

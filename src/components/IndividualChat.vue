@@ -62,27 +62,39 @@ export default {
       .on("value", function (data) {
         _this.userOnline = data.val().online;
 
-        if (_this.chatWith.name !== data.val().name) {
-          _this.chatWith.name = data.val().name;
+        let historyRef = _this.firebase
+          .database()
+          .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`);
 
-          _this.firebase
-            .database()
-            .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`)
-            .update({
-              name: data.val().name,
-            });
-        }
+        historyRef.once("value", function (data2) {
+          if (data2.val()) {
+            if (_this.chatWith.name !== data.val().name) {
+              _this.chatWith.name = data.val().name;
 
-        if (_this.chatWith.dp !== data.val().dp) {
-          _this.chatWith.dp = data.val().dp;
+              _this.firebase
+                .database()
+                .ref(
+                  `Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`
+                )
+                .update({
+                  name: data.val().name,
+                });
+            }
 
-          _this.firebase
-            .database()
-            .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`)
-            .update({
-              dp: data.val().dp ? data.val().dp : null,
-            });
-        }
+            if (_this.chatWith.dp !== data.val().dp) {
+              _this.chatWith.dp = data.val().dp;
+
+              _this.firebase
+                .database()
+                .ref(
+                  `Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`
+                )
+                .update({
+                  dp: data.val().dp ? data.val().dp : null,
+                });
+            }
+          }
+        });
       });
 
     let currentChatRoomId = this.chatRoomId;

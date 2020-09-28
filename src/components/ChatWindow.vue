@@ -2,7 +2,7 @@
   <div class="chat-window">
     {{ resetComponentArray() }}
     {{ checkUserChanges() }}
-    <div v-bind:class="{'chat-window__main': true, 'minimised': (minimised)}">
+    <div v-bind:class="{ 'chat-window__main': true, minimised: minimised }">
       <div class="chat-window__top">
         <h4 class="chat-window__top--heading">Messages</h4>
         <v-btn
@@ -18,11 +18,7 @@
       </div>
       <div class="chat-window__user-list">
         <div class="user-list">
-          <ais-index
-            app-id="OU413LC7SR"
-            api-key="11ed9b1e149370761f2ca223ef2b615a"
-            index-name="test"
-          >
+          <ais-index :search-store="searchStore" index-name="test">
             <div
               class="user-list__search-box"
               @click="onFocus()"
@@ -32,8 +28,11 @@
               <h5 class="user-list__search-box--placeholder">To:</h5>
               <ais-input></ais-input>
             </div>
-            <div class="user-list__results" v-if="userShown">
-              <ais-results v-if="userShown">
+            <div
+              class="user-list__results"
+              v-show="searchStore.query.length > 0"
+            >
+              <ais-results>
                 <template slot-scope="{ result }">
                   <div class="user-list__user" @click="setChatWith(result)">
                     <img
@@ -42,9 +41,14 @@
                       class="user-list__user--dp"
                       alt="User-dp"
                     />
-                    <img v-if="!result.dp" :src="errDp" class="user-list__user--dp" alt="User-dp" />
+                    <img
+                      v-if="!result.dp"
+                      :src="errDp"
+                      class="user-list__user--dp"
+                      alt="User-dp"
+                    />
                     <h5 class="user-list__user--name">
-                      {{result.name}}
+                      {{ result.name }}
                       <!-- <ais-highlight :result="result" attribute-name="name"></ais-highlight> -->
                     </h5>
                   </div>
@@ -73,16 +77,27 @@
                 class="chat-history__item--dp"
               >
                 <template v-slot:placeholder>
-                  <v-row class="fill-height ma-0" align="center" justify="center">
-                    <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey lighten-5"
+                    ></v-progress-circular>
                   </v-row>
                 </template>
               </v-img>
 
               <div class="chat-history__item--text-part">
                 <h4 class="chat-history__item--name">{{ user.name }}</h4>
-                <div v-if="user.msg" class="chat-history__item--last-msg">{{ user.msg }}</div>
-                <div v-if="!user.msg" class="chat-history__item--last-msg">Image</div>
+                <div v-if="user.msg" class="chat-history__item--last-msg">
+                  {{ user.msg }}
+                </div>
+                <div v-if="!user.msg" class="chat-history__item--last-msg">
+                  Image
+                </div>
               </div>
             </div>
           </div>
@@ -90,8 +105,16 @@
       </div>
     </div>
     <div class="components">
-      <IndividualChat v-if="chatWith[0]" :key="chatWith[0].objectID" :chatWith="chatWith[0]" />
-      <IndividualChat v-if="chatWith[1]" :key="chatWith[1].objectID" :chatWith="chatWith[1]" />
+      <IndividualChat
+        v-if="chatWith[0]"
+        :key="chatWith[0].objectID"
+        :chatWith="chatWith[0]"
+      />
+      <IndividualChat
+        v-if="chatWith[1]"
+        :key="chatWith[1].objectID"
+        :chatWith="chatWith[1]"
+      />
     </div>
   </div>
 </template>
@@ -100,6 +123,14 @@
 import IndividualChat from "./IndividualChat";
 import chatMixin from "../mixins/chatMixin";
 import errDp from "../assets/logo.png";
+
+import { createFromAlgoliaCredentials } from "vue-instantsearch";
+
+const searchStore = createFromAlgoliaCredentials(
+  "OU413LC7SR",
+  "11ed9b1e149370761f2ca223ef2b615a"
+);
+
 export default {
   name: "ChatWindow",
   mixins: [chatMixin],
@@ -115,6 +146,7 @@ export default {
       minimised: false,
       userShown: false,
       errDp: errDp,
+      searchStore,
     };
   },
   mounted() {
@@ -400,6 +432,8 @@ export default {
   }
 
   &__results {
+    max-height: 200px;
+    overflow-y: auto;
     width: 101%;
     padding: 5px;
     border-radius: 5px;

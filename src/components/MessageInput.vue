@@ -115,6 +115,7 @@ export default {
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg: null,
             img: imgPost.photo,
+            sender: this.myName,
           };
 
           updates[
@@ -148,10 +149,11 @@ export default {
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg:
-              newMessage.length > 45
-                ? newMessage.substring(0, 45) + "..."
+              newMessage.length > 20
+                ? newMessage.substring(0, 20) + "..."
                 : newMessage,
             img: null,
+            sender: this.myName,
           };
 
           updates[
@@ -174,13 +176,13 @@ export default {
               : newMessage;
         }
 
-        // updates[
-        //   "Edubase/chatHistory/" +
-        //     this.chatWith.objectID +
-        //     "/" +
-        //     this.myId +
-        //     "/userId"
-        // ] = this.chatWith.objectID;
+        updates[
+          "Edubase/chatHistory/" +
+            this.chatWith.objectID +
+            "/" +
+            this.myId +
+            "/sender"
+        ] = this.myName;
 
         updates[
           "Edubase/chatHistory/" +

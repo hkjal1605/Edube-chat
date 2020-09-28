@@ -30,6 +30,7 @@
             </div>
             <div
               class="user-list__results"
+              v-if="userShown"
               v-show="searchStore.query.length > 0"
             >
               <ais-results>
@@ -92,12 +93,24 @@
 
               <div class="chat-history__item--text-part">
                 <h4 class="chat-history__item--name">{{ user.name }}</h4>
-                <div v-if="user.msg" class="chat-history__item--last-msg">
-                  {{ user.msg }}
+                <div
+                  v-if="user.msg && user.sender === myName"
+                  class="chat-history__item--last-msg"
+                >
+                  You: {{ user.msg }}
+                </div>
+                <div
+                  v-if="user.msg && user.sender !== myName"
+                  class="chat-history__item--last-msg"
+                >
+                  {{ user.sender }}: {{ user.msg }}
                 </div>
                 <div v-if="!user.msg" class="chat-history__item--last-msg">
                   Image
                 </div>
+              </div>
+              <div class="chat-history__item--unseen-num" v-if="user.unseen">
+                {{ user.unseen }}
               </div>
             </div>
           </div>
@@ -222,6 +235,7 @@ export default {
               msg: data.val()[key].msg,
               unseen: data.val()[key].unseen,
               end: data.val()[key].end,
+              sender: data.val()[key].sender,
             };
 
             _this.users.push(userObj);
@@ -395,6 +409,13 @@ export default {
       margin-right: 10px !important;
     }
 
+    &--text-part {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
     &--name {
       font-size: 18px;
       font-weight: 400;
@@ -404,6 +425,15 @@ export default {
     &--last-msg {
       text-align: left;
       color: #666;
+    }
+
+    &--unseen-num {
+      margin-left: auto;
+      height: 20px;
+      width: 20px;
+      background-color: #b53471;
+      border-radius: 200px;
+      color: #eee;
     }
   }
 }

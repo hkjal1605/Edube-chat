@@ -1,5 +1,8 @@
 <template>
-  <div class="chat-room" v-chat-scroll="{always: false, smooth: true, scrollonremoved:true}">
+  <div
+    class="chat-room"
+    v-chat-scroll="{ always: false, smooth: true, scrollonremoved: true }"
+  >
     <v-btn
       v-if="showLoadLastSeen"
       text
@@ -7,15 +10,30 @@
       color="primary"
       class="chat-room__load-button"
       @click="loadPreviousMessages"
-    >LOAD PREVIOUS CHAT</v-btn>
+      >LOAD PREVIOUS CHAT</v-btn
+    >
     <div style="height: 10px"></div>
     <ul class="container__message-list" id="messages">
       <li
-        v-bind:class="{'container__message': true, 'msg-sent':(chat.val.sender === myId), 'msg-recieved':(chat.val.sender !== myId), 'last-sent': (chat.val.sender === myId && chats[i+1] && chats[i+1].val.sender !== myId), 'last-recieved': (chat.val.sender !== myId && chats[i+1] && chats[i+1].val.sender === myId)}"
+        v-bind:class="{
+          container__message: true,
+          'msg-sent': chat.val.sender === myId,
+          'msg-recieved': chat.val.sender !== myId,
+          'last-sent':
+            chat.val.sender === myId &&
+            chats[i + 1] &&
+            chats[i + 1].val.sender !== myId,
+          'last-recieved':
+            chat.val.sender !== myId &&
+            chats[i + 1] &&
+            chats[i + 1].val.sender === myId,
+        }"
         v-for="(chat, i) in chats"
         :key="i"
       >
-        <span v-if="chat.val.msg" class="container__message--msg">{{ chat.val.msg }}</span>
+        <span v-if="chat.val.msg" class="container__message--msg">{{
+          chat.val.msg
+        }}</span>
         <FullScreenImg
           :key="chat.key"
           :imgUrl="chat.val.photo"
@@ -26,8 +44,9 @@
       </li>
       <span
         class="individual-chat__seen"
-        v-if="lastSeen !== null && lastSeen >= chats[chats.length - 1].val.tm && chats[chats.length - 1].val.sender === myId"
-      >seen</span>
+        v-if="lastSeen >= chats[chats.length - 1].val.tm"
+        >seen</span
+      >
     </ul>
     {{ checkMessageSeen() }}
   </div>
@@ -109,12 +128,18 @@ export default {
   padding: 0 10px;
   list-style: none;
   text-align: right;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .container__message {
   padding: 5px;
   margin-bottom: 3px;
   border-radius: 8px;
+  max-width: 280px !important;
+  overflow: auto;
 
   &--photo-msg {
     padding: 0;
@@ -129,14 +154,13 @@ export default {
 }
 
 .msg-sent {
+  align-self: flex-end;
   text-align: right;
-  margin-left: 65px;
   background-color: #e1e4e5;
 }
 
 .msg-recieved {
   text-align: left;
-  margin-right: 50px;
   background-color: #c8e9f7;
 }
 

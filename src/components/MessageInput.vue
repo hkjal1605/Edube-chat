@@ -53,7 +53,7 @@
         v-on:keydown.enter="sendMessage"
       />
 
-      <v-btn fab small class="message-div__send-btn" @click="sendMessage">
+      <v-btn fab small class="message-div__send-btn">
         <v-icon @click="sendMessage">mdi-send</v-icon>
       </v-btn>
     </div>
@@ -115,7 +115,7 @@ export default {
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg: null,
             img: imgPost.photo,
-            sender: this.myName,
+            sender: this.myId,
           };
 
           updates[
@@ -153,7 +153,7 @@ export default {
                 ? newMessage.substring(0, 20) + "..."
                 : newMessage,
             img: null,
-            sender: this.myName,
+            sender: this.myId,
           };
 
           updates[
@@ -182,7 +182,7 @@ export default {
             "/" +
             this.myId +
             "/sender"
-        ] = this.myName;
+        ] = this.myId;
 
         updates[
           "Edubase/chatHistory/" +

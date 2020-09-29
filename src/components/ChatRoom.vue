@@ -17,6 +17,7 @@
       <li
         v-bind:class="{
           container__message: true,
+          'photo-message': chat.val.photo,
           'msg-sent': chat.val.sender === myId,
           'msg-recieved': chat.val.sender !== myId,
           'last-sent':
@@ -138,7 +139,7 @@ export default {
   padding: 5px;
   margin-bottom: 3px;
   border-radius: 8px;
-  max-width: 280px !important;
+  max-width: 280px;
   overflow: auto;
 
   &--photo-msg {
@@ -168,5 +169,9 @@ export default {
 .last-sent,
 .last-recieved {
   margin-bottom: 15px;
+}
+
+.photo-message {
+  width: 280px !important;
 }
 </style>

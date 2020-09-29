@@ -1,11 +1,25 @@
 <template>
-  <div v-bind:class="{'chat-window__container': true, 'minimisedChatRoom': (minimised)}">
-    <div :key="chatWith.name" class="chat-window__container--top" @click="minimiseChatRoom()">
+  <div
+    v-bind:class="{
+      'chat-window__container': true,
+      minimisedChatRoom: minimised,
+    }"
+  >
+    <div
+      :key="chatWith.name"
+      class="chat-window__container--top"
+      @click="minimiseChatRoom()"
+    >
       <div class="online-display" v-if="userOnline === 'true'" />
-      <div class="offline-display" v-if="!userOnline || userOnline === 'false'" />
+      <div
+        class="offline-display"
+        v-if="!userOnline || userOnline === 'false'"
+      />
       <h3 :key="chatWith.name" class="chat-window__container--heading">
-        {{ chatWith.name}}
-        <div class="chat-window__container--unseen" v-if="numUnseen">{{ numUnseen }}</div>
+        {{ chatWith.name }}
+        <div class="chat-window__container--unseen" v-if="numUnseen">
+          {{ numUnseen }}
+        </div>
       </h3>
 
       <v-btn
@@ -25,7 +39,11 @@
         :chatRoomId="chatRoomId"
         :showLoadLastSeen="showLoadLastSeen"
       />
-      <MessageInput class="message-input" :chatRoomId="chatRoomId" :chatWith="chatWith" />
+      <MessageInput
+        class="message-input"
+        :chatRoomId="chatRoomId"
+        :chatWith="chatWith"
+      />
     </div>
   </div>
 </template>
@@ -145,6 +163,8 @@ export default {
         key: data.key,
         val: data.val(),
       });
+
+      console.log(_this.chats);
 
       _this.arrayOfKeys.push(data.key);
 

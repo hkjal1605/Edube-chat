@@ -23,7 +23,12 @@
       ref="viewer"
     >
       <template slot-scope="scope">
-        <img class="viewerImg" v-for="(src,i) in scope.images" :src="src" :key="i" />
+        <img
+          class="viewerImg"
+          v-for="(src, i) in scope.images"
+          :src="src"
+          :key="i"
+        />
       </template>
     </viewer>
   </div>

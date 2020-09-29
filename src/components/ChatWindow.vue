@@ -90,19 +90,28 @@
               <div class="chat-history__item--text-part">
                 <h4 class="chat-history__item--name">{{ user.name }}</h4>
                 <div
-                  v-if="user.msg && user.sender === myName"
+                  v-if="user.msg && user.sender === myId"
                   class="chat-history__item--last-msg"
                 >
                   You: {{ user.msg }}
                 </div>
                 <div
-                  v-if="user.msg && user.sender !== myName"
+                  v-if="user.msg && user.sender !== myId"
                   class="chat-history__item--last-msg"
                 >
-                  {{ user.sender }}: {{ user.msg }}
+                  {{ user.name.split(" ")[0] }}: {{ user.msg }}
                 </div>
-                <div v-if="!user.msg" class="chat-history__item--last-msg">
-                  Image
+                <div
+                  v-if="!user.msg && user.sender === myId"
+                  class="chat-history__item--last-msg"
+                >
+                  You: Image
+                </div>
+                <div
+                  v-if="!user.msg && user.sender !== myId"
+                  class="chat-history__item--last-msg"
+                >
+                  {{ user.name.split(" ")[0] }}: Image
                 </div>
               </div>
               <div class="chat-history__item--unseen-num" v-if="user.unseen">

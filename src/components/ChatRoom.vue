@@ -160,6 +160,7 @@ export default {
 }
 
 .msg-recieved {
+  align-self: flex-start;
   text-align: left;
   background-color: #c8e9f7;
 }

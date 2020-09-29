@@ -18,45 +18,41 @@
       </div>
       <div class="chat-window__user-list">
         <div class="user-list">
-          <ais-index :search-store="searchStore" index-name="test">
+          <div
+            class="user-list__search-box"
+            @click="onFocus()"
+            v-click-outside="hideSearchResults"
+            style="width: 100%"
+          >
+            <h5 class="user-list__search-box--placeholder">To:</h5>
+            <input
+              class="user-list__search-box--input"
+              v-model="queryString"
+              v-on:input="searchUsers"
+            />
+          </div>
+          <div
+            class="user-list__results"
+            v-show="queryString.length > 0 && userShown"
+          >
             <div
-              class="user-list__search-box"
-              @click="onFocus()"
-              v-click-outside="hideSearchResults"
-              style="width: 100%"
+              class="user-list__user"
+              v-for="(user, i) in searchResults"
+              :key="user.objectID"
+              @click="setChatWith(user)"
             >
-              <h5 class="user-list__search-box--placeholder">To:</h5>
-              <ais-input></ais-input>
+              <v-img
+                max-width="40"
+                max-height="40"
+                :src="user.dp"
+                :lazy-src="user.dp"
+                :alt="user.name"
+                class="user-list__user--dp"
+                @error="onAlgoliaImgError(i)"
+              />
+              <h3 class="user-list__user--name">{{ user.name }}</h3>
             </div>
-            <div
-              class="user-list__results"
-              v-if="userShown"
-              v-show="searchStore.query.length > 0"
-            >
-              <ais-results>
-                <template slot-scope="{ result }">
-                  <div class="user-list__user" @click="setChatWith(result)">
-                    <img
-                      v-if="result.dp"
-                      :src="result.dp"
-                      class="user-list__user--dp"
-                      alt="User-dp"
-                    />
-                    <img
-                      v-if="!result.dp"
-                      :src="errDp"
-                      class="user-list__user--dp"
-                      alt="User-dp"
-                    />
-                    <h5 class="user-list__user--name">
-                      {{ result.name }}
-                      <!-- <ais-highlight :result="result" attribute-name="name"></ais-highlight> -->
-                    </h5>
-                  </div>
-                </template>
-              </ais-results>
-            </div>
-          </ais-index>
+          </div>
         </div>
 
         <div class="chat-history">
@@ -137,12 +133,10 @@ import IndividualChat from "./IndividualChat";
 import chatMixin from "../mixins/chatMixin";
 import errDp from "../assets/logo.png";
 
-import { createFromAlgoliaCredentials } from "vue-instantsearch";
+import algoliasearch from "algoliasearch";
 
-const searchStore = createFromAlgoliaCredentials(
-  "OU413LC7SR",
-  "11ed9b1e149370761f2ca223ef2b615a"
-);
+const client = algoliasearch("OU413LC7SR", "11ed9b1e149370761f2ca223ef2b615a");
+const index = client.initIndex("test");
 
 export default {
   name: "ChatWindow",
@@ -159,7 +153,9 @@ export default {
       minimised: false,
       userShown: false,
       errDp: errDp,
-      searchStore,
+      index,
+      queryString: "",
+      searchResults: [],
     };
   },
   mounted() {
@@ -182,6 +178,16 @@ export default {
   },
 
   methods: {
+    searchUsers() {
+      this.index
+        .search(this.queryString, {
+          facetFilters: [`clg: ${this.myClgId}`],
+        })
+        .then(({ hits }) => {
+          this.searchResults = hits;
+        });
+    },
+
     listenUserPresence() {
       this.chatWith.map((user) => {
         this.firebase
@@ -305,6 +311,10 @@ export default {
     onImgError(i) {
       this.users[i].dp = this.errDp;
       console.log(this.users[i]);
+    },
+
+    onAlgoliaImgError(i) {
+      this.searchResults[i].dp = this.errDp;
     },
   },
 };
@@ -459,6 +469,13 @@ export default {
       text-align: left;
       margin-bottom: 0;
     }
+
+    &--input {
+      width: 100%;
+      padding: 5px 10px;
+      outline: none;
+      border: none;
+    }
   }
 
   &__results {
@@ -516,12 +533,5 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.ais-input {
-  width: 100%;
-  padding: 5px 10px;
-  outline: none;
-  border: none;
 }
 </style>

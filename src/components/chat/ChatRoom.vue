@@ -32,9 +32,6 @@
         v-for="(chat, i) in chats"
         :key="i"
       >
-        <span v-if="chat.val.msg" class="container__message--msg">{{
-          chat.val.msg
-        }}</span>
         <FullScreenImg
           :key="chat.key"
           :imgUrl="chat.val.photo"
@@ -42,9 +39,15 @@
           v-if="chat.val.photo"
           alt="sentImage"
         />
+        <span v-if="chat.val.msg" class="container__message--msg">{{
+          chat.val.msg
+        }}</span>
       </li>
       <span
-        v-if="chats[chats.length - 1].val.sender === myId && lastSeen >= chats[chats.length - 1].val.tm"
+        v-if="
+          chats[chats.length - 1].val.sender === myId &&
+          lastSeen >= chats[chats.length - 1].val.tm
+        "
         class="individual-chat__seen"
         >seen</span
       >

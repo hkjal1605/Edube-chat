@@ -3,12 +3,14 @@
     <div class="image-preview" v-if="imageData">
       <v-btn
         class="image-preview__close-btn"
-        color="error"
+        color="#cd201f"
         fab
         small
         @click="closeImageInput()"
       >
-        <v-icon>mdi-close</v-icon>
+        <v-icon color="#fff" small class="image-preview__close-btn--icon"
+          >mdi-close</v-icon
+        >
       </v-btn>
       <v-img
         class="image-preview__image"
@@ -25,14 +27,7 @@
       </h5>
     </div>
     <div class="message-div__form-area">
-      <v-btn
-        class="message-div__image-btn"
-        fab
-        color="primary"
-        small
-        outlined
-        @click="click1"
-      >
+      <v-btn class="message-div__image-btn" fab small outlined @click="click1">
         <v-icon>mdi-image</v-icon>
       </v-btn>
       <input
@@ -49,24 +44,7 @@
         class="message-div__form--input"
         rows="1"
       />
-      <!-- <textarea-autosize
-        :placeholder="imageData ? 'Caption Image' : 'Type Text Here'"
-        v-model="newMessage"
-        :max-height="50"
-        class="message-div__form--input"
-        name="message"
-        rows="1"
-        onkeydown="sendMessage"
-      /> -->
-      <!-- <textarea
-        rows="1"
-        class="message-div__form--input"
-        :placeholder="imageData ? 'Caption Image' : 'Type Text Here'"
-        v-model="newMessage"
-        v-on:keydown.enter="sendMessage"
-      /> -->
-
-      <v-btn fab small class="message-div__send-btn">
+      <v-btn fab small color="primary" class="message-div__send-btn">
         <v-icon @click="sendMessage">mdi-send</v-icon>
       </v-btn>
     </div>
@@ -130,7 +108,7 @@ export default {
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg: null,
-            img: imgPost.photo,
+            img: true,
             sender: this.myId,
           };
 
@@ -190,6 +168,32 @@ export default {
             newMessage.length > 45
               ? newMessage.substring(0, 45) + "..."
               : newMessage;
+        }
+
+        if (imgPost && newMessage) {
+          imgPost.msg = newMessage;
+
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey1
+          ] = imgPost;
+
+          updates[
+            "Edubase/chat/" + this.chatRoomId + "/chats/" + pushKey2
+          ] = null;
+
+          updates[
+            "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
+          ] = {
+            name: this.chatWith.name,
+            dp: this.chatWith.dp ? this.chatWith.dp : null,
+            end: this.firebase.database.ServerValue.TIMESTAMP,
+            msg:
+              newMessage.length > 20
+                ? newMessage.substring(0, 20) + "..."
+                : newMessage,
+            img: true,
+            sender: this.myId,
+          };
         }
 
         updates[
@@ -362,6 +366,8 @@ export default {
 
   &__image-btn {
     margin-right: 10px;
+    border: solid 2px #c8cdce !important;
+    background-color: #f8f8f8 !important;
   }
 
   &__form {
@@ -372,16 +378,19 @@ export default {
 
     &--input {
       resize: none;
-      padding: 8px 10px;
+      padding: 9px 12px;
       border: none;
       outline: none;
       width: 88%;
-      border-radius: 10px;
+      border-radius: 1000px;
       border: solid 2px #c8cdce;
       background-color: #f8f8f8;
       margin-right: 10px;
       color: #818181;
-      margin-top: -3px;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
 
@@ -417,6 +426,9 @@ export default {
     position: absolute;
     top: 5px;
     right: 5px;
+    height: 22px !important;
+    width: 22px !important;
+    box-shadow: none !important;
   }
 }
 

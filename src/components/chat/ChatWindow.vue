@@ -4,8 +4,14 @@
     {{ checkUserChanges() }}
     <div v-bind:class="{ 'chat-window__main': true, minimised: minimised }">
       <div class="chat-window__top">
-        <h4 class="chat-window__top--heading">Messages</h4>
-        <div class="chat-window__top--unseen-notif" v-if="showUnseen"></div>
+        <h4 class="chat-window__top--heading">
+          Messages
+          <div
+            class="chat-window__top--unseen-notif"
+            v-if="minimised && showUnseen"
+          ></div>
+        </h4>
+
         <v-btn
           class="chat-window__top--minimise-btn"
           color="transparent"
@@ -358,14 +364,14 @@ export default {
       font-size: 20px;
       margin: 0;
       font-weight: 300;
+      display: flex;
+      align-items: center;
     }
 
     &--unseen-notif {
-      position: absolute;
-      top: 6px;
-      left: 125px;
-      height: 15px;
-      width: 15px;
+      margin-left: 3px;
+      height: 12px;
+      width: 12px;
       border-radius: 200px;
       background-color: #55efc4;
     }

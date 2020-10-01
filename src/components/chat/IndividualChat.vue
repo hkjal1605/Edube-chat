@@ -408,16 +408,16 @@ export default {
 
 .online-display {
   margin-right: 8px;
-  height: 16px;
-  width: 16px;
+  height: 12px;
+  width: 12px;
   border-radius: 50%;
   background-color: #55efc4;
 }
 
 .offline-display {
   margin-right: 8px;
-  height: 16px;
-  width: 16px;
+  height: 12px;
+  width: 12px;
   background-color: #ff7675;
   border-radius: 50%;
 }

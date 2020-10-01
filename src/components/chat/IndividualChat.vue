@@ -50,7 +50,7 @@
 
 <script>
 import MessageInput from "./MessageInput";
-import chatMixin from "../mixins/chatMixin";
+import chatMixin from "../../mixins/chatMixin";
 import ChatRoom from "./ChatRoom";
 export default {
   name: "IndividualChat",
@@ -163,8 +163,6 @@ export default {
         key: data.key,
         val: data.val(),
       });
-
-      console.log(_this.chats);
 
       _this.arrayOfKeys.push(data.key);
 

@@ -42,16 +42,29 @@
         @change="previewImage"
         accept="image/*"
       />
-
-      <textarea
-        type="text"
+      <TextareaAutosize
+        :placeholder="imageData ? 'Caption Image' : 'Type Text Here'"
+        v-model="newMessage"
+        :max-height="50"
+        class="message-div__form--input"
+        rows="1"
+      />
+      <!-- <textarea-autosize
+        :placeholder="imageData ? 'Caption Image' : 'Type Text Here'"
+        v-model="newMessage"
+        :max-height="50"
         class="message-div__form--input"
         name="message"
         rows="1"
+        onkeydown="sendMessage"
+      /> -->
+      <!-- <textarea
+        rows="1"
+        class="message-div__form--input"
         :placeholder="imageData ? 'Caption Image' : 'Type Text Here'"
         v-model="newMessage"
         v-on:keydown.enter="sendMessage"
-      />
+      /> -->
 
       <v-btn fab small class="message-div__send-btn">
         <v-icon @click="sendMessage">mdi-send</v-icon>
@@ -61,10 +74,12 @@
 </template>
 
 <script>
-import chatMixin from "../mixins/chatMixin";
+import TextareaAutosize from "../TextArea";
+import chatMixin from "../../mixins/chatMixin";
 export default {
   name: "MessageInput",
   mixins: [chatMixin],
+  components: { TextareaAutosize },
   props: {
     chatRoomId: String,
     chatWith: Object,
@@ -83,6 +98,7 @@ export default {
   },
   methods: {
     sendMessage(event) {
+      console.log("yes");
       if ((event.keyCode == 13 && !event.shiftKey) || event.type === "click") {
         event.preventDefault();
         if (this.imageData && this.newMessage) {
@@ -356,16 +372,16 @@ export default {
 
     &--input {
       resize: none;
-      height: 35px;
-      padding: 5px 10px;
+      padding: 8px 10px;
       border: none;
       outline: none;
       width: 88%;
-      border-radius: 2000px;
+      border-radius: 10px;
       border: solid 2px #c8cdce;
       background-color: #f8f8f8;
       margin-right: 10px;
       color: #818181;
+      margin-top: -3px;
     }
   }
 

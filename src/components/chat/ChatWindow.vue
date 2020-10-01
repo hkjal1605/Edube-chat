@@ -5,6 +5,7 @@
     <div v-bind:class="{ 'chat-window__main': true, minimised: minimised }">
       <div class="chat-window__top">
         <h4 class="chat-window__top--heading">Messages</h4>
+        <div class="chat-window__top--unseen-notif" v-if="showUnseen"></div>
         <v-btn
           class="chat-window__top--minimise-btn"
           color="transparent"
@@ -139,8 +140,8 @@
 
 <script>
 import IndividualChat from "./IndividualChat";
-import chatMixin from "../mixins/chatMixin";
-import errDp from "../assets/logo.png";
+import chatMixin from "../../mixins/chatMixin";
+import errDp from "../../assets/logo.png";
 
 import algoliasearch from "algoliasearch";
 
@@ -159,6 +160,7 @@ export default {
       users: [],
       chatWith: [],
       lastMsg: undefined,
+      showUnseen: false,
       minimised: false,
       userShown: false,
       errDp: errDp,
@@ -170,7 +172,6 @@ export default {
   mounted() {
     this.getChatHistory();
     this.listenUserPresence();
-    // this.checkUserChanges();
   },
   beforeDestroy() {
     this.firebase
@@ -241,6 +242,8 @@ export default {
 
           let userObj = {};
 
+          let totalUnseen = 0;
+
           Object.keys(data.val()).map((key) => {
             userObj = {
               objectID: key,
@@ -252,6 +255,13 @@ export default {
               end: data.val()[key].end,
               sender: data.val()[key].sender,
             };
+
+            totalUnseen += data.val()[key].unseen;
+            if (totalUnseen) {
+              _this.showUnseen = true;
+            } else {
+              _this.showUnseen = false;
+            }
 
             _this.users.push(userObj);
           });
@@ -271,7 +281,6 @@ export default {
           this.chatWith.shift();
           this.chatWith.push(user);
         } else {
-          console.log(user);
           this.chatWith.push(user);
         }
       }
@@ -351,17 +360,21 @@ export default {
       font-weight: 300;
     }
 
+    &--unseen-notif {
+      position: absolute;
+      top: 6px;
+      left: 125px;
+      height: 15px;
+      width: 15px;
+      border-radius: 200px;
+      background-color: #55efc4;
+    }
+
     &--minimise-btn {
       height: 28px !important;
       width: 28px !important;
       box-shadow: none !important;
     }
-  }
-
-  &__heading {
-    color: teal;
-    font-size: 40px;
-    font-weight: normal;
   }
 
   &__main {

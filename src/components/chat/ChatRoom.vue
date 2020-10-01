@@ -1,7 +1,7 @@
 <template>
   <div
     class="chat-room"
-    v-chat-scroll="{ always: false, smooth: true, scrollonremoved: true }"
+    v-chat-scroll="{ always: false, smooth: false, scrollonremoved: true }"
   >
     <v-btn
       v-if="showLoadLastSeen"
@@ -44,8 +44,8 @@
         />
       </li>
       <span
+        v-if="chats[chats.length - 1].val.sender === myId && lastSeen >= chats[chats.length - 1].val.tm"
         class="individual-chat__seen"
-        v-if="lastSeen >= chats[chats.length - 1].val.tm"
         >seen</span
       >
     </ul>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import chatMixin from "../mixins/chatMixin";
+import chatMixin from "../../mixins/chatMixin";
 import FullScreenImg from "./FullScreenImg";
 export default {
   name: "ChatRoom",
@@ -140,7 +140,7 @@ export default {
   margin-bottom: 3px;
   border-radius: 8px;
   max-width: 280px;
-  overflow: auto;
+  word-wrap: break-word;
 
   &--photo-msg {
     padding: 0;

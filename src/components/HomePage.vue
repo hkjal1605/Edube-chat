@@ -10,7 +10,7 @@
 
 
 <script>
-import ToggleChatButton from "./ToggleChatButton";
+import ToggleChatButton from "./chat/ToggleChatButton";
 export default {
   name: "HomePage",
   components: { ToggleChatButton },

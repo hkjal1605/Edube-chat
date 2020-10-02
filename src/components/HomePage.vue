@@ -6,17 +6,17 @@
       <div style="height: 1000px; width: 100%; background: grey">Scrolable</div>
     </div>
     <div class="toggle-button">
-      <ToggleChatButton />
+      <ChatWindow v-if="myId" />
     </div>
   </div>
 </template>
 
 
 <script>
-import ToggleChatButton from "./chat/ToggleChatButton";
+import ChatWindow from "./chat/ChatWindow";
 export default {
   name: "HomePage",
-  components: { ToggleChatButton },
+  components: { ChatWindow },
   data() {
     return {
       authListenerUnsubscribe: null,

@@ -70,6 +70,7 @@
             :key="i"
             @click="setChatWith(user)"
           >
+            {{ user }}
             <div class="chat-history__item--user-details">
               <v-img
                 max-width="40"
@@ -129,6 +130,7 @@
         </div>
       </div>
     </div>
+    {{ chatWith }}
     <IndividualChat
       class="individual-chat-1"
       v-if="chatWith[0]"
@@ -275,7 +277,6 @@ export default {
             } else {
               _this.showUnseen = false;
             }
-
             _this.users.push(userObj);
           });
 
@@ -285,17 +286,23 @@ export default {
     },
 
     setChatWith(user) {
+      console.log("yes4");
       this.userShown = false;
 
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
       ) {
+        console.log("if1", user);
         if (this.chatWith.length === 2) {
+          console.log("if2");
           this.chatWith.shift();
           this.chatWith.push(user);
         } else {
+          console.log("if3");
           this.chatWith.push(user);
         }
+
+        console.log("chat", this.chatWith);
       }
     },
 

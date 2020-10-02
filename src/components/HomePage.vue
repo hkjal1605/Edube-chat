@@ -2,6 +2,9 @@
   <div class="home-page">
     <v-btn @click="onLogoutClick()">Logout</v-btn>
     <div v-if="isNewUser">New User</div>
+    <div style="height: 100%; width: 100%; overflow-y: auto">
+      <div style="height: 1000px; width: 100%; background: grey">Scrolable</div>
+    </div>
     <div class="toggle-button">
       <ToggleChatButton />
     </div>

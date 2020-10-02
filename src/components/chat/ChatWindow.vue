@@ -179,6 +179,7 @@ export default {
       queryString: "",
       searchResults: [],
       chatComponentMinimised: false,
+      chatComponentTwoMinimised: false,
     };
   },
   mounted() {

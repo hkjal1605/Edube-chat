@@ -73,7 +73,15 @@ export default {
     };
   },
   mounted() {
-    this.$parent.chatComponentMinimised = false;
+    if (this.chatPosition === 1) {
+      this.$parent.chatComponentMinimised = false;
+    }
+    if (this.$parent.chatComponentTwoMinimised && this.chatPosition === 2) {
+      this.$parent.chatComponentMinimised = true;
+      this.$parent.chatComponentTwoMinimised = false;
+    }
+
+    console.log(this.$parent.chatComponentMinimised);
 
     let _this = this;
 
@@ -193,6 +201,11 @@ export default {
       });
   },
   beforeDestroy() {
+    console.log(this.chatPosition);
+    if (this.chatPosition === 1 && this.$parent.chatComponentMinimised) {
+      this.$parent.chatComponentMinimised = false;
+    }
+
     this.firebase
       .database()
       .ref("Edubase/chat/" + this.chatRoomId + "/chats")
@@ -262,11 +275,16 @@ export default {
     minimiseChatRoom() {
       this.minimised = !this.minimised;
 
-      console.log(this.chatPosition);
       if (this.chatPosition === 1) {
         let tempVar = this.$parent.chatComponentMinimised;
         this.$parent.chatComponentMinimised = !tempVar;
       }
+
+      if (this.chatPosition === 2) {
+        let tempVar = this.$parent.chatComponentTwoMinimised;
+        this.$parent.chatComponentTwoMinimised = !tempVar;
+      }
+      console.log(this.$parent.chatComponentMinimised);
 
       let _this = this;
 

@@ -1,7 +1,5 @@
 <template>
   <div class="chat-window">
-    {{ resetComponentArray() }}
-    {{ checkUserChanges() }}
     <div v-bind:class="{ 'chat-window__main': true, minimised: minimised }">
       <div class="chat-window__top">
         <h4 class="chat-window__top--heading">
@@ -70,7 +68,6 @@
             :key="i"
             @click="setChatWith(user)"
           >
-            {{ user }}
             <div class="chat-history__item--user-details">
               <v-img
                 max-width="40"
@@ -130,7 +127,6 @@
         </div>
       </div>
     </div>
-    {{ chatWith }}
     <IndividualChat
       class="individual-chat-1"
       v-if="chatWith[0]"
@@ -174,7 +170,7 @@ export default {
       chatWith: [],
       lastMsg: undefined,
       showUnseen: false,
-      minimised: false,
+      minimised: true,
       userShown: false,
       errDp: errDp,
       index,
@@ -187,6 +183,8 @@ export default {
   mounted() {
     this.getChatHistory();
     this.listenUserPresence();
+    this.resetComponentArray();
+    this.checkUserChanges();
   },
   beforeDestroy() {
     this.firebase
@@ -286,23 +284,17 @@ export default {
     },
 
     setChatWith(user) {
-      console.log("yes4");
       this.userShown = false;
 
       if (
         this.chatWith.filter((e) => e.objectID === user.objectID).length === 0
       ) {
-        console.log("if1", user);
         if (this.chatWith.length === 2) {
-          console.log("if2");
           this.chatWith.shift();
           this.chatWith.push(user);
         } else {
-          console.log("if3");
           this.chatWith.push(user);
         }
-
-        console.log("chat", this.chatWith);
       }
     },
 

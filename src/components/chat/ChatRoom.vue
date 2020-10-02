@@ -52,7 +52,6 @@
         >seen</span
       >
     </ul>
-    {{ checkMessageSeen() }}
   </div>
 </template>
 
@@ -72,6 +71,9 @@ export default {
     return {
       lastSeen: null,
     };
+  },
+  mounted() {
+    this.checkMessageSeen();
   },
   beforeDestroy() {
     this.firebase

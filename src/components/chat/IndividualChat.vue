@@ -81,8 +81,6 @@ export default {
       this.$parent.chatComponentTwoMinimised = false;
     }
 
-    console.log(this.$parent.chatComponentMinimised);
-
     let _this = this;
 
     this.firebase
@@ -201,7 +199,6 @@ export default {
       });
   },
   beforeDestroy() {
-    console.log(this.chatPosition);
     if (this.chatPosition === 1 && this.$parent.chatComponentMinimised) {
       this.$parent.chatComponentMinimised = false;
     }
@@ -284,7 +281,6 @@ export default {
         let tempVar = this.$parent.chatComponentTwoMinimised;
         this.$parent.chatComponentTwoMinimised = !tempVar;
       }
-      console.log(this.$parent.chatComponentMinimised);
 
       let _this = this;
 

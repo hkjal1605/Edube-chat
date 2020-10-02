@@ -129,18 +129,23 @@
         </div>
       </div>
     </div>
-    <div class="components">
-      <IndividualChat
-        v-if="chatWith[0]"
-        :key="chatWith[0].objectID"
-        :chatWith="chatWith[0]"
-      />
-      <IndividualChat
-        v-if="chatWith[1]"
-        :key="chatWith[1].objectID"
-        :chatWith="chatWith[1]"
-      />
-    </div>
+    <IndividualChat
+      class="individual-chat-1"
+      v-if="chatWith[0]"
+      :key="chatWith[0].objectID"
+      :chatWith="chatWith[0]"
+      :chat-position="1"
+    />
+    <IndividualChat
+      :class="{
+        'individual-chat-2': true,
+        'chat-1-minimised': chatComponentMinimised,
+      }"
+      v-if="chatWith[1]"
+      :key="chatWith[1].objectID"
+      :chatWith="chatWith[1]"
+      :chat-position="2"
+    />
   </div>
 </template>
 
@@ -173,6 +178,7 @@ export default {
       index,
       queryString: "",
       searchResults: [],
+      chatComponentMinimised: false,
     };
   },
   mounted() {
@@ -346,10 +352,7 @@ export default {
 
 <style lang="scss">
 .chat-window {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  flex-direction: row-reverse;
+  position: relative;
 
   &__top {
     padding: 5px 10px;
@@ -550,16 +553,19 @@ export default {
   }
 }
 
-.components {
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: flex-end;
+.individual-chat-1 {
+  position: absolute;
+  bottom: 0;
+  right: 310px;
 }
 
-.ais-index {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.individual-chat-2 {
+  position: absolute;
+  bottom: 0;
+  right: 702px;
+}
+
+.chat-1-minimised {
+  right: 600px;
 }
 </style>

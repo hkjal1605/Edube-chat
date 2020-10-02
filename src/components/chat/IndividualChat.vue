@@ -56,6 +56,7 @@ export default {
   name: "IndividualChat",
   props: {
     chatWith: Object,
+    chatPosition: Number,
   },
   mixins: [chatMixin],
   components: { MessageInput, ChatRoom },
@@ -72,6 +73,8 @@ export default {
     };
   },
   mounted() {
+    this.$parent.chatComponentMinimised = false;
+
     let _this = this;
 
     this.firebase
@@ -259,6 +262,12 @@ export default {
     minimiseChatRoom() {
       this.minimised = !this.minimised;
 
+      console.log(this.chatPosition);
+      if (this.chatPosition === 1) {
+        let tempVar = this.$parent.chatComponentMinimised;
+        this.$parent.chatComponentMinimised = !tempVar;
+      }
+
       let _this = this;
 
       if (this.minimised) {
@@ -329,8 +338,6 @@ export default {
   width: 380px;
   text-align: center;
   margin-left: 15px;
-
-  position: relative;
 
   transition: all 0.3s;
 

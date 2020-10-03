@@ -10,11 +10,8 @@
       class="chat-window__container--top"
       @click="minimiseChatRoom()"
     >
-      <div class="online-display" v-if="userOnline === 'true'" />
-      <div
-        class="offline-display"
-        v-if="!userOnline || userOnline === 'false'"
-      />
+      <div class="online-display" v-if="userOnline" />
+      <div class="offline-display" v-if="!userOnline" />
       <h3 :key="chatWith.name" class="chat-window__container--heading">
         {{ chatWith.name }}
         <div class="chat-window__container--unseen" v-if="numUnseen">

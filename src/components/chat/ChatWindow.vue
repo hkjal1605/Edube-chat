@@ -1,7 +1,7 @@
 <template>
   <div class="chat-window">
     <div v-bind:class="{ 'chat-window__main': true, minimised: minimised }">
-      <div class="chat-window__top">
+      <div class="chat-window__top" @click="minimiseChatWindow()">
         <h4 class="chat-window__top--heading">
           Messages
           <div
@@ -9,17 +9,6 @@
             v-if="minimised && showUnseen"
           ></div>
         </h4>
-
-        <v-btn
-          class="chat-window__top--minimise-btn"
-          color="transparent"
-          fab
-          small
-          @click="minimiseChatWindow()"
-        >
-          <v-icon color="#dee2e1" v-if="!minimised">mdi-chevron-down</v-icon>
-          <v-icon color="#dee2e1" v-if="minimised">mdi-chevron-up</v-icon>
-        </v-btn>
       </div>
       <div class="chat-window__user-list">
         <div class="user-list">
@@ -105,18 +94,6 @@
                   class="chat-history__item--last-msg"
                 >
                   {{ user.name.split(" ")[0] }}: {{ user.msg }}
-                </div>
-                <div
-                  v-if="!user.msg && user.sender === myId"
-                  class="chat-history__item--last-msg"
-                >
-                  You: Image
-                </div>
-                <div
-                  v-if="!user.msg && user.sender !== myId"
-                  class="chat-history__item--last-msg"
-                >
-                  {{ user.name.split(" ")[0] }}: Image
                 </div>
               </div>
               <div class="chat-history__item--unseen-num" v-if="user.unseen">
@@ -240,12 +217,12 @@ export default {
               .database()
               .ref(`Edubase/users/${_this.myId}/online`)
               .onDisconnect()
-              .set("false");
+              .set(false);
 
             _this.firebase
               .database()
               .ref(`Edubase/users/${_this.myId}/online`)
-              .set("true");
+              .set(true);
           }
         });
 
@@ -361,6 +338,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
 
     &--heading {
       color: #eee;
@@ -377,12 +355,6 @@ export default {
       width: 12px;
       border-radius: 200px;
       background-color: #55efc4;
-    }
-
-    &--minimise-btn {
-      height: 28px !important;
-      width: 28px !important;
-      box-shadow: none !important;
     }
   }
 
@@ -403,7 +375,7 @@ export default {
 }
 
 .minimised {
-  height: 38px;
+  height: 36px;
   overflow: hidden;
 }
 
@@ -518,10 +490,6 @@ export default {
     background-color: #e1e4e5;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     margin-top: 11px;
-  }
-
-  &__heading {
-    color: teal;
   }
 
   &__user {

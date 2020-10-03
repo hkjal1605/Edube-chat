@@ -76,7 +76,6 @@ export default {
   },
   methods: {
     sendMessage(event) {
-      console.log("yes");
       if ((event.keyCode == 13 && !event.shiftKey) || event.type === "click") {
         event.preventDefault();
         if (this.imageData && this.newMessage) {
@@ -107,8 +106,7 @@ export default {
             name: this.chatWith.name,
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
-            msg: null,
-            img: true,
+            msg: "Image",
             sender: this.myId,
           };
 
@@ -136,6 +134,8 @@ export default {
             sender: this.myId,
           };
 
+          const messageToBeSaved = newMessage.split("\n")[0];
+
           updates[
             "Edubase/chatHistory/" + this.myId + "/" + this.chatWith.objectID
           ] = {
@@ -143,10 +143,11 @@ export default {
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg:
-              newMessage.length > 20
-                ? newMessage.substring(0, 20) + "..."
-                : newMessage,
-            img: null,
+              messageToBeSaved.length > 20
+                ? messageToBeSaved.substring(0, 20) + "..."
+                : messageToBeSaved === newMessage
+                ? messageToBeSaved
+                : messageToBeSaved + "...",
             sender: this.myId,
           };
 
@@ -187,11 +188,7 @@ export default {
             name: this.chatWith.name,
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
-            msg:
-              newMessage.length > 20
-                ? newMessage.substring(0, 20) + "..."
-                : newMessage,
-            img: true,
+            msg: "Image",
             sender: this.myId,
           };
         }

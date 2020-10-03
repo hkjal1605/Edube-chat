@@ -29,7 +29,10 @@
             class="user-list__results"
             v-show="queryString.length > 0 && userShown"
           >
-            <div class="search-loader" v-if="isSearching">
+            <div
+              class="search-loader"
+              v-if="isSearching && searchResults.length === 0"
+            >
               <div></div>
               <div></div>
               <div></div>
@@ -42,6 +45,7 @@
               @click="setChatWith(user)"
             >
               <v-img
+                v-if="user.dp"
                 max-width="40"
                 max-height="40"
                 :src="user.dp"
@@ -50,11 +54,21 @@
                 class="user-list__user--dp"
                 @error="onAlgoliaImgError(i)"
               />
+              <v-img
+                v-if="!user.dp"
+                max-width="40"
+                max-height="40"
+                :src="errDp"
+                :lazy-src="errDp"
+                :alt="user.name"
+                class="user-list__user--dp"
+                @error="onAlgoliaImgError(i)"
+              />
               <h3 class="user-list__user--name">{{ user.name }}</h3>
             </div>
             <h3
               class="user-list__user--no-result"
-              v-if="searchResults.length === 0"
+              v-if="searchResults.length === 0 && !isSearching"
             >
               No Users Found!
             </h3>

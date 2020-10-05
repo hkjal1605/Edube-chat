@@ -366,7 +366,7 @@ export default {
   &--heading {
     position: relative;
     font-size: 20px;
-    font-weight: 300;
+    font-weight: 500;
     color: #eee;
     display: flex;
     align-items: center;

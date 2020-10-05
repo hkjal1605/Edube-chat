@@ -53,11 +53,17 @@ Vue.filter("kb", (val) => {
   return Math.floor(val / 1024);
 });
 
+import algoliasearch from "algoliasearch";
+
+const algoliaClient = algoliasearch(CONFIG.algoliaAppId, CONFIG.algoliaApiKey);
+const algoliaIndex = algoliaClient.initIndex(CONFIG.algoliaIndex);
+
 Vue.mixin({
   data: function() {
     return {
       firebase: firebase,
       CONFIG: CONFIG,
+      algoliaIndex: algoliaIndex,
     };
   },
 

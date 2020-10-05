@@ -155,11 +155,6 @@ import IndividualChat from "./IndividualChat";
 import chatMixin from "../../mixins/chatMixin";
 import errDp from "../../assets/logo.png";
 
-import algoliasearch from "algoliasearch";
-
-const client = algoliasearch("OU413LC7SR", "11ed9b1e149370761f2ca223ef2b615a");
-const index = client.initIndex("test");
-
 export default {
   name: "ChatWindow",
   mixins: [chatMixin],
@@ -176,7 +171,7 @@ export default {
       minimised: true,
       userShown: false,
       errDp: errDp,
-      index,
+
       queryString: "",
       searchResults: [],
       isSearching: false,
@@ -208,7 +203,7 @@ export default {
     searchUsers() {
       if (this.queryString.length > 0) {
         this.isSearching = true;
-        this.index
+        this.algoliaIndex
           .search(this.queryString, {
             facetFilters: [`clg: ${this.myClgId}`],
           })

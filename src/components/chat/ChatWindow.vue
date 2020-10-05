@@ -181,7 +181,6 @@ export default {
   },
   mounted() {
     this.getChatHistory();
-    this.listenUserPresence();
     this.resetComponentArray();
     this.checkUserChanges();
   },
@@ -212,19 +211,6 @@ export default {
             this.isSearching = false;
           });
       }
-    },
-
-    listenUserPresence() {
-      this.chatWith.map((user) => {
-        this.firebase
-          .database()
-          .ref(`Edubase/users/${user.objectID}/online`)
-          .on("value", function (data) {
-            if (user.online !== data.val()) {
-              user.online = data.val();
-            }
-          });
-      });
     },
 
     getChatHistory() {
@@ -370,7 +356,7 @@ export default {
       color: #eee;
       font-size: 20px;
       margin: 0;
-      font-weight: 300;
+      font-weight: 500;
       display: flex;
       align-items: center;
     }
@@ -401,7 +387,7 @@ export default {
 }
 
 .minimised {
-  height: 36px;
+  height: 38px;
   overflow: hidden;
 }
 
@@ -513,9 +499,9 @@ export default {
     width: 101%;
     padding: 5px;
     border-radius: 5px;
-    background-color: #e1e4e5;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     margin-top: 11px;
+    background-color: #1976d2;
   }
 
   &__user {
@@ -528,7 +514,7 @@ export default {
     transition: all 0.6s;
 
     &:hover {
-      background-color: #d4d4d4;
+      background-color: #74b9ff;
       border-radius: 3px;
     }
 
@@ -543,11 +529,13 @@ export default {
     &--name {
       font-size: 20px;
       font-weight: 500;
+      color: #e1e4e5;
     }
 
     &--no-result {
       font-size: 15px;
       font-weight: 400;
+      color: #e1e4e5;
     }
   }
 }

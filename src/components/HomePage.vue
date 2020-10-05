@@ -122,7 +122,7 @@ export default {
 
 .toggle-button {
   position: absolute;
-  bottom: 0;
+  bottom: -4px;
   right: 20px;
 }
 </style>

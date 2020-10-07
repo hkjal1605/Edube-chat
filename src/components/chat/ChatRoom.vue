@@ -42,6 +42,17 @@
         <span v-if="chat.val.msg" class="container__message--msg">{{
           chat.val.msg
         }}</span>
+        <div v-if="chat.val.post" class="container__message--post">
+          <div class="container__message--post--content">
+            <h4 class="container__message--post--text1">POST</h4>
+            <h4 class="container__message--post--text2">Click here to view</h4>
+          </div>
+          <img
+            :src="chat.val.post.crsDp"
+            alt="Post Img"
+            class="container__message--post--img"
+          />
+        </div>
       </li>
       <span
         v-if="
@@ -151,12 +162,45 @@ export default {
     padding: 0;
     margin-bottom: 5px;
   }
-}
 
-.container__message--image {
-  width: 100%;
-  object-fit: cover;
-  cursor: pointer;
+  &--image {
+    width: 100%;
+    object-fit: cover;
+    cursor: pointer;
+  }
+
+  &--post {
+    width: 200px;
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &--content {
+      flex: 1;
+    }
+
+    &--text1 {
+      font-size: 15px;
+      color: #555;
+      margin: 0;
+    }
+
+    &--text2 {
+      font-size: 12px;
+      color: #333;
+      margin: 0;
+    }
+
+    &--img {
+      margin-left: 8px;
+      float: 0.4;
+      height: 36px;
+      width: 36px;
+      object-fit: cover;
+      border-radius: 2000px;
+    }
+  }
 }
 
 .msg-sent {
@@ -178,5 +222,6 @@ export default {
 
 .photo-message {
   width: 280px !important;
+  text-align: left !important;
 }
 </style>

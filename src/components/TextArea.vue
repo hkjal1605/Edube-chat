@@ -4,6 +4,7 @@
     v-model="val"
     @focus="resize"
     v-on:keydown.enter="enterPressed"
+    class="text-area-autosize"
   ></textarea>
 </template>
 <script>
@@ -123,3 +124,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.text-area-autosize {
+  padding-left: 15px;
+}
+</style>

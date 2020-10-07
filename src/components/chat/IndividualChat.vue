@@ -28,6 +28,14 @@
       >
         <v-icon color="#dee2e1">mdi-close</v-icon>
       </v-btn>
+      <v-btn
+        class="chat-window__container--info-btn"
+        fab
+        small
+        color="transparent"
+      >
+        <v-icon color="#dee2e1">mdi-information-outline</v-icon>
+      </v-btn>
     </div>
     <div v-if="!minimised">
       <ChatRoom
@@ -86,39 +94,27 @@ export default {
       .on("value", function (data) {
         _this.userOnline = data.val().online;
 
-        let historyRef = _this.firebase
-          .database()
-          .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`);
+        if (_this.chatWith.name !== data.val().name) {
+          _this.chatWith.name = data.val().name;
 
-        historyRef.once("value", function (data2) {
-          if (data2.val()) {
-            if (_this.chatWith.name !== data.val().name) {
-              _this.chatWith.name = data.val().name;
+          _this.firebase
+            .database()
+            .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`)
+            .update({
+              name: data.val().name,
+            });
+        }
 
-              _this.firebase
-                .database()
-                .ref(
-                  `Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`
-                )
-                .update({
-                  name: data.val().name,
-                });
-            }
+        if (_this.chatWith.dp !== data.val().dp) {
+          _this.chatWith.dp = data.val().dp;
 
-            if (_this.chatWith.dp !== data.val().dp) {
-              _this.chatWith.dp = data.val().dp;
-
-              _this.firebase
-                .database()
-                .ref(
-                  `Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`
-                )
-                .update({
-                  dp: data.val().dp ? data.val().dp : null,
-                });
-            }
-          }
-        });
+          _this.firebase
+            .database()
+            .ref(`Edubase/chatHistory/${_this.myId}/${_this.chatWith.objectID}`)
+            .update({
+              dp: data.val().dp ? data.val().dp : null,
+            });
+        }
       });
 
     let currentChatRoomId = this.chatRoomId;
@@ -400,12 +396,12 @@ export default {
     transform: translateY(-50%);
   }
 
-  &--minimise-btn {
+  &--info-btn {
     height: 28px !important;
     width: 28px !important;
     box-shadow: none !important;
     position: absolute;
-    right: 45px;
+    right: 38px;
     top: 50%;
     transform: translateY(-50%);
   }
@@ -413,7 +409,7 @@ export default {
 
 .minimisedChatRoom {
   height: 38px;
-  width: 280px;
+  width: 320px;
   align-self: flex-end;
 }
 

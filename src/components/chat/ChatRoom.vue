@@ -7,9 +7,16 @@
       scrollonremoved: true,
       notSmoothOnInit: true,
     }"
-    @v-chat-scroll-top-reached="loadPreviousMessages"
-    @scroll="handleScroll"
   >
+    <v-btn
+      v-if="showLoadLastSeen"
+      text
+      small
+      color="primary"
+      class="chat-room__load-button"
+      @click.prevent="loadPreviousMessages"
+      >LOAD PREVIOUS CHAT</v-btn
+    >
     <div style="height: 10px"></div>
     <ul class="container__message-list" id="messages">
       <li
@@ -82,9 +89,6 @@ export default {
       scrollEnabled: true,
     };
   },
-  created() {
-    console.log("yess");
-  },
   mounted() {
     this.checkMessageSeen();
   },
@@ -124,13 +128,9 @@ export default {
     },
 
     loadPreviousMessages(event) {
-      event.preventDefault();
-      this.$parent.loadPreviousMessages();
-    },
-
-    handleScroll(event) {
       console.log(event);
       event.preventDefault();
+      this.$parent.loadPreviousMessages();
     },
   },
 };

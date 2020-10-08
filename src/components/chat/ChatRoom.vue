@@ -44,7 +44,7 @@
           v-if="chat.val.photo"
           alt="sentImage"
         />
-        <span v-if="chat.val.msg" class="container__message--msg">{{
+        <span v-if="chat.val.msg" class="container__message--msg" v-linkified>{{
           chat.val.msg
         }}</span>
         <div v-if="chat.val.post" class="container__message--post">

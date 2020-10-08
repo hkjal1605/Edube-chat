@@ -161,6 +161,17 @@ export default {
       .limitToLast(this.chatLimit);
 
     msgRef.on("child_added", function (data) {
+      if (data.val().post) {
+        _this.firebase
+          .database()
+          .ref(`Edubase/courseList/${_this.myClgId}/${data.val().post.crsId}`)
+          .once("value", function (data2) {
+            if (data2.val()) {
+              data.val().crsDp = data2.val().dp;
+              data.val().crsNm = data2.val().name;
+            }
+          });
+      }
       _this.chats.push({
         key: data.key,
         val: data.val(),
@@ -226,7 +237,7 @@ export default {
         .ref("Edubase/chat/" + this.chatRoomId + "/chats")
         .orderByKey()
         .endAt(this.arrayOfKeys[0])
-        .limitToLast(5);
+        .limitToLast(10);
 
       this.arrayOfKeys = [];
 
@@ -237,6 +248,32 @@ export default {
       msgRef.once("value", function (data) {
         Object.keys(data.val()).map((key) => {
           _this.arrayOfKeys.push(key);
+
+          if (data.val()[key].post) {
+            _this.firebase
+              .database()
+              .ref(
+                `Edubase/courseList/${_this.myClgId}/${
+                  data.val()[key].post.crsId
+                }`
+              )
+              .once("value", function (data2) {
+                if (
+                  data2.val() &&
+                  (data.val()[key].crsDp !== data2.val().dp ||
+                    data.val()[key].crsNm !== data2.val().name)
+                ) {
+                  data.val()[key].crsDp = data2.val().dp;
+                  data.val()[key].crsNm = data2.val().name;
+
+                  _this.firebase
+                    .database()
+                    .ref(`Edubase/chat/${_this.chatRoomId}/chats/${key}/post`)
+                    .update({ crsDp: data2.val().dp, crsNm: data2.val().name });
+                }
+              });
+          }
+
           tempArray.unshift({
             key: key,
             val: data.val()[key],
@@ -341,8 +378,8 @@ export default {
   background-color: #eff3f2;
   overflow: hidden;
   border-radius: 15px 15px 2px 2px;
-  height: 450px;
-  width: 380px;
+  height: 480px;
+  width: 400px;
   text-align: center;
   margin-left: 15px;
 

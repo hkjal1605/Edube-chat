@@ -549,11 +549,11 @@ export default {
 .individual-chat-2 {
   position: absolute;
   bottom: 0;
-  right: 702px;
+  right: 718px;
 }
 
 .chat-1-minimised {
-  right: 600px;
+  right: 635px;
 }
 
 .search-loader {

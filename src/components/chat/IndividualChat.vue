@@ -161,20 +161,12 @@ export default {
       .limitToLast(this.chatLimit);
 
     msgRef.on("child_added", function (data) {
-      if (data.val().post) {
-        _this.firebase
-          .database()
-          .ref(`Edubase/courseList/${_this.myClgId}/${data.val().post.crsId}`)
-          .once("value", function (data2) {
-            if (data2.val()) {
-              data.val().crsDp = data2.val().dp;
-              data.val().crsNm = data2.val().name;
-            }
-          });
-      }
+      let chat = {};
+      chat = _this.checkPostUpdates(data.val(), data.key);
+
       _this.chats.push({
         key: data.key,
-        val: data.val(),
+        val: chat,
       });
 
       _this.arrayOfKeys.push(data.key);
@@ -231,6 +223,32 @@ export default {
       .off();
   },
   methods: {
+    checkPostUpdates(data, key) {
+      if (data.post) {
+        let _this = this;
+        _this.firebase
+          .database()
+          .ref(`Edubase/courseList/${_this.myClgId}/${data.post.crsId}`)
+          .once("value", function (data2) {
+            if (
+              data2.val() &&
+              (data.post.crsDp !== data2.val().dp ||
+                data.post.crsNm !== data2.val().name)
+            ) {
+              data.post.crsDp = data2.val().dp;
+              data.post.crsNm = data2.val().name;
+
+              _this.firebase
+                .database()
+                .ref(`Edubase/chat/${_this.chatRoomId}/chats/${key}/post`)
+                .update({ crsDp: data2.val().dp, crsNm: data2.val().name });
+            }
+          });
+      }
+
+      return data;
+    },
+
     loadPreviousMessages() {
       let msgRef = this.firebase
         .database()
@@ -249,34 +267,13 @@ export default {
         Object.keys(data.val()).map((key) => {
           _this.arrayOfKeys.push(key);
 
-          if (data.val()[key].post) {
-            _this.firebase
-              .database()
-              .ref(
-                `Edubase/courseList/${_this.myClgId}/${
-                  data.val()[key].post.crsId
-                }`
-              )
-              .once("value", function (data2) {
-                if (
-                  data2.val() &&
-                  (data.val()[key].crsDp !== data2.val().dp ||
-                    data.val()[key].crsNm !== data2.val().name)
-                ) {
-                  data.val()[key].crsDp = data2.val().dp;
-                  data.val()[key].crsNm = data2.val().name;
+          let chat = {};
 
-                  _this.firebase
-                    .database()
-                    .ref(`Edubase/chat/${_this.chatRoomId}/chats/${key}/post`)
-                    .update({ crsDp: data2.val().dp, crsNm: data2.val().name });
-                }
-              });
-          }
+          chat = _this.checkPostUpdates(data.val()[key], key);
 
           tempArray.unshift({
             key: key,
-            val: data.val()[key],
+            val: chat,
           });
         });
 

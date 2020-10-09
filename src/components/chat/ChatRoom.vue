@@ -50,7 +50,9 @@
         <div v-if="chat.val.post" class="container__message--post">
           <div class="container__message--post--content">
             <h4 class="container__message--post--text1">POST</h4>
-            <h4 class="container__message--post--text2">Click here to view</h4>
+            <h4 class="container__message--post--text2">
+              {{ chat.val.post.crsNm }}
+            </h4>
           </div>
           <img
             :src="chat.val.post.crsDp"
@@ -127,9 +129,7 @@ export default {
       }
     },
 
-    loadPreviousMessages(event) {
-      console.log(event);
-      event.preventDefault();
+    loadPreviousMessages() {
       this.$parent.loadPreviousMessages();
     },
   },
@@ -183,6 +183,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #f5f5f5 !important;
 
     &--content {
       flex: 1;

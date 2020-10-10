@@ -511,7 +511,7 @@ export default {
     transition: all 0.6s;
 
     &:hover {
-      background-color: #74b9ff;
+      background-color: #c6cbcd;
       border-radius: 3px;
     }
 
@@ -528,6 +528,7 @@ export default {
       font-size: 20px;
       font-weight: 500;
       color: #444;
+      margin: 0;
     }
 
     &--no-result {

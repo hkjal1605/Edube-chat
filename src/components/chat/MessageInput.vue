@@ -167,9 +167,11 @@ export default {
               this.myId +
               "/msg"
           ] =
-            newMessage.length > this.msgLengthLimit
-              ? newMessage.substring(0, this.msgLengthLimit) + "..."
-              : newMessage;
+            messageToBeSaved.length > this.msgLengthLimit
+              ? messageToBeSaved.substring(0, this.msgLengthLimit) + "..."
+              : messageToBeSaved === newMessage
+              ? messageToBeSaved
+              : messageToBeSaved + "...";
         }
 
         if (imgPost && newMessage) {

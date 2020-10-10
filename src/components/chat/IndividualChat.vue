@@ -255,7 +255,7 @@ export default {
         .ref("Edubase/chat/" + this.chatRoomId + "/chats")
         .orderByKey()
         .endAt(this.arrayOfKeys[0])
-        .limitToLast(10);
+        .limitToLast(this.chatLimit);
 
       this.arrayOfKeys = [];
 

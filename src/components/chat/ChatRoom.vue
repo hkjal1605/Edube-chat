@@ -23,6 +23,7 @@
         v-bind:class="{
           container__message: true,
           'photo-message': chat.val.photo,
+          'post-message': chat.val.post,
           'msg-sent': chat.val.sender === myId,
           'msg-recieved': chat.val.sender !== myId,
           'last-sent':
@@ -54,10 +55,12 @@
               {{ chat.val.post.crsNm }}
             </h4>
           </div>
-          <img
+          <v-img
+            max-width="40"
             :src="chat.val.post.crsDp"
             alt="Post Img"
             class="container__message--post--img"
+            @error="onPostImgError(i)"
           />
         </div>
       </li>
@@ -76,6 +79,7 @@
 <script>
 import chatMixin from "../../mixins/chatMixin";
 import FullScreenImg from "./FullScreenImg";
+import errDp from "../../assets/logo.png";
 export default {
   name: "ChatRoom",
   mixins: [chatMixin],
@@ -89,6 +93,7 @@ export default {
     return {
       lastSeen: null,
       scrollEnabled: true,
+      errDp,
     };
   },
   mounted() {
@@ -131,6 +136,10 @@ export default {
 
     loadPreviousMessages() {
       this.$parent.loadPreviousMessages();
+    },
+
+    onPostImgError(i) {
+      this.chats[i].post.crsDp = this.errDp;
     },
   },
 };
@@ -187,6 +196,7 @@ export default {
 
     &--content {
       flex: 1;
+      text-align: left;
     }
 
     &--text1 {
@@ -204,10 +214,10 @@ export default {
     &--img {
       margin-left: 8px;
       float: 0.4;
-      height: 36px;
-      width: 36px;
+      height: 40px;
+      width: 40px;
       object-fit: cover;
-      border-radius: 2000px;
+      border-radius: 50%;
     }
   }
 }
@@ -232,5 +242,9 @@ export default {
 .photo-message {
   width: 280px !important;
   text-align: left !important;
+}
+
+.post-message {
+  padding: 0;
 }
 </style>

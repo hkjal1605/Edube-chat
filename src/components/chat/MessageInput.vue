@@ -72,6 +72,7 @@ export default {
       uploadStart: false,
       uploadValue: null,
       imgObj: {},
+      msgLengthLimit: 20,
     };
   },
   methods: {
@@ -143,8 +144,8 @@ export default {
             dp: this.chatWith.dp ? this.chatWith.dp : null,
             end: this.firebase.database.ServerValue.TIMESTAMP,
             msg:
-              messageToBeSaved.length > 20
-                ? messageToBeSaved.substring(0, 20) + "..."
+              messageToBeSaved.length > this.msgLengthLimit
+                ? messageToBeSaved.substring(0, this.msgLengthLimit) + "..."
                 : messageToBeSaved === newMessage
                 ? messageToBeSaved
                 : messageToBeSaved + "...",
@@ -166,8 +167,8 @@ export default {
               this.myId +
               "/msg"
           ] =
-            newMessage.length > 45
-              ? newMessage.substring(0, 45) + "..."
+            newMessage.length > this.msgLengthLimit
+              ? newMessage.substring(0, this.msgLengthLimit) + "..."
               : newMessage;
         }
 

@@ -33,10 +33,7 @@
               class="search-loader"
               v-if="isSearching && searchResults.length === 0"
             >
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
+              Searching...
             </div>
             <div
               class="user-list__user"
@@ -501,7 +498,7 @@ export default {
     border-radius: 5px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
     margin-top: 11px;
-    background-color: #1976d2;
+    background-color: #e1e4e5;
   }
 
   &__user {
@@ -527,15 +524,16 @@ export default {
     }
 
     &--name {
+      text-align: left;
       font-size: 20px;
       font-weight: 500;
-      color: #e1e4e5;
+      color: #444;
     }
 
     &--no-result {
       font-size: 15px;
       font-weight: 400;
-      color: #e1e4e5;
+      color: #444;
     }
   }
 }
@@ -561,54 +559,6 @@ export default {
   position: relative;
   width: 80px;
   height: 80px;
-}
-.search-loader div {
-  position: absolute;
-  top: 33px;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #fff;
-  animation-timing-function: cubic-bezier(0, 1, 1, 0);
-}
-.search-loader div:nth-child(1) {
-  left: 8px;
-  animation: search-loader1 0.6s infinite;
-}
-.search-loader div:nth-child(2) {
-  left: 8px;
-  animation: search-loader2 0.6s infinite;
-}
-.search-loader div:nth-child(3) {
-  left: 32px;
-  animation: search-loader2 0.6s infinite;
-}
-.search-loader div:nth-child(4) {
-  left: 56px;
-  animation: search-loader3 0.6s infinite;
-}
-@keyframes search-loader1 {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-@keyframes search-loader3 {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0);
-  }
-}
-@keyframes search-loader2 {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(24px, 0);
-  }
+  color: #333;
 }
 </style>

@@ -192,7 +192,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f5f5f5 !important;
 
     &--content {
       flex: 1;
@@ -242,9 +241,5 @@ export default {
 .photo-message {
   width: 280px !important;
   text-align: left !important;
-}
-
-.post-message {
-  padding: 0;
 }
 </style>

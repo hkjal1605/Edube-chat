@@ -453,9 +453,9 @@ export default {
       margin-left: auto;
       height: 20px;
       width: 20px;
-      background-color: #b53471;
+      background-color: #cd201f;
       border-radius: 200px;
-      color: #eee;
+      color: #fff;
     }
   }
 }

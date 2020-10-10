@@ -406,10 +406,10 @@ export default {
   &--unseen {
     position: absolute;
     top: 50%;
-    right: -20px;
+    right: -22px;
     transform: translateY(-50%);
-    background-color: #f1c40f;
-    color: #c0392b;
+    background-color: #f4ad00;
+    color: black;
     height: 18px;
     width: 18px;
     border-radius: 2000px;
@@ -459,14 +459,14 @@ export default {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background-color: #55efc4;
+  background-color: #09cb20;
 }
 
 .offline-display {
   margin-right: 8px;
   height: 12px;
   width: 12px;
-  background-color: #ff7675;
+  background-color: #ed4837;
   border-radius: 50%;
 }
 </style>

@@ -34,9 +34,11 @@
             chat.val.sender !== myId &&
             chats[i + 1] &&
             chats[i + 1].val.sender === myId,
+          'time-shown': showTime && showTimeNum === i,
         }"
         v-for="(chat, i) in chats"
         :key="i"
+        @click="toggleShowTime(i)"
       >
         <FullScreenImg
           :key="chat.key"
@@ -51,9 +53,7 @@
         <div v-if="chat.val.post" class="container__message--post">
           <div class="container__message--post--content">
             <h4 class="container__message--post--text1">POST</h4>
-            <h4 class="container__message--post--text2">
-              {{ chat.val.post.crsNm }}
-            </h4>
+            <h4 class="container__message--post--text2">Click Here To View</h4>
           </div>
           <v-img
             max-width="40"
@@ -62,6 +62,19 @@
             class="container__message--post--img"
             @error="onPostImgError(i)"
           />
+        </div>
+        <div
+          v-if="showTime && showTimeNum === i"
+          v-bind:class="{
+            'container__message--time': true,
+            'msg-time': chat.val.msg,
+            'photo-time': chat.val.photo,
+            'post-time': chat.val.post,
+            'time-sent': chat.val.sender === myId,
+            'time-recieved': chat.val.sender !== myId,
+          }"
+        >
+          {{ chats[i].val.tm }}
         </div>
       </li>
       <span
@@ -94,6 +107,8 @@ export default {
       lastSeen: null,
       scrollEnabled: true,
       errDp,
+      showTime: false,
+      showTimeNum: undefined,
     };
   },
   mounted() {
@@ -136,10 +151,20 @@ export default {
 
     loadPreviousMessages() {
       this.$parent.loadPreviousMessages();
+      this.toggleShowTime();
     },
 
     onPostImgError(i) {
       this.chats[i].post.crsDp = this.errDp;
+    },
+
+    toggleShowTime(i) {
+      if (this.showTime === true && i !== this.showTimeNum) {
+        this.showTimeNum = i;
+      } else {
+        this.showTimeNum = i;
+        this.showTime = !this.showTime;
+      }
     },
   },
 };
@@ -147,7 +172,7 @@ export default {
 
 <style lang="scss">
 .chat-room {
-  height: 340px;
+  height: 360px;
   overflow-y: auto;
   background-color: #eff3f2;
 
@@ -158,8 +183,9 @@ export default {
 }
 
 .container__message-list {
-  padding-left: 0;
+  margin-bottom: 0;
   padding: 0 10px;
+  padding-left: 10px !important;
   list-style: none;
   text-align: right;
 
@@ -174,6 +200,7 @@ export default {
   border-radius: 8px;
   max-width: 280px;
   word-wrap: break-word;
+  position: relative;
 
   &--photo-msg {
     padding: 0;
@@ -196,6 +223,7 @@ export default {
     &--content {
       flex: 1;
       text-align: left;
+      cursor: pointer;
     }
 
     &--text1 {
@@ -219,6 +247,11 @@ export default {
       border-radius: 50%;
     }
   }
+
+  &--time {
+    position: absolute;
+    font-size: 12px;
+  }
 }
 
 .msg-sent {
@@ -241,5 +274,29 @@ export default {
 .photo-message {
   width: 280px !important;
   text-align: left !important;
+}
+
+.time-shown {
+  margin-bottom: 20px !important;
+}
+
+.msg-time {
+  top: 30px;
+}
+
+.post-time {
+  top: 66px;
+}
+
+.photo-time {
+  top: 208px;
+}
+
+.time-sent {
+  right: 5px;
+}
+
+.time-recieved {
+  left: 5px;
 }
 </style>

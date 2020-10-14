@@ -251,6 +251,7 @@ export default {
   &--time {
     position: absolute;
     font-size: 12px;
+    animation: fadeIn ease 0.6s;
   }
 }
 
@@ -278,6 +279,7 @@ export default {
 
 .time-shown {
   margin-bottom: 20px !important;
+  transition: all 0.4s;
 }
 
 .msg-time {
@@ -298,5 +300,14 @@ export default {
 
 .time-recieved {
   left: 5px;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 </style>

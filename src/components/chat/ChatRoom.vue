@@ -98,6 +98,7 @@ export default {
   mixins: [chatMixin],
   components: { FullScreenImg },
   props: {
+    toName: String,
     chats: Array,
     chatRoomId: String,
     showLoadLastSeen: Boolean,

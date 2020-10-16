@@ -40,6 +40,7 @@
     <div v-if="!minimised">
       <ChatRoom
         v-if="chats.length > 0"
+        :toName="chatWith.name"
         :chats="chats"
         :chatRoomId="chatRoomId"
         :showLoadLastSeen="showLoadLastSeen"

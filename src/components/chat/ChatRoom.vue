@@ -74,7 +74,7 @@
             'time-recieved': chat.val.sender !== myId,
           }"
         >
-          {{ chats[i].val.tm }}
+          &#x25CF; {{ getTimeStr(chats[i].val.tm) }}
         </div>
       </li>
       <span
@@ -98,6 +98,7 @@ export default {
   mixins: [chatMixin],
   components: { FullScreenImg },
   props: {
+    toName: String,
     chats: Array,
     chatRoomId: String,
     showLoadLastSeen: Boolean,
@@ -126,6 +127,57 @@ export default {
       .off();
   },
   methods: {
+    getTimeStr(timestamp) {
+      const timeDifSec = (Date.now() - timestamp) / 1000;
+      var date = new Date(timestamp);
+
+      let timeStr = "";
+
+      if (timeDifSec < 0) {
+        timeStr = "0s";
+      } else if (timeDifSec < 24 * 60 * 60) {
+        const dateTimeFormat = new Intl.DateTimeFormat("en", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        });
+        const [
+          { value: hour },
+          ,
+          { value: minute },
+          ,
+          { value: dayPeriod },
+        ] = dateTimeFormat.formatToParts(date);
+
+        timeStr = `${hour}:${minute} ${dayPeriod}`;
+      } else {
+        const dateTimeFormat = new Intl.DateTimeFormat("en", {
+          year: "2-digit",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        });
+        const [
+          { value: month },
+          ,
+          { value: day },
+          ,
+          { value: year },
+          ,
+          { value: hour },
+          ,
+          { value: minute },
+          ,
+          { value: dayPeriod },
+        ] = dateTimeFormat.formatToParts(date);
+
+        timeStr = `${day} ${month} ${year}, ${hour}:${minute} ${dayPeriod}`;
+      }
+      console.log("tmmm=" + timeStr);
+      return timeStr;
+    },
     checkMessageSeen() {
       let _this = this;
       if (_this.checkUserId(_this.myId, _this.chatRoomId)) {

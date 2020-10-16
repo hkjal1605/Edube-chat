@@ -376,8 +376,8 @@ export default {
   background-color: #eff3f2;
   overflow: hidden;
   border-radius: 15px 15px 2px 2px;
-  height: 480px;
-  width: 400px;
+  height: 500px;
+  width: 420px;
   text-align: center;
   margin-left: 15px;
 
@@ -444,7 +444,7 @@ export default {
 
 .minimisedChatRoom {
   height: 38px;
-  width: 320px;
+  width: 350px;
   align-self: flex-end;
 }
 

@@ -266,8 +266,10 @@ export default {
   }
 
   &--post {
+    background-color: #f5f5f5;
     width: 200px;
     padding: 8px;
+    border: 2px solid #d7d7d7;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -303,6 +305,7 @@ export default {
   &--time {
     position: absolute;
     font-size: 12px;
+    width: 130px;
     animation: fadeIn ease 0.6s;
   }
 }
@@ -327,6 +330,10 @@ export default {
 .photo-message {
   width: 280px !important;
   text-align: left !important;
+}
+
+.post-message {
+  padding: 0;
 }
 
 .time-shown {

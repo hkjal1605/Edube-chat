@@ -179,7 +179,6 @@ export default {
   mounted() {
     this.getChatHistory();
     this.resetComponentArray();
-    this.checkUserChanges();
   },
   beforeDestroy() {
     this.firebase
@@ -210,7 +209,7 @@ export default {
       }
     },
 
-    async getChatHistory() {
+    getChatHistory() {
       let userRef = this.firebase
         .database()
         .ref("Edubase/chatHistory/" + this.myId);
@@ -235,7 +234,9 @@ export default {
           }
         });
 
-      await userRef.on("value", function (data) {
+      let tempVar = 1;
+
+      userRef.on("value", function (data) {
         if (data.val()) {
           _this.users = [];
 
@@ -263,6 +264,11 @@ export default {
             }
             _this.users.push(userObj);
           });
+
+          if (tempVar === 1) {
+            _this.checkUserChanges();
+          }
+          tempVar += 1;
 
           _this.users.sort((a, b) => (a.end > b.end ? -1 : 1));
         }
@@ -292,6 +298,7 @@ export default {
 
     minimiseChatWindow() {
       this.minimised = !this.minimised;
+      this.checkUserChanges();
     },
 
     onFocus() {
@@ -548,11 +555,11 @@ export default {
 .individual-chat-2 {
   position: absolute;
   bottom: 0;
-  right: 718px;
+  right: 738px;
 }
 
 .chat-1-minimised {
-  right: 635px;
+  right: 665px;
 }
 
 .search-loader {

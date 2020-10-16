@@ -210,7 +210,7 @@ export default {
       }
     },
 
-    getChatHistory() {
+    async getChatHistory() {
       let userRef = this.firebase
         .database()
         .ref("Edubase/chatHistory/" + this.myId);
@@ -235,7 +235,7 @@ export default {
           }
         });
 
-      userRef.on("value", function (data) {
+      await userRef.on("value", function (data) {
         if (data.val()) {
           _this.users = [];
 

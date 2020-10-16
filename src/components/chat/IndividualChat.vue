@@ -232,12 +232,14 @@ export default {
           .ref(`Edubase/courseList/${_this.myClgId}/${data.post.crsId}`)
           .once("value", function (data2) {
             if (
-              data2.val() &&
-              (data.post.crsDp !== data2.val().dp ||
-                data.post.crsNm !== data2.val().name)
+              (data2.val() &&
+                (data.post.crsDp !== data2.val().dp ||
+                  data.post.crsNm !== data2.val().name)) ||
+              data.post.crsCode !== data2.val().code
             ) {
               data.post.crsDp = data2.val().dp;
               data.post.crsNm = data2.val().name;
+              data.post.crsCode = data2.val().code;
 
               _this.firebase
                 .database()

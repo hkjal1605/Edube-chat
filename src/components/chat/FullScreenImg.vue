@@ -11,7 +11,7 @@
       max-width="400"
       max-height="200"
       @error="onImgError(0)"
-      @click.prevent="showImgViewer(0)"
+      @click.stop="showImgViewer(0)"
     />
 
     <viewer

@@ -52,7 +52,9 @@
         }}</span>
         <div v-if="chat.val.post" class="container__message--post">
           <div class="container__message--post--content">
-            <h4 class="container__message--post--text1">POST</h4>
+            <h4 class="container__message--post--text1">
+              POST - {{ chat.val.post.crsCode }}-{{ chat.val.post.crsNm }}
+            </h4>
             <h4 class="container__message--post--text2">Click Here To View</h4>
           </div>
           <v-img

@@ -20,8 +20,7 @@
       <li
         v-bind:class="{
           container__message: true,
-          'photo-message': chat.val.photo,
-          'post-message': chat.val.post,
+
           'msg-sent': chat.val.sender === myId,
           'msg-recieved': chat.val.sender !== myId,
           'last-sent':
@@ -38,47 +37,61 @@
         :key="i"
         @click="toggleShowTime(i)"
       >
-        <FullScreenImg
-          :key="chat.key"
-          :imgUrl="chat.val.photo"
-          class="container__message--image"
-          v-if="chat.val.photo"
-          alt="sentImage"
-        />
-        <span v-if="chat.val.msg" class="container__message--msg" v-linkified>{{
-          chat.val.msg
-        }}</span>
-        <div v-if="chat.val.post" class="container__message--post">
-          <div class="container__message--post--content">
-            <h4 class="container__message--post--text1">
-              POST - {{ chat.val.post.crsCode }}-{{ chat.val.post.crsNm }}
-            </h4>
-            <h4 class="container__message--post--text2">Click Here To View</h4>
+        <div
+          v-bind:class="{
+            'container__message--cover-container': true,
+            'msg-sent__cover': chat.val.sender === myId,
+            'msg-recieved__cover': chat.val.sender !== myId,
+            'post-message': chat.val.post,
+            'photo-message': chat.val.photo,
+          }"
+        >
+          <FullScreenImg
+            :key="chat.key"
+            :imgUrl="chat.val.photo"
+            class="container__message--image"
+            v-if="chat.val.photo"
+            alt="sentImage"
+          />
+          <span
+            v-if="chat.val.msg"
+            class="container__message--msg"
+            v-linkified
+            >{{ chat.val.msg }}</span
+          >
+          <div v-if="chat.val.post" class="container__message--post">
+            <div class="container__message--post--content">
+              <h4 class="container__message--post--text1">
+                POST - {{ chat.val.post.crsCode }}-{{ chat.val.post.crsNm }}
+              </h4>
+              <h4 class="container__message--post--text2">
+                Click Here To View
+              </h4>
+            </div>
+            <v-img
+              v-if="chat.val.post.crsDp"
+              max-width="40"
+              :src="chat.val.post.crsDp"
+              :lazy-src="chat.val.post.crsDp"
+              alt="Post Img"
+              class="container__message--post--img"
+              @error="onPostImgError(i)"
+            />
+            <v-img
+              v-if="!chat.val.post.crsDp"
+              max-width="40"
+              :src="errDp"
+              :lazy-src="errDp"
+              alt="Post Img"
+              class="container__message--post--img"
+            />
           </div>
-          <v-img
-            v-if="chat.val.post.crsDp"
-            max-width="40"
-            :src="chat.val.post.crsDp"
-            :lazy-src="chat.val.post.crsDp"
-            alt="Post Img"
-            class="container__message--post--img"
-            @error="onPostImgError(i)"
-          />
-          <v-img
-            v-if="!chat.val.post.crsDp"
-            max-width="40"
-            :src="errDp"
-            :lazy-src="errDp"
-            alt="Post Img"
-            class="container__message--post--img"
-          />
         </div>
-        <v-scale-transition>
+        <v-expand-transition>
           <div
             v-if="showTime && showTimeNum === i"
             v-bind:class="{
-              'container__message--time-hidden': !showTime,
-              'container__message--time-shown': showTime && showTimeNum === i,
+              'container__message--time': true,
               'msg-time': chat.val.msg,
               'photo-time': chat.val.photo,
               'post-time': chat.val.post,
@@ -88,7 +101,7 @@
           >
             &#x25CF; {{ getTimeStr(chats[i].val.tm) }}
           </div>
-        </v-scale-transition>
+        </v-expand-transition>
       </li>
       <span
         v-if="
@@ -260,14 +273,16 @@ export default {
 }
 
 .container__message {
-  padding: 5px;
   margin-bottom: 3px;
-  border-radius: 8px;
   max-width: 280px;
-  word-wrap: break-word;
-  position: relative;
-
   transition: all 0.4s;
+
+  &--cover-container {
+    width: 100%;
+    padding: 5px;
+    border-radius: 8px;
+    word-wrap: break-word;
+  }
 
   &--photo-msg {
     padding: 0;
@@ -318,14 +333,7 @@ export default {
     }
   }
 
-  &--time-hidden {
-    position: absolute;
-    font-size: 12px;
-    width: 130px;
-  }
-
-  &--time-shown {
-    position: absolute;
+  &--time {
     font-size: 12px;
     width: 130px;
   }
@@ -334,13 +342,21 @@ export default {
 .msg-sent {
   align-self: flex-end;
   text-align: right;
-  background-color: #e1e4e5;
+  align-items: flex-end;
+
+  &__cover {
+    background-color: #e1e4e5;
+  }
 }
 
 .msg-recieved {
   align-self: flex-start;
   text-align: left;
-  background-color: #c8e9f7;
+  align-items: flex-start;
+
+  &__cover {
+    background-color: #c8e9f7;
+  }
 }
 
 .last-sent,
@@ -356,12 +372,7 @@ export default {
 .post-message {
   padding: 2px;
 }
-
-.time-shown {
-  margin-bottom: 20px !important;
-  transition: all 0.4s;
-}
-
+/* 
 .msg-time {
   top: 30px;
 }
@@ -372,13 +383,13 @@ export default {
 
 .photo-time {
   top: 208px;
-}
-
+} */
+/* 
 .time-sent {
   right: 5px;
 }
 
 .time-recieved {
   left: 5px;
-}
+} */
 </style>

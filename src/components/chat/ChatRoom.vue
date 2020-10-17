@@ -276,9 +276,11 @@ export default {
   margin-bottom: 3px;
   max-width: 280px;
   transition: all 0.4s;
+  display: flex;
+  flex-direction: column;
 
   &--cover-container {
-    width: 100%;
+    width: fit-content;
     padding: 5px;
     border-radius: 8px;
     word-wrap: break-word;

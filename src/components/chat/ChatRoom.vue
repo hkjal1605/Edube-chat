@@ -73,7 +73,7 @@
             class="container__message--post--img"
           />
         </div>
-        <v-expand-transition>
+        <v-scale-transition>
           <div
             v-if="showTime && showTimeNum === i"
             v-bind:class="{
@@ -88,7 +88,7 @@
           >
             &#x25CF; {{ getTimeStr(chats[i].val.tm) }}
           </div>
-        </v-expand-transition>
+        </v-scale-transition>
       </li>
       <span
         v-if="
@@ -367,7 +367,7 @@ export default {
 }
 
 .post-time {
-  top: 72px;
+  bottom: -18px;
 }
 
 .photo-time {

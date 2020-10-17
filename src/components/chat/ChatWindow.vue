@@ -318,13 +318,17 @@ export default {
             .database()
             .ref(`Edubase/users/${userObj.objectID}`)
             .once("value", function (data) {
-              if (userObj.name !== data.val().name) {
+              if (
+                userObj.name !== data.val().name ||
+                userObj.dp !== data.val().dp
+              ) {
                 userObj.name = data.val().name;
+                userObj.dp = data.val().dp;
 
                 _this.firebase
                   .database()
                   .ref(`Edubase/chatHistory/${_this.myId}/${userObj.objectID}`)
-                  .update({ name: data.val().name });
+                  .update({ name: data.val().name, dp: data.val().dp });
               }
             });
         });

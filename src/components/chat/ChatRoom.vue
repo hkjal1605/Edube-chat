@@ -68,7 +68,8 @@
         <div
           v-if="showTime && showTimeNum === i"
           v-bind:class="{
-            'container__message--time': true,
+            'container__message--time-hidden': !showTime,
+            'container__message--time-shown': showTime && showTimeNum === i,
             'msg-time': chat.val.msg,
             'photo-time': chat.val.photo,
             'post-time': chat.val.post,
@@ -256,6 +257,8 @@ export default {
   word-wrap: break-word;
   position: relative;
 
+  transition: all 0.4s;
+
   &--photo-msg {
     padding: 0;
     margin-bottom: 5px;
@@ -272,6 +275,7 @@ export default {
     width: 200px;
     padding: 8px;
     border: 2px solid #d7d7d7;
+    border-radius: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -304,7 +308,13 @@ export default {
     }
   }
 
-  &--time {
+  &--time-hidden {
+    position: absolute;
+    font-size: 12px;
+    width: 130px;
+  }
+
+  &--time-shown {
     position: absolute;
     font-size: 12px;
     width: 130px;
@@ -332,10 +342,6 @@ export default {
 .photo-message {
   width: 280px !important;
   text-align: left !important;
-}
-
-.post-message {
-  padding: 0;
 }
 
 .time-shown {

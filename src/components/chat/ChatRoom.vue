@@ -3,9 +3,7 @@
     class="chat-room"
     v-chat-scroll="{
       always: false,
-      smooth: true,
-      scrollonremoved: true,
-      notSmoothOnInit: true,
+      smooth: false,
     }"
   >
     <v-btn
@@ -60,6 +58,7 @@
           <v-img
             max-width="40"
             :src="chat.val.post.crsDp"
+            :lazy-src="chat.val.post.crsDp"
             alt="Post Img"
             class="container__message--post--img"
             @error="onPostImgError(i)"

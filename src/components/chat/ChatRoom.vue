@@ -56,6 +56,7 @@
             <h4 class="container__message--post--text2">Click Here To View</h4>
           </div>
           <v-img
+            v-if="chat.val.post.crsDp"
             max-width="40"
             :src="chat.val.post.crsDp"
             :lazy-src="chat.val.post.crsDp"
@@ -63,21 +64,31 @@
             class="container__message--post--img"
             @error="onPostImgError(i)"
           />
+          <v-img
+            v-if="!chat.val.post.crsDp"
+            max-width="40"
+            :src="errDp"
+            :lazy-src="errDp"
+            alt="Post Img"
+            class="container__message--post--img"
+          />
         </div>
-        <div
-          v-if="showTime && showTimeNum === i"
-          v-bind:class="{
-            'container__message--time-hidden': !showTime,
-            'container__message--time-shown': showTime && showTimeNum === i,
-            'msg-time': chat.val.msg,
-            'photo-time': chat.val.photo,
-            'post-time': chat.val.post,
-            'time-sent': chat.val.sender === myId,
-            'time-recieved': chat.val.sender !== myId,
-          }"
-        >
-          &#x25CF; {{ getTimeStr(chats[i].val.tm) }}
-        </div>
+        <v-expand-transition>
+          <div
+            v-if="showTime && showTimeNum === i"
+            v-bind:class="{
+              'container__message--time-hidden': !showTime,
+              'container__message--time-shown': showTime && showTimeNum === i,
+              'msg-time': chat.val.msg,
+              'photo-time': chat.val.photo,
+              'post-time': chat.val.post,
+              'time-sent': chat.val.sender === myId,
+              'time-recieved': chat.val.sender !== myId,
+            }"
+          >
+            &#x25CF; {{ getTimeStr(chats[i].val.tm) }}
+          </div>
+        </v-expand-transition>
       </li>
       <span
         v-if="
@@ -226,7 +237,7 @@ export default {
 
 <style lang="scss">
 .chat-room {
-  height: 360px;
+  height: 380px;
   overflow-y: auto;
   background-color: #eff3f2;
 
@@ -317,7 +328,6 @@ export default {
     position: absolute;
     font-size: 12px;
     width: 130px;
-    animation: fadeIn ease 0.6s;
   }
 }
 
@@ -343,6 +353,10 @@ export default {
   text-align: left !important;
 }
 
+.post-message {
+  padding: 2px;
+}
+
 .time-shown {
   margin-bottom: 20px !important;
   transition: all 0.4s;
@@ -353,7 +367,7 @@ export default {
 }
 
 .post-time {
-  top: 66px;
+  top: 72px;
 }
 
 .photo-time {
@@ -366,16 +380,5 @@ export default {
 
 .time-recieved {
   left: 5px;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 </style>

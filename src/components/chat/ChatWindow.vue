@@ -374,7 +374,7 @@ export default {
       height: 12px;
       width: 12px;
       border-radius: 200px;
-      background-color: #55efc4;
+      background-color: #f4ad00;
     }
   }
 

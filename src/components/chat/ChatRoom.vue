@@ -276,8 +276,7 @@ export default {
 
 .container__message {
   margin-bottom: 3px;
-  width: 100%;
-  background: red;
+  max-width: 280px;
   transition: all 0.4s;
   display: flex;
   flex-direction: column;
@@ -364,11 +363,6 @@ export default {
   }
 }
 
-/* .last-sent,
-.last-recieved {
-  margin-bottom: 15px;
-} */
-
 .photo-message {
   width: 280px !important;
   text-align: left !important;
@@ -377,24 +371,4 @@ export default {
 .post-message {
   padding: 2px;
 }
-/* 
-.msg-time {
-  top: 30px;
-}
-
-.post-time {
-  bottom: -18px;
-}
-
-.photo-time {
-  top: 208px;
-} */
-/* 
-.time-sent {
-  right: 5px;
-}
-
-.time-recieved {
-  left: 5px;
-} */
 </style>

@@ -276,7 +276,8 @@ export default {
 
 .container__message {
   margin-bottom: 3px;
-  max-width: 280px;
+  width: 100%;
+  background: red;
   transition: all 0.4s;
   display: flex;
   flex-direction: column;
@@ -363,10 +364,10 @@ export default {
   }
 }
 
-.last-sent,
+/* .last-sent,
 .last-recieved {
   margin-bottom: 15px;
-}
+} */
 
 .photo-message {
   width: 280px !important;

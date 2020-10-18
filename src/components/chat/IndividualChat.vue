@@ -154,6 +154,7 @@ export default {
 
     if (!this.minimised) {
       this.resetUnseenNumber(this.chatWith);
+      console.log("yess");
     }
 
     this.chats = [];

@@ -3,8 +3,6 @@
     class="chat-room"
     v-chat-scroll="{
       always: false,
-      smooth: true,
-      notSmoothOnInit: true,
       scrollonremoved: true,
     }"
   >
@@ -105,14 +103,16 @@
           </div>
         </v-expand-transition>
       </li>
-      <span
-        v-if="
-          chats[chats.length - 1].val.sender === myId &&
-          lastSeen >= chats[chats.length - 1].val.tm
-        "
-        class="individual-chat__seen"
-        >seen</span
-      >
+      <li>
+        <span
+          v-if="
+            chats[chats.length - 1].val.sender === myId &&
+            lastSeen >= chats[chats.length - 1].val.tm
+          "
+          class="individual-chat__seen"
+          >seen</span
+        >
+      </li>
     </ul>
   </div>
 </template>

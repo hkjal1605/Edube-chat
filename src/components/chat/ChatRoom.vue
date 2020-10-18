@@ -3,7 +3,9 @@
     class="chat-room"
     v-chat-scroll="{
       always: false,
-      smooth: false,
+      smooth: true,
+      notSmoothOnInit: true,
+      scrollonremoved: true,
     }"
   >
     <v-btn

@@ -24,7 +24,7 @@
         fab
         small
         color="transparent"
-        @click="closeChatRoom()"
+        @click.stop="closeChatRoom()"
       >
         <v-icon color="#dee2e1">mdi-close</v-icon>
       </v-btn>
@@ -79,10 +79,13 @@ export default {
     };
   },
   mounted() {
+    console.log(this.$parent.chatComponentMinimised);
     if (this.chatPosition === 1) {
+      console.log(1);
       this.$parent.chatComponentMinimised = false;
     }
     if (this.$parent.chatComponentTwoMinimised && this.chatPosition === 2) {
+      console.log(2);
       this.$parent.chatComponentMinimised = true;
       this.$parent.chatComponentTwoMinimised = false;
     }
@@ -197,6 +200,7 @@ export default {
   },
   beforeDestroy() {
     if (this.chatPosition === 1 && this.$parent.chatComponentMinimised) {
+      console.log(3);
       this.$parent.chatComponentMinimised = false;
     }
 
@@ -222,6 +226,8 @@ export default {
           "/unseen"
       )
       .off();
+
+    console.log(this.$parent.chatComponentMinimised);
   },
   methods: {
     checkPostUpdates(data, key) {
@@ -300,14 +306,17 @@ export default {
     },
 
     minimiseChatRoom() {
+      console.log("yess");
       this.minimised = !this.minimised;
 
       if (this.chatPosition === 1) {
+        console.log(4);
         let tempVar = this.$parent.chatComponentMinimised;
         this.$parent.chatComponentMinimised = !tempVar;
       }
 
       if (this.chatPosition === 2) {
+        console.log(5);
         let tempVar = this.$parent.chatComponentTwoMinimised;
         this.$parent.chatComponentTwoMinimised = !tempVar;
       }

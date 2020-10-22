@@ -223,13 +223,13 @@ export default {
           if (data.val()) {
             _this.firebase
               .database()
-              .ref(`Edubase/users/${_this.myId}/online`)
+              .ref(`Edubase/onlineStatus/${_this.myId}/web`)
               .onDisconnect()
               .set(false);
 
             _this.firebase
               .database()
-              .ref(`Edubase/users/${_this.myId}/online`)
+              .ref(`Edubase/onlineStatus/${_this.myId}/web`)
               .set(true);
           }
         });

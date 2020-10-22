@@ -79,9 +79,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$parent.chatComponentMinimised);
     if (this.chatPosition === 1) {
-      console.log(1);
       this.$parent.chatComponentMinimised = false;
     }
     if (this.$parent.chatComponentTwoMinimised && this.chatPosition === 2) {
@@ -94,10 +92,23 @@ export default {
 
     this.firebase
       .database()
+      .ref(`Edubase/onlineStatus/${this.chatWith.objectID}`)
+      .on("value", function (data) {
+        if (data.val()) {
+          console.log(data.val());
+          if (data.val().web || data.val().andr) {
+            console.log(1);
+            _this.userOnline = true;
+          } else {
+            _this.userOnline = false;
+          }
+        }
+      });
+
+    this.firebase
+      .database()
       .ref("Edubase/users/" + this.chatWith.objectID)
       .on("value", function (data) {
-        _this.userOnline = data.val().online;
-
         if (_this.chatWith.name !== data.val().name) {
           _this.chatWith.name = data.val().name;
 
@@ -154,7 +165,6 @@ export default {
 
     if (!this.minimised) {
       this.resetUnseenNumber(this.chatWith);
-      console.log("yess");
     }
 
     this.chats = [];

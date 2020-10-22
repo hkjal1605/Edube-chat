@@ -224,6 +224,11 @@ export default {
 
     this.firebase
       .database()
+      .ref(`Edubase/onlineStatus/${this.chatWith.objectID}`)
+      .off();
+
+    this.firebase
+      .database()
       .ref("Edubase/users/" + this.chatWith.objectID)
       .off();
 
